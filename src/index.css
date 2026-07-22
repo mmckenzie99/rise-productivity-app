@@ -103,3 +103,26 @@
     @apply bg-background text-foreground font-body;
   }
 }
+
+/* Rich text editor (react-quill) */
+.rich-notes .ql-toolbar {
+  border: 1px solid #C9BE9C;
+  border-bottom: none;
+  border-radius: 0.375rem 0.375rem 0 0;
+  background: #EFE9D5;
+}
+.rich-notes .ql-container {
+  border: 1px solid #C9BE9C;
+  border-radius: 0 0 0.375rem 0.375rem;
+  min-height: 120px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+}
+.rich-notes .ql-editor { min-height: 120px; padding: 0.75rem; }
+.rich-notes .ql-editor a { color: #3F6E63; text-decoration: underline; }
+
+/* Rich text display (read-only) */
+.rich-notes-display a { color: #3F6E63; text-decoration: underline; word-break: break-word; }
+.rich-notes-display ul { list-style: disc; padding-left: 1.25rem; margin: 0.25rem 0; }
+.rich-notes-display ol { list-style: decimal; padding-left: 1.25rem; margin: 0.25rem 0; }
+.rich-notes-display p { margin: 0.25rem 0; }
