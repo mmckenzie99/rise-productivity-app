@@ -1,0 +1,124 @@
+{
+  "name": "Trip",
+  "type": "object",
+  "properties": {
+    "engagement_id": {
+      "type": "string",
+      "description": "ID of the linked engagement"
+    },
+    "engagement_title": {
+      "type": "string",
+      "description": "Cached engagement title for display"
+    },
+    "department": {
+      "type": "string",
+      "enum": [
+        "Expense to Thrive",
+        "Engage Department"
+      ]
+    },
+    "leave_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "leave_time": {
+      "type": "string"
+    },
+    "return_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "return_time": {
+      "type": "string"
+    },
+    "travel_type": {
+      "type": "string",
+      "enum": [
+        "Flight",
+        "Rental",
+        "Personal Auto"
+      ]
+    },
+    "airline": {
+      "type": "string"
+    },
+    "rental_company": {
+      "type": "string"
+    },
+    "travel_cost": {
+      "type": "number"
+    },
+    "travel_receipt": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "per_diem_days": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "Full Day",
+              "Half Day"
+            ]
+          },
+          "amount": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "expense_report": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "total_per_diem": {
+      "type": "number"
+    },
+    "total_cost": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "engagement_id",
+    "department"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
