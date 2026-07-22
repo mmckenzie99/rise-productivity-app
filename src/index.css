@@ -4,14 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fix: shadcn Dialog z-index (z-50) is below Leaflet map panes (z-index up to 700).
-   Raise dialogs, popovers, overlays, and tooltips above the map. */
+/* Fix: Leaflet map panes default to high z-index values (up to 700) which
+   cover shadcn dialogs (z-50). Reset Leaflet layers to 0 so dialogs naturally
+   render above the map without affecting dialog overlay/content layering. */
+.leaflet-container,
 .leaflet-pane,
 .leaflet-top,
-.leaflet-bottom { z-index: 0 !important; }
+.leaflet-bottom,
 .leaflet-control { z-index: 0 !important; }
-[data-radix-popper-content-wrapper],
-.fixed.inset-0[data-state="open"] { z-index: 9999 !important; }
+/* Keep popper-based menus (selects, dropdowns, tooltips) above the map too. */
+[data-radix-popper-content-wrapper] { z-index: 60 !important; }
 
 @layer base {
   :root {
