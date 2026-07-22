@@ -1,0 +1,97 @@
+{
+  "name": "Engagement",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "presentation_type": {
+      "type": "string",
+      "enum": [
+        "Workshop",
+        "Sermon",
+        "Series",
+        "Training",
+        "Evangelistic",
+        "Vision-Casting"
+      ]
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "speaking_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string"
+    },
+    "end_time": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Planning",
+        "Confirmed",
+        "Completed"
+      ],
+      "default": "Planning"
+    },
+    "progress": {
+      "type": "string",
+      "enum": [
+        "Not Started",
+        "In Progress",
+        "Ready to Deploy"
+      ],
+      "default": "Not Started"
+    },
+    "speaker_name": {
+      "type": "string"
+    },
+    "speaker_bio": {
+      "type": "string"
+    },
+    "speaker_photo": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "title",
+    "speaker_name"
+  ]
+}
