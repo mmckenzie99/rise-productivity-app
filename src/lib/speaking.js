@@ -1,4 +1,4 @@
-export const TYPES=['Workshop','Sermon','Series','Training','Evangelistic','Vision-Casting'];
+export const TYPES=['Presentation(s)','Workshop','Training','Booth','Vision-Casting'];
 export const STATUSES=['Planning','Confirmed','Completed'];
 export const PROGRESS=['Not Started','In Progress','Ready to Deploy'];
 export const TIMEZONES=[
