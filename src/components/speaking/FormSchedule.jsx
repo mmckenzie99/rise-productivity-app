@@ -18,7 +18,7 @@ export default function FormSchedule({form,set}){
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Picker label="Presentation type" value={form.presentation_type} items={TYPES} onChange={v=>set('presentation_type',v)}/>
+        <Picker label="Engagement type" value={form.presentation_type} items={TYPES} onChange={v=>set('presentation_type',v)}/>
         <Picker label="Status" value={form.status} items={STATUSES} onChange={v=>set('status',v)}/>
         <Picker label="Progress" value={form.progress} items={PROGRESS} onChange={v=>set('progress',v)}/>
       </div>
