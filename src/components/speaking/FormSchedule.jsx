@@ -1,3 +1,42 @@
-import { Input } from '@/components/ui/input';import { Label } from '@/components/ui/label';import { Select,SelectContent,SelectItem,SelectTrigger,SelectValue } from '@/components/ui/select';import { PROGRESS,STATUSES,TYPES } from '@/lib/speaking';
-const Picker=({label,value,items,onChange})=><div><Label>{label}</Label><Select value={value||''} onValueChange={onChange}><SelectTrigger><SelectValue placeholder="Select…"/></SelectTrigger><SelectContent>{items.map(x=><SelectItem key={x} value={x}>{x}</SelectItem>)}</SelectContent></Select></div>;
-export default function FormSchedule({form,set}){return <><div className="grid gap-4 sm:grid-cols-2"><Picker label="Presentation type" value={form.presentation_type} items={TYPES} onChange={v=>set('presentation_type',v)}/><Picker label="Status" value={form.status} items={STATUSES} onChange={v=>set('status',v)}/><Picker label="Progress" value={form.progress} items={PROGRESS} onChange={v=>set('progress',v)}/></div><div className="grid gap-4 sm:grid-cols-2"><div><Label>Creation start date</Label><Input type="date" value={form.start_date||''} onChange={e=>set('start_date',e.target.value)}/></div><div><Label>Speaking date</Label><Input type="date" value={form.speaking_date||''} onChange={e=>set('speaking_date',e.target.value)}/></div><div><Label>Start time</Label><Input type="time" value={form.start_time||''} onChange={e=>set('start_time',e.target.value)}/></div><div><Label>End time</Label><Input type="time" value={form.end_time||''} onChange={e=>set('end_time',e.target.value)}/></div></div></>}
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select,SelectContent,SelectItem,SelectTrigger,SelectValue } from '@/components/ui/select';
+import { PROGRESS,STATUSES,TYPES,TIMEZONES,detectTimezone } from '@/lib/speaking';
+
+const Picker=({label,value,items,onChange})=>(
+  <div>
+    <Label>{label}</Label>
+    <Select value={value||''} onValueChange={onChange}>
+      <SelectTrigger><SelectValue placeholder="Select…"/></SelectTrigger>
+      <SelectContent>{items.map(x=><SelectItem key={x} value={x}>{x}</SelectItem>)}</SelectContent>
+    </Select>
+  </div>
+);
+
+export default function FormSchedule({form,set}){
+  const tz=form.timezone||detectTimezone();
+  return (
+    <>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Picker label="Presentation type" value={form.presentation_type} items={TYPES} onChange={v=>set('presentation_type',v)}/>
+        <Picker label="Status" value={form.status} items={STATUSES} onChange={v=>set('status',v)}/>
+        <Picker label="Progress" value={form.progress} items={PROGRESS} onChange={v=>set('progress',v)}/>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div><Label>Creation start date</Label><Input type="date" value={form.start_date||''} onChange={e=>set('start_date',e.target.value)}/></div>
+        <div><Label>Speaking date</Label><Input type="date" value={form.speaking_date||''} onChange={e=>set('speaking_date',e.target.value)}/></div>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div><Label>Start time</Label><Input type="time" value={form.start_time||''} onChange={e=>set('start_time',e.target.value)}/></div>
+        <div><Label>End time</Label><Input type="time" value={form.end_time||''} onChange={e=>set('end_time',e.target.value)}/></div>
+        <div>
+          <Label>Time zone</Label>
+          <Select value={tz} onValueChange={v=>set('timezone',v)}>
+            <SelectTrigger><SelectValue placeholder="Select…"/></SelectTrigger>
+            <SelectContent>{TIMEZONES.map(z=><SelectItem key={z.value} value={z.value}>{z.label}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+      </div>
+    </>
+  );
+}

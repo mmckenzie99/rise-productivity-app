@@ -33,6 +33,9 @@
     "end_time": {
       "type": "string"
     },
+    "timezone": {
+      "type": "string"
+    },
     "status": {
       "type": "string",
       "enum": [
