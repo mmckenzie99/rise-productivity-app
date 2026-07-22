@@ -35,7 +35,7 @@ export default function Login() {
   return (
     <AuthLayout
       icon={LogIn}
-      title="Welcome to Speaking Log"
+      title="Welcome to Engagement Log"
       subtitle="Sign in with the email address that was invited"
       footer={
         <>
