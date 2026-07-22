@@ -1,5 +1,6 @@
 export const TYPES=['Presentation(s)','Workshop','Training','Booth','Vision-Casting'];
 export const STATUSES=['Planning','Confirmed','Completed'];
+export const asArray=(v)=>Array.isArray(v)?v:v?[v]:[];
 export const PROGRESS=['Not Started','In Progress','Ready to Deploy'];
 export const TIMEZONES=[
   {value:'America/New_York',label:'Eastern (ET)'},
