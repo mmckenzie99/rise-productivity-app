@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2, FileText, Plane, Car, CalendarDays, Building2, DollarSign } from 'lucide-react';
-import { formatCurrency, calcTravelByType } from '@/lib/trips';
+import { Pencil, Trash2, FileText, Plane, Car, CalendarDays, Building2, DollarSign, Download } from 'lucide-react';
+import { formatCurrency, calcTravelByType, exportTripCSV } from '@/lib/trips';
 
 function Row({ icon: Icon, label, children }) {
   return (
@@ -127,12 +127,15 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
             <span className="font-display text-lg font-semibold text-[#D9A404]">{formatCurrency(trip.total_cost)}</span>
           </div>
 
-          {isAdmin && (
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={onEdit} className="border-[#D6DAE3] bg-white"><Pencil className="mr-1.5 h-4 w-4" />Edit</Button>
-              <Button variant="destructive" onClick={onDelete}><Trash2 className="mr-1.5 h-4 w-4" />Delete</Button>
-            </div>
-          )}
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button variant="outline" onClick={() => exportTripCSV(trip)} className="border-[#D6DAE3] bg-white"><Download className="mr-1.5 h-4 w-4" />Export CSV</Button>
+            {isAdmin && (
+              <>
+                <Button variant="outline" onClick={onEdit} className="border-[#D6DAE3] bg-white"><Pencil className="mr-1.5 h-4 w-4" />Edit</Button>
+                <Button variant="destructive" onClick={onDelete}><Trash2 className="mr-1.5 h-4 w-4" />Delete</Button>
+              </>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

@@ -30,6 +30,49 @@ export const calcPerDiemTotal = (days) =>
 export const calcTravelTotal = (entries) =>
   (entries || []).reduce((sum, e) => sum + (Number(e.cost) || 0), 0);
 
+export const exportTripCSV = (trip) => {
+  const esc = (val) => `"${String(val ?? '').replace(/"/g, '""')}"`;
+  const rows = [];
+  const byType = calcTravelByType(trip.travel_entries);
+
+  rows.push(['Engagement Log — Trip Details']);
+  rows.push([]);
+  rows.push(['Engagement', 'Department', 'Leave Date', 'Leave Time', 'Return Date', 'Return Time']);
+  rows.push([trip.engagement_title || '', trip.department || '', trip.leave_date || '', trip.leave_time || '', trip.return_date || '', trip.return_time || '']);
+  rows.push([]);
+
+  rows.push(['Expense Breakdown']);
+  rows.push(['Category', 'Type', 'Description', 'Date', 'Amount', 'Receipt']);
+  (trip.travel_entries || []).forEach((e) => {
+    const desc = e.type === 'Flight' ? e.airline : e.type === 'Rental' ? e.rental_company : '';
+    rows.push(['Travel', e.type || '', desc, '', (e.cost || 0).toFixed(2), e.receipt?.name || '']);
+  });
+  (trip.per_diem_days || []).forEach((d) => {
+    rows.push(['Per Diem', d.type || '', '', d.date || '', (d.amount || 0).toFixed(2), '']);
+  });
+  if (trip.expense_report?.url) {
+    rows.push(['Expense Report', '', '', '', '', trip.expense_report.name || '']);
+  }
+  rows.push([]);
+
+  rows.push(['Cost Summary']);
+  rows.push(['Category', 'Amount']);
+  if (byType.Flight > 0) rows.push(['Airfare', byType.Flight.toFixed(2)]);
+  if (byType.Rental > 0) rows.push(['Rental', byType.Rental.toFixed(2)]);
+  if (byType['Personal Auto'] > 0) rows.push(['Personal Auto', byType['Personal Auto'].toFixed(2)]);
+  rows.push(['Per Diem', (trip.total_per_diem || 0).toFixed(2)]);
+  rows.push(['Total Cost', (trip.total_cost || 0).toFixed(2)]);
+
+  const csv = rows.map((r) => r.map(esc).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `trip-${(trip.engagement_title || 'export').replace(/\s+/g, '-').toLowerCase()}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+};
+
 export const calcTravelByType = (entries) => {
   const byType = { Flight: 0, Rental: 0, 'Personal Auto': 0 };
   (entries || []).forEach((e) => {
