@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2, FileText, Plane, Car, CalendarDays, Building2, DollarSign } from 'lucide-react';
-import { formatCurrency } from '@/lib/trips';
+import { formatCurrency, calcTravelByType } from '@/lib/trips';
 
 function Row({ icon: Icon, label, children }) {
   return (
@@ -15,6 +15,7 @@ function Row({ icon: Icon, label, children }) {
 
 export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin }) {
   if (!trip) return null;
+  const travelByType = calcTravelByType(trip.travel_entries);
 
   return (
     <Dialog open={!!trip} onOpenChange={(v) => !v && onClose()}>
@@ -88,6 +89,35 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
             <div className="flex justify-between pt-2">
               <span className="text-sm text-[#5A6781]">Per Diem Subtotal</span>
               <span className="text-sm font-semibold text-[#1B2A4B]">{formatCurrency(trip.total_per_diem)}</span>
+            </div>
+          </div>
+
+          {/* Cost Summary */}
+          <div className="rounded-lg border border-[#D6DAE3] bg-white p-4">
+            <h3 className="font-display text-sm font-semibold text-[#1B2A4B] mb-2">Cost Summary</h3>
+            <div className="space-y-1.5 text-sm">
+              {travelByType.Flight > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-[#5A6781]">Airfare</span>
+                  <span className="font-medium text-[#1B2A4B]">{formatCurrency(travelByType.Flight)}</span>
+                </div>
+              )}
+              {travelByType.Rental > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-[#5A6781]">Rental</span>
+                  <span className="font-medium text-[#1B2A4B]">{formatCurrency(travelByType.Rental)}</span>
+                </div>
+              )}
+              {travelByType['Personal Auto'] > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-[#5A6781]">Personal Auto</span>
+                  <span className="font-medium text-[#1B2A4B]">{formatCurrency(travelByType['Personal Auto'])}</span>
+                </div>
+              )}
+              <div className="flex justify-between border-t border-[#E8EAF0] pt-1.5">
+                <span className="text-[#5A6781]">Per Diem</span>
+                <span className="font-medium text-[#1B2A4B]">{formatCurrency(trip.total_per_diem)}</span>
+              </div>
             </div>
           </div>
 

@@ -30,6 +30,14 @@ export const calcPerDiemTotal = (days) =>
 export const calcTravelTotal = (entries) =>
   (entries || []).reduce((sum, e) => sum + (Number(e.cost) || 0), 0);
 
+export const calcTravelByType = (entries) => {
+  const byType = { Flight: 0, Rental: 0, 'Personal Auto': 0 };
+  (entries || []).forEach((e) => {
+    if (byType[e.type] !== undefined) byType[e.type] += Number(e.cost) || 0;
+  });
+  return byType;
+};
+
 export const calcTotalCost = (travelTotal, perDiemTotal) =>
   (Number(travelTotal) || 0) + (Number(perDiemTotal) || 0);
 
