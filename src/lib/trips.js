@@ -15,6 +15,8 @@ export const defaultTrip = {
   leave_time: '',
   return_date: '',
   return_time: '',
+  departure_airport: '',
+  rental_pickup_location: '',
   travel_entries: [],
   per_diem_days: [],
   expense_report: { name: '', url: '' },

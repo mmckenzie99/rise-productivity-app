@@ -26,6 +26,17 @@ export default function FormTravel({ form, set }) {
         </Button>
       </div>
 
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <Label className="text-xs text-[#5A6781]">Departure Airport</Label>
+          <Input className="mt-1 border-[#D6DAE3] bg-white" value={form.departure_airport || ''} onChange={(e) => set('departure_airport', e.target.value)} placeholder="e.g. DTW - Detroit" />
+        </div>
+        <div>
+          <Label className="text-xs text-[#5A6781]">Rental Pickup Location</Label>
+          <Input className="mt-1 border-[#D6DAE3] bg-white" value={form.rental_pickup_location || ''} onChange={(e) => set('rental_pickup_location', e.target.value)} placeholder="e.g. Enterprise - Airport" />
+        </div>
+      </div>
+
       {entries.length === 0 && <p className="text-sm text-[#5A6781]">No travel entries added yet. Click "Add Travel" to add a flight, rental, or personal auto.</p>}
 
       {entries.map((entry, i) => (

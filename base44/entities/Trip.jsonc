@@ -31,6 +31,12 @@
     "return_time": {
       "type": "string"
     },
+    "departure_airport": {
+      "type": "string"
+    },
+    "rental_pickup_location": {
+      "type": "string"
+    },
     "travel_entries": {
       "type": "array",
       "items": {

@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2, FileText, Plane, Car, CalendarDays, Building2, DollarSign, Download } from 'lucide-react';
+import { Pencil, Trash2, FileText, Plane, Car, CalendarDays, Building2, DollarSign, Download, MapPin } from 'lucide-react';
 import { formatCurrency, calcTravelByType, exportTripCSV } from '@/lib/trips';
 
 function Row({ icon: Icon, label, children }) {
@@ -45,6 +45,8 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
           {/* Travel Details */}
           <div className="rounded-lg border border-[#D6DAE3] bg-white p-4">
             <h3 className="font-display text-sm font-semibold text-[#1B2A4B] mb-2">Travel Details</h3>
+            {trip.departure_airport && <Row icon={Plane} label="Departure Airport">{trip.departure_airport}</Row>}
+            {trip.rental_pickup_location && <Row icon={MapPin} label="Rental Pickup">{trip.rental_pickup_location}</Row>}
             {trip.travel_entries?.length ? (
               trip.travel_entries.map((entry, i) => (
                 <div key={i} className="space-y-1 border-b border-[#E8EAF0] pb-2 mb-2 last:border-0 last:mb-0 last:pb-0">
