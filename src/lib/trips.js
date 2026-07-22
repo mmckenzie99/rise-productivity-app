@@ -88,3 +88,11 @@ export const calcTotalCost = (travelTotal, perDiemTotal) =>
 
 export const formatCurrency = (n) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n || 0);
+
+export const getTripStatus = (trip) => {
+  if (!trip.return_date) return 'upcoming';
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const returnDate = new Date(trip.return_date + 'T00:00:00');
+  return returnDate < today ? 'completed' : 'upcoming';
+};
