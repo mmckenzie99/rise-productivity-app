@@ -9,15 +9,17 @@
       "type": "string"
     },
     "presentation_type": {
-      "type": "string",
-      "enum": [
-        "Workshop",
-        "Sermon",
-        "Series",
-        "Training",
-        "Evangelistic",
-        "Vision-Casting"
-      ]
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Presentation(s)",
+          "Workshop",
+          "Training",
+          "Booth",
+          "Vision-Casting"
+        ]
+      }
     },
     "start_date": {
       "type": "string",

@@ -2,6 +2,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select,SelectContent,SelectItem,SelectTrigger,SelectValue } from '@/components/ui/select';
 import { PROGRESS,STATUSES,TYPES,TIMEZONES,detectTimezone } from '@/lib/speaking';
+import MultiTypeSelect from './MultiTypeSelect';
 
 const Picker=({label,value,items,onChange})=>(
   <div>
@@ -18,7 +19,7 @@ export default function FormSchedule({form,set}){
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Picker label="Engagement type" value={form.presentation_type} items={TYPES} onChange={v=>set('presentation_type',v)}/>
+        <MultiTypeSelect label="Engagement type" values={form.presentation_type||[]} options={TYPES} onChange={v=>set('presentation_type',v)}/>
         <Picker label="Status" value={form.status} items={STATUSES} onChange={v=>set('status',v)}/>
         <Picker label="Progress" value={form.progress} items={PROGRESS} onChange={v=>set('progress',v)}/>
       </div>
