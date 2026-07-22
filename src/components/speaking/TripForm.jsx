@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DEPARTMENTS, defaultTrip, calcPerDiemTotal, calcTotalCost, formatCurrency } from '@/lib/trips';
+import { DEPARTMENTS, defaultTrip, calcPerDiemTotal, calcTotalCost, calcTravelTotal, formatCurrency } from '@/lib/trips';
 import FormTravel from './FormTravel';
 import FormPerDiem from './FormPerDiem';
 
@@ -20,8 +20,9 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
+  const travelTotal = calcTravelTotal(form.travel_entries);
   const totalPerDiem = calcPerDiemTotal(form.per_diem_days);
-  const totalCost = calcTotalCost(form.travel_cost, totalPerDiem);
+  const totalCost = calcTotalCost(travelTotal, totalPerDiem);
 
   const handleSubmit = async () => {
     setSaving(true);

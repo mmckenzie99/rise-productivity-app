@@ -44,16 +44,24 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
           {/* Travel Details */}
           <div className="rounded-lg border border-[#D6DAE3] bg-white p-4">
             <h3 className="font-display text-sm font-semibold text-[#1B2A4B] mb-2">Travel Details</h3>
-            <Row icon={trip.travel_type === 'Flight' ? Plane : Car} label="Type">{trip.travel_type || '—'}</Row>
-            {trip.travel_type === 'Flight' && <Row icon={Plane} label="Airline">{trip.airline || '—'}</Row>}
-            {trip.travel_type === 'Rental' && <Row icon={Car} label="Company">{trip.rental_company || '—'}</Row>}
-            <Row icon={DollarSign} label="Travel Cost">{formatCurrency(trip.travel_cost)}</Row>
-            {trip.travel_receipt?.url && (
-              <div className="flex items-center gap-2 py-1.5">
-                <FileText className="h-4 w-4 text-[#5A6781]" />
-                <span className="text-sm text-[#5A6781] min-w-[120px]">Receipt</span>
-                <a href={trip.travel_receipt.url} target="_blank" rel="noreferrer" className="text-sm text-[#D9A404] underline">{trip.travel_receipt.name}</a>
-              </div>
+            {trip.travel_entries?.length ? (
+              trip.travel_entries.map((entry, i) => (
+                <div key={i} className="space-y-1 border-b border-[#E8EAF0] pb-2 mb-2 last:border-0 last:mb-0 last:pb-0">
+                  <Row icon={entry.type === 'Flight' ? Plane : Car} label="Type">{entry.type || '—'}</Row>
+                  {entry.type === 'Flight' && <Row icon={Plane} label="Airline">{entry.airline || '—'}</Row>}
+                  {entry.type === 'Rental' && <Row icon={Car} label="Company">{entry.rental_company || '—'}</Row>}
+                  <Row icon={DollarSign} label="Cost">{formatCurrency(entry.cost)}</Row>
+                  {entry.receipt?.url && (
+                    <div className="flex items-center gap-2 py-1.5">
+                      <FileText className="h-4 w-4 text-[#5A6781]" />
+                      <span className="text-sm text-[#5A6781] min-w-[120px]">Receipt</span>
+                      <a href={entry.receipt.url} target="_blank" rel="noreferrer" className="text-sm text-[#D9A404] underline">{entry.receipt.name}</a>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-[#5A6781]">No travel details.</p>
             )}
           </div>
 

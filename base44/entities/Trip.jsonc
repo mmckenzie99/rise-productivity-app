@@ -31,31 +31,39 @@
     "return_time": {
       "type": "string"
     },
-    "travel_type": {
-      "type": "string",
-      "enum": [
-        "Flight",
-        "Rental",
-        "Personal Auto"
-      ]
-    },
-    "airline": {
-      "type": "string"
-    },
-    "rental_company": {
-      "type": "string"
-    },
-    "travel_cost": {
-      "type": "number"
-    },
-    "travel_receipt": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "url": {
-          "type": "string"
+    "travel_entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "Flight",
+              "Rental",
+              "Personal Auto"
+            ]
+          },
+          "airline": {
+            "type": "string"
+          },
+          "rental_company": {
+            "type": "string"
+          },
+          "cost": {
+            "type": "number"
+          },
+          "receipt": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },
