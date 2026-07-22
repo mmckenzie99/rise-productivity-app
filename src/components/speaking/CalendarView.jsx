@@ -37,18 +37,18 @@ export default function CalendarView({ items, onSelect }) {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <Button variant="outline" size="icon" onClick={() => setCursor(new Date(year, month - 1, 1))}><ChevronLeft className="h-4 w-4" /></Button>
+        <Button variant="outline" size="icon" onClick={() => setCursor(new Date(year, month - 1, 1))} className="border-[#D6DAE3] bg-white"><ChevronLeft className="h-4 w-4" /></Button>
         <h3 className="font-display text-xl font-semibold">{MONTHS[month]} {year}</h3>
-        <Button variant="outline" size="icon" onClick={() => setCursor(new Date(year, month + 1, 1))}><ChevronRight className="h-4 w-4" /></Button>
+        <Button variant="outline" size="icon" onClick={() => setCursor(new Date(year, month + 1, 1))} className="border-[#D6DAE3] bg-white"><ChevronRight className="h-4 w-4" /></Button>
       </div>
       <div className="grid grid-cols-7 gap-1">
         {DAYS.map(d => (
-          <div key={d} className="pb-1 text-center font-mono text-[10px] uppercase tracking-wider text-[#4C5B6B]">{d}</div>
+          <div key={d} className="pb-1 text-center font-mono text-[10px] uppercase tracking-wider text-[#5A6781]">{d}</div>
         ))}
         {cells.map((cell, i) => (
           <div
             key={i}
-            className={`min-h-[72px] rounded-md border p-1.5 ${cell.muted ? 'border-transparent bg-[#EFE9D5]/50 text-[#A9793B]' : cell.date === todayKey ? 'border-[#3F6E63] bg-[#DCE9E4]' : 'border-[#C9BE9C] bg-[#F6F1E4]'}`}
+            className={`min-h-[72px] rounded-md border p-1.5 ${cell.muted ? 'border-transparent bg-[#F0F2F6]/50 text-[#5A6781]' : cell.date === todayKey ? 'border-[#D9A404] bg-[#FBF0D0]/40' : 'border-[#D6DAE3] bg-white'}`}
           >
             <p className="text-xs font-medium">{cell.day}</p>
             {cell.engagements?.map(eng => (
@@ -58,7 +58,7 @@ export default function CalendarView({ items, onSelect }) {
                 className="mt-1 block w-full truncate rounded px-1 py-0.5 text-left text-[11px] font-medium"
                 title={`${eng.title} — ${formatDate(eng.speaking_date)}`}
               >
-                <span className={`rounded px-1 ${statusTone[eng.status] || 'bg-[#E4E0D4] text-[#5B5548]'}`}>
+                <span className={`rounded px-1 ${statusTone[eng.status] || 'bg-[#E8EAF0] text-[#5A6781]'}`}>
                   {eng.title}
                 </span>
               </button>

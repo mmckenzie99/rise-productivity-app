@@ -4,9 +4,9 @@ import { STATUSES, statusTone } from '@/lib/speaking';
 import KanbanCard from './KanbanCard';
 
 const COLUMN_TONE = {
-  Planning: 'border-t-[#A9793B]',
-  Confirmed: 'border-t-[#3F6E63]',
-  Completed: 'border-t-[#5B5548]'
+  Planning: 'border-t-[#D9A404]',
+  Confirmed: 'border-t-[#1B2A4B]',
+  Completed: 'border-t-[#5A6781]'
 };
 
 export default function KanbanBoard({ items, onSave, onSelect, isAdmin }) {
@@ -35,7 +35,7 @@ export default function KanbanBoard({ items, onSave, onSelect, isAdmin }) {
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className={`flex flex-col rounded-lg border border-[#C9BE9C] border-t-4 ${COLUMN_TONE[status]} bg-[#EFE9D5] p-3 transition ${snapshot.isDraggingOver ? 'bg-[#E7DFC6]' : ''}`}
+                className={`flex flex-col rounded-lg border border-[#D6DAE3] border-t-4 ${COLUMN_TONE[status]} bg-[#F0F2F6] p-3 transition ${snapshot.isDraggingOver ? 'bg-[#E8EBF2]' : ''}`}
               >
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="font-display text-lg font-semibold">{status}</h3>
@@ -51,7 +51,7 @@ export default function KanbanBoard({ items, onSave, onSelect, isAdmin }) {
                           ref={dragProvided.innerRef}
                           {...dragProvided.draggableProps}
                           {...dragProvided.dragHandleProps}
-                          className={`transition ${dragSnapshot.isDragging ? 'opacity-80 shadow-lg' : ''} ${dragId === item.id ? 'ring-2 ring-[#3F6E63] ring-offset-1' : ''}`}
+                          className={`transition ${dragSnapshot.isDragging ? 'opacity-80 shadow-lg' : ''} ${dragId === item.id ? 'ring-2 ring-[#D9A404] ring-offset-1' : ''}`}
                         >
                           <KanbanCard item={item} onClick={() => onSelect(item)} />
                         </div>
@@ -60,7 +60,7 @@ export default function KanbanBoard({ items, onSave, onSelect, isAdmin }) {
                   ))}
                   {provided.placeholder}
                   {grouped[status].length === 0 && (
-                    <p className="py-6 text-center text-xs text-[#A9793B]">
+                    <p className="py-6 text-center text-xs text-[#D9A404]">
                       {isAdmin ? 'Drop a card here' : 'Nothing here'}
                     </p>
                   )}
