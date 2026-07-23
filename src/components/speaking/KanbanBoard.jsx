@@ -9,20 +9,66 @@ const COLUMN_TONE = {
   Completed: 'border-t-[#5A6781]'
 };
 
+const STORAGE_KEY = 'kanbanColumnOrder';
+
+const loadOrder = () => {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { return {}; }
+};
+
 export default function KanbanBoard({ items, onSave, onSelect, isAdmin }) {
   const [dragId, setDragId] = useState(null);
+  const [columnOrder, setColumnOrder] = useState(loadOrder);
+
+  const sortByOrder = (status, list) => {
+    const ord = columnOrder[status] || [];
+    const orderMap = new Map(ord.map((id, i) => [id, i]));
+    return [...list].sort((a, b) => {
+      const ai = orderMap.get(a.id);
+      const bi = orderMap.get(b.id);
+      if (ai !== undefined && bi !== undefined) return ai - bi;
+      if (ai !== undefined) return -1;
+      if (bi !== undefined) return 1;
+      return 0;
+    });
+  };
 
   const grouped = STATUSES.reduce((acc, s) => {
-    acc[s] = items.filter(i => i.status === s);
+    acc[s] = sortByOrder(s, items.filter(i => i.status === s));
     return acc;
   }, {});
+
+  const persist = (next) => {
+    setColumnOrder(next);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
+  };
 
   const onDragEnd = (result) => {
     setDragId(null);
     if (!result.destination) return;
-    const destStatus = result.destination.droppableId;
+    const { source, destination } = result;
+    const srcStatus = source.droppableId;
+    const destStatus = destination.droppableId;
     const item = items.find(i => i.id === result.draggableId);
-    if (!item || item.status === destStatus) return;
+    if (!item) return;
+
+    // Reorder within the same column — persist the new order.
+    if (srcStatus === destStatus) {
+      const colItems = [...grouped[srcStatus]];
+      const [moved] = colItems.splice(source.index, 1);
+      colItems.splice(destination.index, 0, moved);
+      persist({ ...columnOrder, [srcStatus]: colItems.map(i => i.id) });
+      return;
+    }
+
+    // Cross-column move — update status and both columns' order.
+    if (item.status === destStatus) return;
+    const next = { ...columnOrder };
+    next[srcStatus] = (grouped[srcStatus] || []).map(i => i.id).filter(id => id !== item.id);
+    const destIds = (grouped[destStatus] || []).map(i => i.id);
+    destIds.splice(destination.index, 0, item.id);
+    next[destStatus] = destIds;
+    persist(next);
     onSave({ ...item, status: destStatus });
   };
 
