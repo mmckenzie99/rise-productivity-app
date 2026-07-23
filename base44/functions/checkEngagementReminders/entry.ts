@@ -66,14 +66,29 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
-    // Allow scheduled calls (no user) or admin direct calls
-    try {
-      const user = await base44.auth.me();
-      if (user && user.role !== 'admin') {
-        return Response.json({ error: 'Forbidden' }, { status: 403 });
+    // Authorize: either a valid admin session (direct call) or the cron
+    // secret (scheduled workflow). The platform scheduler has no user
+    // context, so without the secret it is indistinguishable from anonymous
+    // HTTP and must be rejected.
+    let authorized = false;
+    const cronSecret = Deno.env.get('CRON_SECRET');
+    if (cronSecret) {
+      try {
+        const body = await req.json();
+        if (body && body.secret === cronSecret) authorized = true;
+      } catch (_e) { /* no JSON body */ }
+    }
+    if (!authorized) {
+      try {
+        const user = await base44.auth.me();
+        if (user && user.role === 'admin') {
+          authorized = true;
+        } else {
+          return Response.json({ error: 'Forbidden' }, { status: 403 });
+        }
+      } catch (_e) {
+        return Response.json({ error: 'Unauthorized' }, { status: 401 });
       }
-    } catch (_e) {
-      // Scheduled run — no user context
     }
 
     const now = new Date();
