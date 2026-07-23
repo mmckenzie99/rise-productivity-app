@@ -14,7 +14,14 @@ export default function PlaceBreakdown({ items, onSelect }) {
     acc[key].push(x);
     return acc;
   }, {});
-  const sorted = Object.entries(byPlace).sort((a, b) => b[1].length - a[1].length);
+  const sorted = Object.entries(byPlace).sort((a, b) => {
+    const da = a[1].map(x => x.deploy_date || '').filter(Boolean).sort()[0];
+    const db = b[1].map(x => x.deploy_date || '').filter(Boolean).sort()[0];
+    if (!da && !db) return b[1].length - a[1].length;
+    if (!da) return 1;
+    if (!db) return -1;
+    return da.localeCompare(db);
+  });
 
   return (
     <section>

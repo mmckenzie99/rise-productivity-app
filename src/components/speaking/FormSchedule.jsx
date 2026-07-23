@@ -58,13 +58,11 @@ export default function FormSchedule({ form, set }) {
         </div>
       )}
 
-      {/* Creation Start Date + Deploy Date (only for Presentation(s)) */}
-      {isPresentation && (
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div><Label>Creation start date</Label><Input type="date" value={form.start_date || ''} onChange={e => set('start_date', e.target.value)} /></div>
-          <div><Label>Deploy date</Label><Input type="date" value={form.deploy_date || ''} onChange={e => set('deploy_date', e.target.value)} /></div>
-        </div>
-      )}
+      {/* Creation Start Date + Deploy Date (always shown) */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div><Label>Creation start date</Label><Input type="date" value={form.start_date || ''} onChange={e => set('start_date', e.target.value)} /></div>
+        <div><Label>Deploy date</Label><Input type="date" value={form.deploy_date || ''} onChange={e => set('deploy_date', e.target.value)} /></div>
+      </div>
 
       {/* Progress (under Creation Start / Deploy Date) */}
       <Picker label="Progress" value={form.progress} items={PROGRESS} onChange={v => set('progress', v)} />
