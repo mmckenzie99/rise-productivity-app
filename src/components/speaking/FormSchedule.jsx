@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -18,6 +19,8 @@ const Picker = ({ label, value, items, onChange }) => (
 export default function FormSchedule({ form, set }) {
   const tz = form.timezone || detectTimezone();
   const isPresentation = asArray(form.presentation_type).includes('Presentation(s)');
+  const isBooth = asArray(form.presentation_type).includes('Booth');
+  useEffect(() => { if (isBooth && (form.start_time || form.end_time)) { set('start_time', ''); set('end_time', ''); } }, [isBooth]);
 
   return (
     <>
@@ -29,8 +32,14 @@ export default function FormSchedule({ form, set }) {
 
       {/* Times + Timezone */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div><Label>Start time</Label><Input type="time" value={form.start_time || ''} onChange={e => set('start_time', e.target.value)} /></div>
-        <div><Label>End time</Label><Input type="time" value={form.end_time || ''} onChange={e => set('end_time', e.target.value)} /></div>
+        <div>
+          <Label>Start time</Label>
+          <Input type="time" value={form.start_time || ''} onChange={e => set('start_time', e.target.value)} disabled={isBooth} placeholder={isBooth ? 'Not required' : ''} />
+        </div>
+        <div>
+          <Label>End time</Label>
+          <Input type="time" value={form.end_time || ''} onChange={e => set('end_time', e.target.value)} disabled={isBooth} placeholder={isBooth ? 'Not required' : ''} />
+        </div>
         <div>
           <Label>Time zone</Label>
           <Select value={tz} onValueChange={v => set('timezone', v)}>
