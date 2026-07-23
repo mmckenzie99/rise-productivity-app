@@ -40,19 +40,21 @@ export default function FormSchedule({ form, set }) {
         </div>
       </div>
 
-      {/* Title (only for Presentation(s)) */}
+      {/* Presentation Details section (only for Presentation(s)) */}
       {isPresentation && (
-        <div>
-          <Label>Title</Label>
-          <Input value={form.title || ''} onChange={e => set('title', e.target.value)} placeholder="Title of the presentation" />
-        </div>
-      )}
-
-      {/* Presentation Description (only for Presentation(s)) */}
-      {isPresentation && (
-        <div>
-          <Label>Presentation description</Label>
-          <Textarea value={form.presentation_description || ''} onChange={e => set('presentation_description', e.target.value)} placeholder="Description pertaining to the presentation title…" />
+        <div className="rounded-lg border border-[#D6DAE3] bg-[#F7F8FA] p-4 space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="font-display text-sm font-semibold text-[#1B2A4B]">Presentation Details</span>
+            <span className="rounded-full bg-[#D9A404]/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[#D9A404]">Presentation(s)</span>
+          </div>
+          <div>
+            <Label>Title</Label>
+            <Input value={form.title || ''} onChange={e => set('title', e.target.value)} placeholder="Title of the presentation" />
+          </div>
+          <div>
+            <Label>Description</Label>
+            <Textarea value={form.presentation_description || ''} onChange={e => set('presentation_description', e.target.value)} placeholder="Description pertaining to the presentation title…" />
+          </div>
         </div>
       )}
 
