@@ -1,17 +1,15 @@
 import { useState } from 'react';
-import { MapPin, ChevronDown } from 'lucide-react';
+import { ChevronDown, ArrowRight } from 'lucide-react';
 
-export default function PlaceBreakdown({ items }) {
+export default function PlaceBreakdown({ items, onSelect }) {
   const [cardOpen, setCardOpen] = useState(true);
-  const [openPlace, setOpenPlace] = useState(null);
 
-  const byPlace = items.reduce((acc, x) => {
-    const key = x.place?.trim() || 'No place set';
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(x);
-    return acc;
-  }, {});
-  const sorted = Object.entries(byPlace).sort((a, b) => b[1].length - a[1].length);
+  const sorted = [...items].sort((a, b) => {
+    const pa = (a.place?.trim() || 'No place set').toLowerCase();
+    const pb = (b.place?.trim() || 'No place set').toLowerCase();
+    if (pa !== pb) return pa.localeCompare(pb);
+    return (a.speaking_date || '').localeCompare(b.speaking_date || '');
+  });
 
   return (
     <section>
@@ -21,10 +19,7 @@ export default function PlaceBreakdown({ items }) {
           onClick={() => setCardOpen(!cardOpen)}
           className="flex w-full items-center justify-between gap-2 p-5 text-left"
         >
-          <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-[#D9A404]" />
-            <span className="text-sm font-medium text-[#1B2A4B]">{sorted.length} place{sorted.length === 1 ? '' : 's'}</span>
-          </div>
+          <span className="text-sm font-medium text-[#1B2A4B]">{sorted.length} engagement{sorted.length === 1 ? '' : 's'}</span>
           <ChevronDown className={`h-4 w-4 text-[#5A6781] transition-transform ${cardOpen ? 'rotate-180' : ''}`} />
         </button>
         {cardOpen && (
@@ -33,38 +28,18 @@ export default function PlaceBreakdown({ items }) {
               <p className="text-sm text-[#5A6781]">No engagements yet.</p>
             ) : (
               <ul className="space-y-2">
-                {sorted.map(([place, placeItems]) => {
-                  const isOpen = openPlace === place;
-                  const multiple = placeItems.length > 1;
-                  return (
-                    <li key={place}>
-                      {multiple ? (
-                        <button
-                          onClick={() => setOpenPlace(isOpen ? null : place)}
-                          className="flex w-full items-center justify-between gap-2 text-left"
-                        >
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-[#D9A404]" />
-                            <span className="text-sm font-medium text-[#1B2A4B]">{place}</span>
-                          </div>
-                          <ChevronDown className={`h-3.5 w-3.5 text-[#5A6781] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                        </button>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-[#D9A404]" />
-                          <span className="text-sm text-[#5A6781]">{placeItems[0].title}</span>
-                        </div>
-                      )}
-                      {multiple && isOpen && (
-                        <ul className="mt-1.5 space-y-1 pl-6">
-                          {placeItems.map(x => (
-                            <li key={x.id} className="text-sm text-[#5A6781]">{x.title}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
+                {sorted.map(x => (
+                  <li key={x.id} className="flex items-center justify-between gap-2">
+                    <span className="text-sm text-[#1B2A4B]">{x.place?.trim() || 'No place set'}</span>
+                    <button
+                      onClick={() => onSelect?.(x)}
+                      className="text-[#D9A404] transition hover:text-[#B89003]"
+                      title="View engagement"
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </li>
+                ))}
               </ul>
             )}
           </div>
