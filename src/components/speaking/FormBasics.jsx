@@ -10,8 +10,8 @@ export default function FormBasics({ form, set }) {
         <Input value={form.place || ''} onChange={e => set('place', e.target.value)} placeholder="e.g. Houston, TX or Main Campus" />
       </div>
       <div>
-        <Label>Description</Label>
-        <Textarea value={form.description || ''} onChange={e => set('description', e.target.value)} placeholder="General description of this engagement…" />
+        <Label>Purpose</Label>
+        <Textarea value={form.description || ''} onChange={e => set('description', e.target.value)} placeholder="General purpose of this engagement…" />
       </div>
     </>
   );

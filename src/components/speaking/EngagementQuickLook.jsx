@@ -50,7 +50,7 @@ export default function EngagementQuickLook({ item, onClose }) {
           <div className="border-t border-[#D6DAE3] pt-3">
             <h3 className="mb-1 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-[#5A6781]">
               <AlignLeft className="h-3 w-3" />
-              Description
+              Purpose
             </h3>
             <p className="text-sm text-[#1B2A4B]">{item.description}</p>
           </div>
