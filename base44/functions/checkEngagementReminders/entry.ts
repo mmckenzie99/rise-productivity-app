@@ -35,6 +35,15 @@ function getMinutesUntil(engagement, now) {
   return (realUTC - now.getTime()) / 60000;
 }
 
+function getMinutesUntilDeploy(engagement, now) {
+  const dateStr = engagement.deploy_date;
+  if (!dateStr) return null;
+  const [y, mo, d] = dateStr.split('-').map(Number);
+  // Deploy date is a calendar day; trigger at start of that day
+  const realUTC = Date.UTC(y, mo - 1, d, 0, 0);
+  return (realUTC - now.getTime()) / 60000;
+}
+
 function buildEmailBody(eng, windowLabel, tzLabel) {
   const dateStr = eng.speaking_date || eng.start_date || 'TBD';
   const timeStr = eng.start_time || 'TBD';
@@ -69,8 +78,8 @@ Deno.serve(async (req) => {
 
     const now = new Date();
 
-    // Load engagements (sorted by most recent speaking date)
-    const engagements = await base44.asServiceRole.entities.Engagement.list('-speaking_date', 500);
+    // Load engagements (sorted by most recent deploy date)
+    const engagements = await base44.asServiceRole.entities.Engagement.list('-deploy_date', 500);
 
     // Load existing notifications to deduplicate
     const existing = await base44.asServiceRole.entities.Notification.list('-created_date', 500);
@@ -85,7 +94,56 @@ Deno.serve(async (req) => {
       const minutesUntil = getMinutesUntil(eng, now);
       if (minutesUntil === null || minutesUntil <= 0) continue;
 
-      for (const w of WINDOWS) {
+      // --- Deploy date reminder ---
+    // When the deploy date is reached (today or just passed), remind to update progress.
+    const deployKey = `${eng.id}:Deploy Date`;
+    if (!sentKeys.has(deployKey) && eng.deploy_date) {
+      const deployMinutes = getMinutesUntilDeploy(eng, now);
+      // Trigger once deploy date has arrived (<= 0 minutes until) and within 7 days after
+      if (deployMinutes !== null && deployMinutes <= 0 && deployMinutes > -10080) {
+        const notif = await base44.asServiceRole.entities.Notification.create({
+          engagement_id: eng.id,
+          engagement_title: eng.title || eng.place || 'Engagement',
+          speaking_date: eng.deploy_date,
+          speaking_time: eng.start_time,
+          timezone: eng.timezone,
+          window_label: 'Deploy Date',
+          email_sent: false,
+          read: false,
+        });
+        sentKeys.add(deployKey);
+
+        const tzLabel = eng.timezone || 'UTC';
+        const subject = `Action needed: Update progress for "${eng.title || eng.place || 'Engagement'}" — Deploy date reached`;
+        const body = `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B">
+          <h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B;margin-bottom:16px">Deploy Date Reached</h2>
+          <p style="font-size:16px">The deploy date for <strong>${eng.title || eng.place || 'this engagement'}</strong> has arrived.</p>
+          <p style="font-size:14px;color:#5A6781;margin-top:12px">Current progress: <strong>${eng.progress || 'Not Started'}</strong></p>
+          <p style="font-size:15px;margin-top:12px">Please update the <strong>Progress</strong> field to reflect the appropriate status (e.g. Ready to Deploy or Deploying).</p>
+          <p style="font-size:13px;color:#5A6781;margin-top:20px">Review this engagement in the Engagement Log app.</p>
+        </div>`;
+
+        let emailSent = false;
+        for (const u of users) {
+          if (!u.email) continue;
+          try {
+            await base44.asServiceRole.integrations.Core.SendEmail({
+              to: u.email,
+              subject,
+              body,
+            });
+            emailSent = true;
+          } catch (_e) {
+            // Continue to next user
+          }
+        }
+
+        await base44.asServiceRole.entities.Notification.update(notif.id, { email_sent: emailSent });
+        results.push({ engagement: eng.title, window: 'Deploy Date', emailSent });
+      }
+    }
+
+    for (const w of WINDOWS) {
         const key = `${eng.id}:${w.label}`;
         if (sentKeys.has(key)) continue;
 
