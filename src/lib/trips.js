@@ -5,7 +5,7 @@ export const DEPARTMENTS = ['Expense to Thrive', 'Expense to Engage', 'Expense L
 export const PER_DIEM_TYPES = ['Full Day', 'Half Day'];
 export const PER_DIEM_RATES = { 'Full Day': 60.0, 'Half Day': 30.0 };
 
-export const defaultTravelEntry = () => ({ type: '', airline: '', rental_company: '', cost: 0, receipt: { name: '', url: '' } });
+export const defaultTravelEntry = () => ({ type: '', airline: '', departure_airport: '', rental_company: '', rental_pickup_location: '', cost: 0, receipt: { name: '', url: '' } });
 
 export const defaultTrip = {
   place: '',

@@ -26,17 +26,6 @@ export default function FormTravel({ form, set }) {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div>
-          <Label className="text-xs text-[#5A6781]">Departure Airport</Label>
-          <Input className="mt-1 border-[#D6DAE3] bg-white" value={form.departure_airport || ''} onChange={(e) => set('departure_airport', e.target.value)} placeholder="e.g. DTW - Detroit" />
-        </div>
-        <div>
-          <Label className="text-xs text-[#5A6781]">Rental Pickup Location</Label>
-          <Input className="mt-1 border-[#D6DAE3] bg-white" value={form.rental_pickup_location || ''} onChange={(e) => set('rental_pickup_location', e.target.value)} placeholder="e.g. Enterprise - Airport" />
-        </div>
-      </div>
-
       {entries.length === 0 && <p className="text-sm text-[#5A6781]">No travel entries added yet. Click "Add Travel" to add a flight, rental, or personal auto.</p>}
 
       {entries.map((entry, i) => (
@@ -59,16 +48,28 @@ export default function FormTravel({ form, set }) {
           </div>
 
           {entry.type === 'Flight' && (
-            <div>
-              <Label className="text-xs text-[#5A6781]">Airline</Label>
-              <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.airline || ''} onChange={(e) => updateEntry(i, 'airline', e.target.value)} placeholder="e.g. Delta" />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <Label className="text-xs text-[#5A6781]">Airline</Label>
+                <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.airline || ''} onChange={(e) => updateEntry(i, 'airline', e.target.value)} placeholder="e.g. Delta" />
+              </div>
+              <div>
+                <Label className="text-xs text-[#5A6781]">Departure Airport</Label>
+                <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.departure_airport || ''} onChange={(e) => updateEntry(i, 'departure_airport', e.target.value)} placeholder="e.g. DTW - Detroit" />
+              </div>
             </div>
           )}
 
           {entry.type === 'Rental' && (
-            <div>
-              <Label className="text-xs text-[#5A6781]">Rental Company</Label>
-              <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.rental_company || ''} onChange={(e) => updateEntry(i, 'rental_company', e.target.value)} placeholder="e.g. Enterprise" />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <Label className="text-xs text-[#5A6781]">Rental Company</Label>
+                <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.rental_company || ''} onChange={(e) => updateEntry(i, 'rental_company', e.target.value)} placeholder="e.g. Enterprise" />
+              </div>
+              <div>
+                <Label className="text-xs text-[#5A6781]">Rental Pickup Location</Label>
+                <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.rental_pickup_location || ''} onChange={(e) => updateEntry(i, 'rental_pickup_location', e.target.value)} placeholder="e.g. Enterprise - Airport" />
+              </div>
             </div>
           )}
 

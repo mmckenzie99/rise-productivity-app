@@ -50,8 +50,16 @@
           "airline": {
             "type": "string"
           },
+          "departure_airport": {
+            "type": "string",
+            "description": "Departure airport for this travel entry"
+          },
           "rental_company": {
             "type": "string"
+          },
+          "rental_pickup_location": {
+            "type": "string",
+            "description": "Rental pickup location for this travel entry"
           },
           "cost": {
             "type": "number"
