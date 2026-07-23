@@ -59,7 +59,7 @@ export default function PlaceBreakdown({ items, onSelect }) {
                         >
                           <div className="flex items-center gap-2">
                             <Image src={COMPASS_ICON} alt="Place" fittingType="fit" className="h-4 w-4 shrink-0" />
-                            <span className="text-sm font-medium text-[#1B2A4B]">{placeItems[0].title}</span>
+                            <span className="text-sm font-medium text-[#1B2A4B]">{place}</span>
                           </div>
                           <ArrowRight className="h-3.5 w-3.5 text-[#D9A404]" />
                         </button>
@@ -72,7 +72,7 @@ export default function PlaceBreakdown({ items, onSelect }) {
                                 onClick={() => onSelect?.(x)}
                                 className="flex w-full items-center justify-between gap-2 text-left py-0.5"
                               >
-                                <span className="text-sm text-[#5A6781]">{x.title}</span>
+                                <span className="text-sm text-[#5A6781]">{x.title || x.place}</span>
                                 <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[#D9A404]" />
                               </button>
                             </li>
