@@ -49,7 +49,13 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
             <Select value={form.place || ''} onValueChange={(v) => set('place', v)}>
               <SelectTrigger className="mt-1 border-[#D6DAE3] bg-white"><SelectValue placeholder="Select a place" /></SelectTrigger>
               <SelectContent>
-                {Array.from(new Set(engagements.map(e => (e.place || '').trim().replace(/\.+$/, '').trim()).filter(Boolean).map(p => p.replace(/^Rice Lake Seventh-day/, 'Rice Lake Seventh-Day')))).map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                {Object.values(engagements.reduce((acc, e) => {
+                  const p = (e.place || '').trim().replace(/\.+$/, '').trim();
+                  if (!p) return acc;
+                  const key = p.toLowerCase();
+                  if (!acc[key]) acc[key] = p;
+                  return acc;
+                }, {})).map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
