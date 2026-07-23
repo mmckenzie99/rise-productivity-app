@@ -20,7 +20,7 @@ export default function FormSchedule({ form, set }) {
   const tz = form.timezone || detectTimezone();
   const isPresentation = asArray(form.presentation_type).includes('Presentation(s)');
   const isBooth = asArray(form.presentation_type).includes('Booth');
-  useEffect(() => { if (isBooth && (form.start_time || form.end_time)) { set('start_time', ''); set('end_time', ''); } }, [isBooth]);
+  useEffect(() => { if (isBooth && (form.start_time || form.end_time)) { set('start_time', ''); set('end_time', ''); } if (isBooth && form.start_date) { set('start_date', ''); } }, [isBooth]);
 
   return (
     <>
