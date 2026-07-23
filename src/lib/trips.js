@@ -1,7 +1,7 @@
 // Constants and utilities for Trip management.
 
 export const TRAVEL_TYPES = ['Flight', 'Rental', 'Personal Auto'];
-export const DEPARTMENTS = ['Expense to Thrive', 'Engage Department'];
+export const DEPARTMENTS = ['Expense to Thrive', 'Expense to Engage'];
 export const PER_DIEM_TYPES = ['Full Day', 'Half Day'];
 export const PER_DIEM_RATES = { 'Full Day': 60.0, 'Half Day': 30.0 };
 
