@@ -6,7 +6,7 @@ export default function EngagementQuickLook({ item, onClose }) {
   if (!item) return null;
   return (
     <Dialog open={!!item} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="bg-white sm:max-w-xl">
+      <DialogContent className="max-h-[92vh] overflow-y-auto bg-white sm:max-w-xl">
         <DialogHeader className="text-center items-center">
           <DialogTitle className="font-display text-2xl">{item.title}</DialogTitle>
         </DialogHeader>
