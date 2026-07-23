@@ -10,7 +10,8 @@
       "type": "string",
       "enum": [
         "Expense to Thrive",
-        "Expense to Engage"
+        "Expense to Engage",
+        "Expense Local Entity"
       ]
     },
     "leave_date": {
