@@ -1,5 +1,5 @@
 import { CalendarDays, MapPin } from 'lucide-react';
-import { formatDate, statusTone } from '@/lib/speaking';
+import { formatDate, formatTime, statusTone } from '@/lib/speaking';
 
 export default function KanbanCard({ item, onClick }) {
   return (
@@ -23,7 +23,7 @@ export default function KanbanCard({ item, onClick }) {
         {item.address && (
           <p className="flex gap-1.5"><MapPin className="h-3.5 w-3.5 shrink-0 text-[#D9A404]" />{item.address}</p>
         )}
-        <p className="flex gap-1.5"><CalendarDays className="h-3.5 w-3.5 shrink-0" />{formatDate(item.speaking_date)}{item.start_time && ` · ${item.start_time}`}</p>
+        <p className="flex gap-1.5"><CalendarDays className="h-3.5 w-3.5 shrink-0" />{formatDate(item.speaking_date)}{item.start_time && ` · ${formatTime(item.start_time)}`}</p>
       </div>
       <span className={`mt-3 inline-block rounded-full px-2 py-0.5 font-mono text-[10px] uppercase ${statusTone[item.progress] || 'bg-[#E8EAF0] text-[#5A6781]'}`}>
         {item.progress}

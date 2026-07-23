@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2, FileText, Plane, Car, CalendarDays, Building2, DollarSign, Download, MapPin } from 'lucide-react';
 import { formatCurrency, calcTravelByType, exportTripCSV } from '@/lib/trips';
+import { formatTime } from '@/lib/speaking';
 
 function Row({ icon: Icon, label, children }) {
   return (
@@ -38,8 +39,8 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
           {/* Travel Schedule */}
           <div className="rounded-lg border border-[#D6DAE3] bg-white p-4">
             <h3 className="font-display text-sm font-semibold text-[#1B2A4B] mb-2">Travel Schedule</h3>
-            <Row icon={CalendarDays} label="Leave">{trip.leave_date} {trip.leave_time && `at ${trip.leave_time}`}</Row>
-            <Row icon={CalendarDays} label="Return">{trip.return_date} {trip.return_time && `at ${trip.return_time}`}</Row>
+            <Row icon={CalendarDays} label="Leave">{trip.leave_date} {trip.leave_time && `at ${formatTime(trip.leave_time)}`}</Row>
+            <Row icon={CalendarDays} label="Return">{trip.return_date} {trip.return_time && `at ${formatTime(trip.return_time)}`}</Row>
           </div>
 
           {/* Travel Details */}

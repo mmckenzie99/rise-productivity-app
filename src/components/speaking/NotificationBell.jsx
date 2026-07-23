@@ -1,7 +1,7 @@
 import { Bell, Check, CheckCheck } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { formatDate, TIMEZONES } from '@/lib/speaking';
+import { formatDate, formatTime, TIMEZONES } from '@/lib/speaking';
 import useNotifications from '@/hooks/useNotifications';
 
 export default function NotificationBell() {
@@ -44,7 +44,7 @@ export default function NotificationBell() {
                   <p className="text-sm font-medium leading-tight">{n.engagement_title}</p>
                   <p className="mt-0.5 text-xs text-[#5A6781]">
                     {n.window_label} reminder · {formatDate(n.speaking_date)}
-                    {n.speaking_time && ` · ${n.speaking_time}`}
+                    {n.speaking_time && ` · ${formatTime(n.speaking_time)}`}
                   </p>
                   {n.email_sent && (
                     <p className="mt-0.5 text-[10px] font-mono uppercase text-[#5A6781]">Email sent</p>
