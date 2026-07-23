@@ -4,11 +4,13 @@ import { formatDate, formatTime, TIMEZONES, asArray } from '@/lib/speaking';
 
 export default function EngagementQuickLook({ item, onClose }) {
   if (!item) return null;
+  const isRange = item.end_date && item.end_date !== item.speaking_date;
   return (
     <Dialog open={!!item} onOpenChange={v => !v && onClose()}>
       <DialogContent className="max-h-[92vh] overflow-y-auto bg-white sm:max-w-xl">
         <DialogHeader className="text-center items-center">
-          <DialogTitle className="font-display text-2xl">{item.title}</DialogTitle>
+          <DialogTitle className="font-display text-2xl">{item.place || 'Place not set'}</DialogTitle>
+          {item.title && <p className="text-sm font-medium text-[#5A6781]">{item.title}</p>}
         </DialogHeader>
 
         {asArray(item.presentation_type).length > 0 && (
@@ -26,7 +28,7 @@ export default function EngagementQuickLook({ item, onClose }) {
           {item.speaking_date && (
             <p className="flex gap-2">
               <CalendarDays className="h-4 w-4 shrink-0 text-[#5A6781]" />
-              {formatDate(item.speaking_date)}
+              {isRange ? `${formatDate(item.speaking_date)} – ${formatDate(item.end_date)}` : formatDate(item.speaking_date)}
             </p>
           )}
           {item.start_time && (
@@ -51,6 +53,16 @@ export default function EngagementQuickLook({ item, onClose }) {
               Description
             </h3>
             <p className="text-sm text-[#1B2A4B]">{item.description}</p>
+          </div>
+        )}
+
+        {asArray(item.presentation_type).includes('Presentation(s)') && item.presentation_description && (
+          <div className="border-t border-[#D6DAE3] pt-3">
+            <h3 className="mb-1 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-[#5A6781]">
+              <AlignLeft className="h-3 w-3" />
+              Presentation description
+            </h3>
+            <p className="text-sm text-[#1B2A4B]">{item.presentation_description}</p>
           </div>
         )}
       </DialogContent>

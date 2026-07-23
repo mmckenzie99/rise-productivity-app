@@ -11,6 +11,10 @@
     "description": {
       "type": "string"
     },
+    "presentation_description": {
+      "type": "string",
+      "description": "Description specific to a presentation title (only for Presentation(s) type)"
+    },
     "presentation_type": {
       "type": "array",
       "items": {
@@ -26,11 +30,23 @@
     },
     "start_date": {
       "type": "string",
-      "format": "date"
+      "format": "date",
+      "description": "Creation start date (preparation timeline for presentations)"
+    },
+    "deploy_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Deploy date (preparation timeline for presentations)"
     },
     "speaking_date": {
       "type": "string",
-      "format": "date"
+      "format": "date",
+      "description": "Engagement date (start of range if multi-day)"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "End date for multi-day engagement ranges"
     },
     "start_time": {
       "type": "string"
@@ -99,7 +115,6 @@
     }
   },
   "required": [
-    "title",
     "speaker_name"
   ],
   "rls": {
