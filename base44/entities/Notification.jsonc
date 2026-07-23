@@ -1,0 +1,55 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "engagement_id": {
+      "type": "string",
+      "description": "ID of the linked engagement"
+    },
+    "engagement_title": {
+      "type": "string",
+      "description": "Cached engagement title for display"
+    },
+    "speaking_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "speaking_time": {
+      "type": "string"
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "window_label": {
+      "type": "string",
+      "description": "Which reminder window triggered this (e.g. 14 Days, 15 Minutes)"
+    },
+    "email_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "read": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "engagement_id",
+    "engagement_title",
+    "window_label"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {},
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
