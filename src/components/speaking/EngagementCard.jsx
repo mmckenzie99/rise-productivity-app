@@ -6,7 +6,8 @@ import CountdownBadge from './CountdownBadge';
 const ACCENT = { Planning: 'border-l-[#D9A404]', Confirmed: 'border-l-[#1B2A4B]', Completed: 'border-l-[#5A6781]' };
 
 export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, hasTrip, onLocate }) {
-  const isRange = item.end_date && item.end_date !== item.speaking_date;
+  const dateForDisplay = item.speaking_date || item.deploy_date;
+  const isRange = item.end_date && item.end_date !== dateForDisplay;
   return (
     <CardWrapper onClick={() => onClick(item)} className={`group relative cursor-pointer border-l-4 ${ACCENT[item.status]} p-5 text-left transition hover:-translate-y-1 hover:shadow-lg`}>
       {isAdmin && onDuplicate && (
@@ -18,7 +19,7 @@ export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, ha
         <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-[11px] font-medium uppercase ${statusTone[item.status]}`}>
           <span className="h-2 w-2 rounded-full bg-current" />{item.status}
         </span>
-        <CountdownBadge date={item.speaking_date} />
+        <CountdownBadge date={dateForDisplay} />
       </div>
       {/* Place front and center */}
       <div className="flex flex-col text-left">
@@ -36,7 +37,7 @@ export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, ha
         ))}
         <p className="flex gap-2">
           <CalendarDays className="h-4 w-4" />
-          {isRange ? `${formatDate(item.speaking_date)} – ${formatDate(item.end_date)}` : formatDate(item.speaking_date)}
+          {isRange ? `${formatDate(dateForDisplay)} – ${formatDate(item.end_date)}` : formatDate(dateForDisplay)}
           {item.start_time && ` · ${formatTime(item.start_time)}`}
           {item.timezone && ` ${TIMEZONES.find(z => z.value === item.timezone)?.label || item.timezone}`}
         </p>
