@@ -25,7 +25,7 @@ export default function FormSchedule({form,set}){
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div><Label>Creation start date</Label><Input type="date" value={form.start_date||''} onChange={e=>set('start_date',e.target.value)}/></div>
-        <div><Label>Speaking date</Label><Input type="date" value={form.speaking_date||''} onChange={e=>set('speaking_date',e.target.value)}/></div>
+        <div><Label>Engagement date</Label><Input type="date" value={form.speaking_date||''} onChange={e=>set('speaking_date',e.target.value)}/></div>
       </div>
       <div className="grid gap-4 sm:grid-cols-3">
         <div><Label>Start time</Label><Input type="time" value={form.start_time||''} onChange={e=>set('start_time',e.target.value)}/></div>
