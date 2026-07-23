@@ -8,7 +8,7 @@ export default function KanbanCard({ item, onClick }) {
       className="w-full rounded-lg border border-[#D6DAE3] bg-white p-4 text-left shadow-sm transition hover:shadow-md"
     >
 
-      <p className="font-display text-base font-semibold leading-tight">{item.title}</p>
+      <p className="font-display text-base font-semibold leading-tight">{item.place}</p>
       <div className="mt-3 space-y-1 text-xs text-[#5A6781]">
         {item.address && (
           <p className="flex gap-1.5"><MapPin className="h-3.5 w-3.5 shrink-0 text-[#D9A404]" />{item.address}</p>
