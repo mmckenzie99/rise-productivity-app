@@ -7,17 +7,7 @@ export default function KanbanCard({ item, onClick }) {
       onClick={onClick}
       className="w-full rounded-lg border border-[#D6DAE3] bg-white p-4 text-left shadow-sm transition hover:shadow-md"
     >
-      <div className="mb-2 flex items-center gap-2">
-        {item.speaker_photo && (
-          <img
-            src={item.speaker_photo}
-            alt={item.speaker_name}
-            className="h-8 w-8 rounded-full object-cover border border-[#D6DAE3]"
-            onError={e => (e.target.style.display = 'none')}
-          />
-        )}
-        <p className="text-sm text-[#5A6781]">{item.speaker_name}</p>
-      </div>
+
       <p className="font-display text-base font-semibold leading-tight">{item.title}</p>
       <div className="mt-3 space-y-1 text-xs text-[#5A6781]">
         {item.address && (
