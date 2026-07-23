@@ -49,9 +49,9 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
           <div>
             <Label className="text-xs text-[#5A6781]">Linked Engagement</Label>
             <Select value={form.engagement_id || ''} onValueChange={(v) => set('engagement_id', v)}>
-              <SelectTrigger className="mt-1 border-[#D6DAE3] bg-white"><SelectValue placeholder="Select an engagement" /></SelectTrigger>
+              <SelectTrigger className="mt-1 border-[#D6DAE3] bg-white"><SelectValue placeholder="Select a place" /></SelectTrigger>
               <SelectContent>
-                {engagements.map((e) => <SelectItem key={e.id} value={e.id}>{e.title}</SelectItem>)}
+                {engagements.map((e) => <SelectItem key={e.id} value={e.id}>{e.place || 'No place set'}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
