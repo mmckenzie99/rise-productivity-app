@@ -69,7 +69,7 @@ export default function FormSchedule({ form, set }) {
 
       {/* Creation Start Date + Deploy Date (always shown) */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div><Label>Creation start date</Label><Input type="date" value={form.start_date || ''} onChange={e => set('start_date', e.target.value)} /></div>
+        <div><Label className={isBooth ? 'opacity-60' : ''}>Creation start date</Label><Input type="date" value={form.start_date || ''} onChange={e => set('start_date', e.target.value)} className={isBooth ? 'opacity-60' : ''} /></div>
         <div><Label>Deploy date</Label><Input type="date" value={form.deploy_date || ''} onChange={e => set('deploy_date', e.target.value)} /></div>
       </div>
 
