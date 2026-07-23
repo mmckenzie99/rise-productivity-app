@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import EngagementCard from './EngagementCard';
 
-export default function ArchiveDialog({ open, onClose, items, onSelect, isAdmin, tripIds, onLocate, onDuplicate }) {
+export default function ArchiveDialog({ open, onClose, items, onSelect, isAdmin, tripPlaces, onLocate, onDuplicate }) {
   const [search, setSearch] = useState('');
 
   const filtered = useMemo(
@@ -25,7 +25,7 @@ export default function ArchiveDialog({ open, onClose, items, onSelect, isAdmin,
         {filtered.length ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map(x => (
-              <EngagementCard key={x.id} item={x} onClick={onSelect} onDuplicate={onDuplicate} isAdmin={isAdmin} hasTrip={tripIds?.has(x.id)} onLocate={onLocate} />
+              <EngagementCard key={x.id} item={x} onClick={onSelect} onDuplicate={onDuplicate} isAdmin={isAdmin} hasTrip={tripPlaces?.has((x.place||'').trim().toLowerCase())} onLocate={onLocate} />
             ))}
           </div>
         ) : (

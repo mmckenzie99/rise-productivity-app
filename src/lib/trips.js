@@ -8,8 +8,7 @@ export const PER_DIEM_RATES = { 'Full Day': 60.0, 'Half Day': 30.0 };
 export const defaultTravelEntry = () => ({ type: '', airline: '', rental_company: '', cost: 0, receipt: { name: '', url: '' } });
 
 export const defaultTrip = {
-  engagement_id: '',
-  engagement_title: '',
+  place: '',
   department: '',
   leave_date: '',
   leave_time: '',
@@ -39,8 +38,8 @@ export const exportTripCSV = (trip) => {
 
   rows.push(['Engagement Log — Trip Details']);
   rows.push([]);
-  rows.push(['Engagement', 'Department', 'Leave Date', 'Leave Time', 'Return Date', 'Return Time']);
-  rows.push([trip.engagement_title || '', trip.department || '', trip.leave_date || '', trip.leave_time || '', trip.return_date || '', trip.return_time || '']);
+  rows.push(['Place', 'Department', 'Leave Date', 'Leave Time', 'Return Date', 'Return Time']);
+  rows.push([trip.place || '', trip.department || '', trip.leave_date || '', trip.leave_time || '', trip.return_date || '', trip.return_time || '']);
   rows.push([]);
 
   rows.push(['Expense Breakdown']);
@@ -70,7 +69,7 @@ export const exportTripCSV = (trip) => {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `trip-${(trip.engagement_title || 'export').replace(/\s+/g, '-').toLowerCase()}.csv`;
+  link.download = `trip-${(trip.place || 'export').replace(/\s+/g, '-').toLowerCase()}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 };

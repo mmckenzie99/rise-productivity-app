@@ -2,13 +2,9 @@
   "name": "Trip",
   "type": "object",
   "properties": {
-    "engagement_id": {
+    "place": {
       "type": "string",
-      "description": "ID of the linked engagement"
-    },
-    "engagement_title": {
-      "type": "string",
-      "description": "Cached engagement title for display"
+      "description": "Place name this trip covers (multiple engagements may share the same place)"
     },
     "department": {
       "type": "string",
@@ -114,7 +110,7 @@
     }
   },
   "required": [
-    "engagement_id",
+    "place",
     "department"
   ],
   "rls": {

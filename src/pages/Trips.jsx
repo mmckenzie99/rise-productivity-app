@@ -86,7 +86,7 @@ export default function Trips() {
                     <Plane className="h-5 w-5 text-[#1B2A4B]" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-[#1B2A4B]">{t.engagement_title}</p>
+                    <p className="truncate text-sm font-semibold text-[#1B2A4B]">{t.place || 'No place set'}</p>
                     <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-[#5A6781]">
                       <span className="inline-flex items-center gap-1"><Building2 className="h-3 w-3" />{t.department}</span>
                       {t.leave_date && (
@@ -110,7 +110,7 @@ export default function Trips() {
           <div className="rounded-lg border border-dashed border-[#D9A404] bg-white/60 py-14 text-center">
             <h2 className="font-display text-xl font-semibold">{trips.length ? 'Nothing matches' : 'No trips yet'}</h2>
             <p className="mt-2 text-sm text-[#5A6781]">
-              {trips.length ? 'Try a different filter.' : isAdmin ? 'Create a trip and link it to an engagement.' : 'No trip details have been added.'}
+              {trips.length ? 'Try a different filter.' : isAdmin ? 'Create a trip and link it to a place.' : 'No trip details have been added.'}
             </p>
           </div>
         )}

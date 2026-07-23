@@ -31,7 +31,7 @@ export default function TripListDialog({ open, trips, loading, isAdmin, onClose,
                   <Plane className="h-4 w-4 text-[#1B2A4B]" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-[#1B2A4B]">{t.engagement_title}</p>
+                  <p className="truncate text-sm font-medium text-[#1B2A4B]">{t.place || 'No place set'}</p>
                   <div className="flex flex-wrap gap-x-3 text-xs text-[#5A6781]">
                     <span className="inline-flex items-center gap-1"><Building2 className="h-3 w-3" />{t.department}</span>
                     {t.leave_date && <span className="inline-flex items-center gap-1"><CalendarDays className="h-3 w-3" />{t.leave_date}{t.return_date ? ` → ${t.return_date}` : ''}</span>}
@@ -44,7 +44,7 @@ export default function TripListDialog({ open, trips, loading, isAdmin, onClose,
         ) : (
           <div className="rounded-lg border border-dashed border-[#D9A404] bg-white/60 py-10 text-center">
             <h3 className="font-display text-lg font-semibold">No trips yet</h3>
-            <p className="mt-1 text-sm text-[#5A6781]">{isAdmin ? 'Create a trip and link it to an engagement.' : 'No trip details have been added.'}</p>
+            <p className="mt-1 text-sm text-[#5A6781]">{isAdmin ? 'Create a trip and link it to a place.' : 'No trip details have been added.'}</p>
           </div>
         )}
       </DialogContent>

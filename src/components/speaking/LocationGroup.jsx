@@ -7,13 +7,13 @@ import { daysUntil } from '@/lib/speaking';
 
 const GRID = 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3';
 
-export default function LocationGroup({ place, items, onClick, onDuplicate, isAdmin, tripIds, onLocate }) {
+export default function LocationGroup({ place, items, onClick, onDuplicate, isAdmin, tripPlaces, onLocate }) {
   const [expanded, setExpanded] = useState(false);
 
   if (items.length <= 1) {
     const item = items[0];
     if (!item) return null;
-    return <EngagementCard key={item.id} item={item} onClick={onClick} onDuplicate={onDuplicate} isAdmin={isAdmin} hasTrip={tripIds?.has(item.id)} onLocate={onLocate} />;
+    return <EngagementCard key={item.id} item={item} onClick={onClick} onDuplicate={onDuplicate} isAdmin={isAdmin} hasTrip={tripPlaces?.has((item.place||'').trim().toLowerCase())} onLocate={onLocate} />;
   }
 
   const upcoming = items
@@ -38,7 +38,7 @@ export default function LocationGroup({ place, items, onClick, onDuplicate, isAd
       {expanded && (
         <div className={`mt-4 ${GRID}`}>
           {items.map(x => (
-            <EngagementCard key={x.id} item={x} onClick={onClick} onDuplicate={onDuplicate} isAdmin={isAdmin} hasTrip={tripIds?.has(x.id)} onLocate={onLocate} />
+            <EngagementCard key={x.id} item={x} onClick={onClick} onDuplicate={onDuplicate} isAdmin={isAdmin} hasTrip={tripPlaces?.has((x.place||'').trim().toLowerCase())} onLocate={onLocate} />
           ))}
         </div>
       )}

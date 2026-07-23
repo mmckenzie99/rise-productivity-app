@@ -26,10 +26,8 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
 
   const handleSubmit = async () => {
     setSaving(true);
-    const eng = engagements.find((e) => e.id === form.engagement_id);
     await onSave({
       ...form,
-      engagement_title: eng?.title || '',
       total_per_diem: totalPerDiem,
       total_cost: totalCost
     });
@@ -47,11 +45,11 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
         <div className="space-y-5 py-2">
           {/* Linked Engagement */}
           <div>
-            <Label className="text-xs text-[#5A6781]">Linked Engagement</Label>
-            <Select value={form.engagement_id || ''} onValueChange={(v) => set('engagement_id', v)}>
+            <Label className="text-xs text-[#5A6781]">Place</Label>
+            <Select value={form.place || ''} onValueChange={(v) => set('place', v)}>
               <SelectTrigger className="mt-1 border-[#D6DAE3] bg-white"><SelectValue placeholder="Select a place" /></SelectTrigger>
               <SelectContent>
-                {engagements.map((e) => <SelectItem key={e.id} value={e.id}>{e.place || 'No place set'}</SelectItem>)}
+                {Array.from(new Set(engagements.map(e => e.place).filter(Boolean))).map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -102,7 +100,7 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose} className="border-[#D6DAE3] bg-white">Cancel</Button>
-          <Button onClick={handleSubmit} disabled={saving || !form.engagement_id || !form.department} className="bg-[#D9A404] hover:bg-[#B89003]">
+          <Button onClick={handleSubmit} disabled={saving || !form.place || !form.department} className="bg-[#D9A404] hover:bg-[#B89003]">
             {saving ? 'Saving…' : 'Save Trip'}
           </Button>
         </DialogFooter>

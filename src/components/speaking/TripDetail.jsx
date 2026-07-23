@@ -28,7 +28,7 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
         <div className="space-y-4 py-2">
           {/* Engagement + Department */}
           <div className="rounded-lg border border-[#D6DAE3] bg-white p-4">
-            <Row icon={CalendarDays} label="Engagement">{trip.engagement_title}</Row>
+            <Row icon={MapPin} label="Place">{trip.place || 'No place set'}</Row>
             <Row icon={Building2} label="Department">
               <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${trip.department === 'Expense to Thrive' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'}`}>
                 {trip.department}
