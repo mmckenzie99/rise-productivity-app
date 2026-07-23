@@ -27,18 +27,6 @@ export default function FormSchedule({ form, set }) {
         <Picker label="Status" value={form.status} items={STATUSES} onChange={v => set('status', v)} />
       </div>
 
-      {/* Engagement Date (range or single) */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <Label>Engagement date</Label>
-          <Input type="date" value={form.speaking_date || ''} onChange={e => set('speaking_date', e.target.value)} />
-        </div>
-        <div>
-          <Label>End date <span className="text-[#5A6781] font-normal">(optional, for multi-day)</span></Label>
-          <Input type="date" value={form.end_date || ''} onChange={e => set('end_date', e.target.value)} />
-        </div>
-      </div>
-
       {/* Times + Timezone */}
       <div className="grid gap-4 sm:grid-cols-3">
         <div><Label>Start time</Label><Input type="time" value={form.start_time || ''} onChange={e => set('start_time', e.target.value)} /></div>
