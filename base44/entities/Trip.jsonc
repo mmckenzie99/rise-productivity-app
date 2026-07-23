@@ -44,8 +44,13 @@
             "enum": [
               "Flight",
               "Rental",
+              "Gas/Fuel",
               "Personal Auto"
             ]
+          },
+          "description": {
+            "type": "string",
+            "description": "Label for this travel entry (e.g. Outbound DTW \u2192 ORD, Gas for Rental #1)"
           },
           "airline": {
             "type": "string"
@@ -54,12 +59,20 @@
             "type": "string",
             "description": "Departure airport for this travel entry"
           },
+          "arrival_airport": {
+            "type": "string",
+            "description": "Arrival airport for this flight leg (multi-city)"
+          },
           "rental_company": {
             "type": "string"
           },
           "rental_pickup_location": {
             "type": "string",
             "description": "Rental pickup location for this travel entry"
+          },
+          "dropoff_location": {
+            "type": "string",
+            "description": "Rental drop-off location for this leg (multi-city)"
           },
           "cost": {
             "type": "number"

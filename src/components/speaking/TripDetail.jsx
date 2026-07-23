@@ -50,10 +50,13 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
               trip.travel_entries.map((entry, i) => (
                 <div key={i} className="space-y-1 border-b border-[#E8EAF0] pb-2 mb-2 last:border-0 last:mb-0 last:pb-0">
                   <Row icon={entry.type === 'Flight' ? Plane : Car} label="Type">{entry.type || '—'}</Row>
+                  {entry.description && <Row icon={FileText} label="Description">{entry.description}</Row>}
                   {entry.type === 'Flight' && <Row icon={Plane} label="Airline">{entry.airline || '—'}</Row>}
                   {entry.type === 'Flight' && <Row icon={Plane} label="Departure Airport">{entry.departure_airport || '—'}</Row>}
+                  {entry.type === 'Flight' && <Row icon={Plane} label="Arrival Airport">{entry.arrival_airport || '—'}</Row>}
                   {entry.type === 'Rental' && <Row icon={Car} label="Company">{entry.rental_company || '—'}</Row>}
-                  {entry.type === 'Rental' && <Row icon={MapPin} label="Rental Pickup">{entry.rental_pickup_location || '—'}</Row>}
+                  {entry.type === 'Rental' && <Row icon={MapPin} label="Pickup">{entry.rental_pickup_location || '—'}</Row>}
+                  {entry.type === 'Rental' && <Row icon={MapPin} label="Drop-off">{entry.dropoff_location || '—'}</Row>}
                   <Row icon={DollarSign} label="Cost">{formatCurrency(entry.cost)}</Row>
                   {entry.receipt?.url && (
                     <div className="flex items-center gap-2 py-1.5">

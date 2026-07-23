@@ -1,11 +1,11 @@
 // Constants and utilities for Trip management.
 
-export const TRAVEL_TYPES = ['Flight', 'Rental', 'Personal Auto'];
+export const TRAVEL_TYPES = ['Flight', 'Rental', 'Gas/Fuel', 'Personal Auto'];
 export const DEPARTMENTS = ['Expense to Thrive', 'Expense to Engage', 'Expense Local Entity'];
 export const PER_DIEM_TYPES = ['Full Day', 'Half Day'];
 export const PER_DIEM_RATES = { 'Full Day': 60.0, 'Half Day': 30.0 };
 
-export const defaultTravelEntry = () => ({ type: '', airline: '', departure_airport: '', rental_company: '', rental_pickup_location: '', cost: 0, receipt: { name: '', url: '' } });
+export const defaultTravelEntry = () => ({ type: '', description: '', airline: '', departure_airport: '', arrival_airport: '', rental_company: '', rental_pickup_location: '', dropoff_location: '', cost: 0, receipt: { name: '', url: '' } });
 
 export const defaultTrip = {
   place: '',

@@ -47,8 +47,13 @@ export default function FormTravel({ form, set }) {
             </Select>
           </div>
 
+          <div>
+            <Label className="text-xs text-[#5A6781]">Description</Label>
+            <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.description || ''} onChange={(e) => updateEntry(i, 'description', e.target.value)} placeholder="e.g. Outbound DTW → ORD, Gas for Rental #1" />
+          </div>
+
           {entry.type === 'Flight' && (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div>
                 <Label className="text-xs text-[#5A6781]">Airline</Label>
                 <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.airline || ''} onChange={(e) => updateEntry(i, 'airline', e.target.value)} placeholder="e.g. Delta" />
@@ -57,18 +62,26 @@ export default function FormTravel({ form, set }) {
                 <Label className="text-xs text-[#5A6781]">Departure Airport</Label>
                 <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.departure_airport || ''} onChange={(e) => updateEntry(i, 'departure_airport', e.target.value)} placeholder="e.g. DTW - Detroit" />
               </div>
+              <div>
+                <Label className="text-xs text-[#5A6781]">Arrival Airport</Label>
+                <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.arrival_airport || ''} onChange={(e) => updateEntry(i, 'arrival_airport', e.target.value)} placeholder="e.g. ORD - Chicago" />
+              </div>
             </div>
           )}
 
           {entry.type === 'Rental' && (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div>
                 <Label className="text-xs text-[#5A6781]">Rental Company</Label>
                 <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.rental_company || ''} onChange={(e) => updateEntry(i, 'rental_company', e.target.value)} placeholder="e.g. Enterprise" />
               </div>
               <div>
-                <Label className="text-xs text-[#5A6781]">Rental Pickup Location</Label>
+                <Label className="text-xs text-[#5A6781]">Pickup Location</Label>
                 <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.rental_pickup_location || ''} onChange={(e) => updateEntry(i, 'rental_pickup_location', e.target.value)} placeholder="e.g. Enterprise - Airport" />
+              </div>
+              <div>
+                <Label className="text-xs text-[#5A6781]">Drop-off Location</Label>
+                <Input className="mt-1 border-[#D6DAE3] bg-white" value={entry.dropoff_location || ''} onChange={(e) => updateEntry(i, 'dropoff_location', e.target.value)} placeholder="e.g. Enterprise - Downtown" />
               </div>
             </div>
           )}
