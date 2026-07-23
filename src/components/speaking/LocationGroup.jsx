@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MapPin, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import EngagementCard from './EngagementCard';
 import CardWrapper from './CardWrapper';
 import CountdownBadge from './CountdownBadge';
@@ -26,7 +26,7 @@ export default function LocationGroup({ place, items, onClick, onDuplicate, isAd
     <CardWrapper className="sm:col-span-2 lg:col-span-3 p-4">
       <button onClick={() => setExpanded(!expanded)} className="flex w-full items-center justify-between gap-2 text-left">
         <div className="flex flex-wrap items-center gap-2">
-          <MapPin className="h-4 w-4 text-[#D9A404]" />
+          <img src="https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/b5cd1ed0a_Icon.png" alt="" className="h-5 w-5" />
           <span className="text-sm font-medium text-[#1B2A4B]">{place || 'No place set'}</span>
           <span className="rounded-full border border-[#D6DAE3] px-2 py-0.5 font-mono text-[10px] text-[#5A6781]">
             {items.length} engagement{items.length === 1 ? '' : 's'}
