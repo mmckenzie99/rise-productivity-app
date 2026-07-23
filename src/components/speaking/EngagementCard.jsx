@@ -23,7 +23,6 @@ export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, ha
       {/* Place front and center */}
       <div className="flex flex-col text-left">
         <p className="font-display text-lg font-semibold leading-tight w-full">{item.place || 'Place not set'}</p>
-        {item.title && <p className="mt-1 text-sm font-medium text-[#5A6781]">{item.title}</p>}
         {item.description && <p className="mt-2 text-xs text-[#5A6781] line-clamp-2">{item.description}</p>}
       </div>
       <div className="my-4 h-px bg-[#D6DAE3]" />
