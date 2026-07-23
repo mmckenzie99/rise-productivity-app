@@ -3,8 +3,11 @@
   "type": "object",
   "properties": {
     "place": {
-      "type": "string",
-      "description": "Place name this trip covers (multiple engagements may share the same place)"
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Place(s) this trip covers (multiple engagement locations can be linked to one trip itinerary)"
     },
     "department": {
       "type": "string",

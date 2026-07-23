@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Plus, Plane, Building2, CalendarDays } from 'lucide-react';
-import { formatCurrency } from '@/lib/trips';
+import { formatCurrency, formatPlaces } from '@/lib/trips';
 
 export default function TripListDialog({ open, trips, loading, isAdmin, onClose, onAdd, onSelect }) {
   return (
@@ -31,7 +31,7 @@ export default function TripListDialog({ open, trips, loading, isAdmin, onClose,
                   <Plane className="h-4 w-4 text-[#1B2A4B]" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-[#1B2A4B]">{t.place || 'No place set'}</p>
+                  <p className="truncate text-sm font-medium text-[#1B2A4B]">{formatPlaces(t)}</p>
                   <div className="flex flex-wrap gap-x-3 text-xs text-[#5A6781]">
                     <span className="inline-flex items-center gap-1"><Building2 className="h-3 w-3" />{t.department}</span>
                     {t.leave_date && <span className="inline-flex items-center gap-1"><CalendarDays className="h-3 w-3" />{t.leave_date}{t.return_date ? ` → ${t.return_date}` : ''}</span>}

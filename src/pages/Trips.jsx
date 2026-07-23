@@ -5,7 +5,7 @@ import { ArrowLeft, Plus, Plane, Building2, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import useTrips from '@/hooks/useTrips';
 import useEngagements from '@/hooks/useEngagements';
-import { formatCurrency, getTripStatus } from '@/lib/trips';
+import { formatCurrency, getTripStatus, formatPlaces } from '@/lib/trips';
 import TripForm from '@/components/speaking/TripForm';
 import TripDetail from '@/components/speaking/TripDetail';
 
@@ -86,7 +86,7 @@ export default function Trips() {
                     <Plane className="h-5 w-5 text-[#1B2A4B]" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-[#1B2A4B]">{t.place || 'No place set'}</p>
+                    <p className="truncate text-sm font-semibold text-[#1B2A4B]">{formatPlaces(t)}</p>
                     <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-[#5A6781]">
                       <span className="inline-flex items-center gap-1"><Building2 className="h-3 w-3" />{t.department}</span>
                       {t.leave_date && (

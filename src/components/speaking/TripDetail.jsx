@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2, FileText, Plane, Car, CalendarDays, Building2, DollarSign, Download, MapPin } from 'lucide-react';
-import { formatCurrency, calcTravelByType, exportTripCSV } from '@/lib/trips';
+import { formatCurrency, calcTravelByType, exportTripCSV, formatPlaces } from '@/lib/trips';
 import { formatTime } from '@/lib/speaking';
 
 function Row({ icon: Icon, label, children }) {
@@ -28,7 +28,7 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
         <div className="space-y-4 py-2">
           {/* Engagement + Department */}
           <div className="rounded-lg border border-[#D6DAE3] bg-white p-4">
-            <Row icon={MapPin} label="Place">{trip.place || 'No place set'}</Row>
+            <Row icon={MapPin} label="Place">{formatPlaces(trip)}</Row>
             <Row icon={Building2} label="Department">
               <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${trip.department === 'Expense to Thrive' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'}`}>
                 {trip.department}

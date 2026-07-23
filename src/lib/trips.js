@@ -8,7 +8,7 @@ export const PER_DIEM_RATES = { 'Full Day': 60.0, 'Half Day': 30.0 };
 export const defaultTravelEntry = () => ({ type: '', description: '', airline: '', departure_airport: '', arrival_airport: '', rental_company: '', rental_pickup_location: '', dropoff_location: '', cost: 0, receipt: { name: '', url: '' } });
 
 export const defaultTrip = {
-  place: '',
+  place: [],
   department: '',
   leave_date: '',
   leave_time: '',
@@ -39,7 +39,7 @@ export const exportTripCSV = (trip) => {
   rows.push(['Engagement Log — Trip Details']);
   rows.push([]);
   rows.push(['Place', 'Department', 'Leave Date', 'Leave Time', 'Return Date', 'Return Time']);
-  rows.push([trip.place || '', trip.department || '', trip.leave_date || '', trip.leave_time || '', trip.return_date || '', trip.return_time || '']);
+  rows.push([placesList(trip), trip.department || '', trip.leave_date || '', trip.leave_time || '', trip.return_date || '', trip.return_time || '']);
   rows.push([]);
 
   rows.push(['Expense Breakdown']);
@@ -69,7 +69,7 @@ export const exportTripCSV = (trip) => {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `trip-${(trip.place || 'export').replace(/\s+/g, '-').toLowerCase()}.csv`;
+  link.download = `trip-${(placesList(trip) || 'export').replace(/\s+/g, '-').toLowerCase()}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 };
@@ -87,6 +87,33 @@ export const calcTotalCost = (travelTotal, perDiemTotal) =>
 
 export const formatCurrency = (n) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n || 0);
+
+// Place helpers — support both legacy string place and new array place.
+export const placesList = (trip) => {
+  const p = trip?.place;
+  if (Array.isArray(p)) return p.filter(Boolean).join(' · ');
+  return p || '';
+};
+
+export const formatPlaces = (trip) => placesList(trip) || 'No place set';
+
+export const tripHasPlace = (trip, place) => {
+  const target = (place || '').trim().toLowerCase();
+  if (!target) return false;
+  const p = trip?.place;
+  if (Array.isArray(p)) return p.some((x) => (x || '').trim().toLowerCase() === target);
+  return (p || '').trim().toLowerCase() === target;
+};
+
+export const tripPlaceKeys = (trips) => {
+  const set = new Set();
+  (trips || []).forEach((t) => {
+    const p = t?.place;
+    if (Array.isArray(p)) p.forEach((x) => { if (x?.trim()) set.add(x.trim().toLowerCase()); });
+    else if (p?.trim()) set.add(p.trim().toLowerCase());
+  });
+  return set;
+};
 
 export const getTripStatus = (trip) => {
   if (!trip.return_date) return 'upcoming';

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DEPARTMENTS, defaultTrip, calcPerDiemTotal, calcTotalCost, calcTravelTotal, formatCurrency } from '@/lib/trips';
 import FormTravel from './FormTravel';
 import FormPerDiem from './FormPerDiem';
+import MultiTypeSelect from './MultiTypeSelect';
 
 export default function TripForm({ open, item, engagements, onClose, onSave }) {
   const [form, setForm] = useState(defaultTrip);
@@ -14,11 +15,19 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
 
   useEffect(() => {
     if (open) {
-      setForm(item ? { ...defaultTrip, ...item } : { ...defaultTrip });
+      setForm(item ? { ...defaultTrip, ...item, place: Array.isArray(item.place) ? item.place : (item.place ? [item.place] : []) } : { ...defaultTrip });
     }
   }, [open, item]);
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
+
+  const placeOptions = useMemo(() => Object.values((engagements || []).reduce((acc, e) => {
+    const p = (e.place || '').trim().replace(/\.+$/, '').trim();
+    if (!p) return acc;
+    const key = p.toLowerCase();
+    if (!acc[key]) acc[key] = p;
+    return acc;
+  }, {})), [engagements]);
 
   const travelTotal = calcTravelTotal(form.travel_entries);
   const totalPerDiem = calcPerDiemTotal(form.per_diem_days);
@@ -44,21 +53,7 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
 
         <div className="space-y-5 py-2">
           {/* Linked Engagement */}
-          <div>
-            <Label className="text-xs text-[#5A6781]">Place</Label>
-            <Select value={form.place || ''} onValueChange={(v) => set('place', v)}>
-              <SelectTrigger className="mt-1 border-[#D6DAE3] bg-white"><SelectValue placeholder="Select a place" /></SelectTrigger>
-              <SelectContent>
-                {Object.values(engagements.reduce((acc, e) => {
-                  const p = (e.place || '').trim().replace(/\.+$/, '').trim();
-                  if (!p) return acc;
-                  const key = p.toLowerCase();
-                  if (!acc[key]) acc[key] = p;
-                  return acc;
-                }, {})).map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
+          <MultiTypeSelect label="Places" values={form.place} options={placeOptions} onChange={(v) => set('place', v)} />
 
           {/* Department */}
           <div>
@@ -106,7 +101,7 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose} className="border-[#D6DAE3] bg-white">Cancel</Button>
-          <Button onClick={handleSubmit} disabled={saving || !form.place || !form.department} className="bg-[#D9A404] hover:bg-[#B89003]">
+          <Button onClick={handleSubmit} disabled={saving || !form.place.length || !form.department} className="bg-[#D9A404] hover:bg-[#B89003]">
             {saving ? 'Saving…' : 'Save Trip'}
           </Button>
         </DialogFooter>
