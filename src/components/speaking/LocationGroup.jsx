@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { MapPin, ChevronDown } from 'lucide-react';
 import EngagementCard from './EngagementCard';
 
-export default function LocationGroup({ address, items, onClick, onDuplicate, isAdmin, tripIds, onLocate }) {
+export default function LocationGroup({ place, items, onClick, onDuplicate, isAdmin, tripIds, onLocate }) {
   const [expanded, setExpanded] = useState(false);
 
   if (items.length <= 1) {
@@ -16,7 +16,7 @@ export default function LocationGroup({ address, items, onClick, onDuplicate, is
       <button onClick={() => setExpanded(!expanded)} className="flex w-full items-center justify-between gap-2 text-left">
         <div className="flex items-center gap-2">
           <MapPin className="h-4 w-4 text-[#D9A404]" />
-          <span className="text-sm font-medium text-[#1B2A4B]">{address || 'Same location'}</span>
+          <span className="text-sm font-medium text-[#1B2A4B]">{place || 'No place set'}</span>
           <span className="rounded-full border border-[#D6DAE3] bg-white px-2 py-0.5 font-mono text-[10px] text-[#5A6781]">
             {items.length} engagement{items.length === 1 ? '' : 's'}
           </span>

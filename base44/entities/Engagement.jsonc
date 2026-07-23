@@ -2,6 +2,9 @@
   "name": "Engagement",
   "type": "object",
   "properties": {
+    "place": {
+      "type": "string"
+    },
     "title": {
       "type": "string"
     },
