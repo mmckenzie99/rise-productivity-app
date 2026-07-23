@@ -17,9 +17,9 @@ export default function CalendarView({ items, onSelect }) {
   const prevMonthDays = new Date(year, month, 0).getDate();
 
   const byDate = items
-    .filter(x => x.speaking_date)
+    .filter(x => x.deploy_date)
     .reduce((acc, x) => {
-      (acc[x.speaking_date] = acc[x.speaking_date] || []).push(x);
+      (acc[x.deploy_date] = acc[x.deploy_date] || []).push(x);
       return acc;
     }, {});
 
@@ -56,10 +56,10 @@ export default function CalendarView({ items, onSelect }) {
                 key={eng.id}
                 onClick={() => onSelect(eng)}
                 className="mt-1 block w-full truncate rounded px-1 py-0.5 text-left text-[11px] font-medium"
-                title={`${eng.title} — ${formatDate(eng.speaking_date)}`}
+                title={`${eng.place || 'Engagement'} — ${formatDate(eng.deploy_date)}`}
               >
                 <span className={`rounded px-1 ${statusTone[eng.status] || 'bg-[#E8EAF0] text-[#5A6781]'}`}>
-                  {eng.title}
+                  {eng.place || 'Engagement'}
                 </span>
               </button>
             ))}
