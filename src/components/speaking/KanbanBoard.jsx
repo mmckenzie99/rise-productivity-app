@@ -74,14 +74,14 @@ export default function KanbanBoard({ items, onSave, onSelect, isAdmin }) {
 
   return (
     <DragDropContext onDragStart={(s) => setDragId(s.draggableId)} onDragEnd={onDragEnd}>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
         {STATUSES.map(status => (
           <Droppable key={status} droppableId={status} isDropDisabled={!isAdmin}>
             {(provided, snapshot) => (
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className={`flex flex-col rounded-lg border border-[#D6DAE3] border-t-4 ${COLUMN_TONE[status]} bg-[#F0F2F6] p-3 transition ${snapshot.isDraggingOver ? 'bg-[#E8EBF2]' : ''}`}
+                className={`flex flex-col rounded-lg border border-[#D6DAE3] border-t-4 ${COLUMN_TONE[status]} bg-[#F0F2F6] p-3 transition min-w-[78%] sm:min-w-[300px] md:min-w-0 shrink-0 ${snapshot.isDraggingOver ? 'bg-[#E8EBF2]' : ''}`}
               >
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="font-display text-lg font-semibold">{status}</h3>
