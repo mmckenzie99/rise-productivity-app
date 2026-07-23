@@ -71,7 +71,8 @@
       "enum": [
         "Not Started",
         "In Progress",
-        "Ready to Deploy"
+        "Ready to Deploy",
+        "Deploying"
       ],
       "default": "Not Started"
     },
