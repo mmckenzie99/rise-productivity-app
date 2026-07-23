@@ -1,0 +1,22 @@
+{
+  "name": "Comment",
+  "type": "object",
+  "properties": {
+    "engagement_id": {
+      "type": "string",
+      "description": "ID of the engagement this comment belongs to"
+    },
+    "body": {
+      "type": "string",
+      "description": "Comment text"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Cached display name of the comment author"
+    }
+  },
+  "required": [
+    "engagement_id",
+    "body"
+  ]
+}

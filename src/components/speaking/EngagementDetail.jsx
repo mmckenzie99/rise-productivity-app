@@ -4,6 +4,7 @@ import { CalendarDays, MapPin, Paperclip, Pencil, Trash2, Download, Plane, FileT
 import { formatDate, formatTime, statusTone, TIMEZONES, asArray } from '@/lib/speaking';
 import { generateICS, downloadICS } from '@/lib/icsExport';
 import RichTextDisplay from './RichTextDisplay';
+import CommentsSection from './CommentsSection';
 
 export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAdmin, trip, onViewTrip }) {
   if (!item) return null;
@@ -61,6 +62,7 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
             <Paperclip className="h-4 w-4" />{a.name}
           </a>
         ))}
+        <CommentsSection engagementId={item.id} isAdmin={isAdmin} />
         <div className="flex flex-wrap gap-2 border-t border-[#D6DAE3] pt-3">
           <button onClick={() => downloadICS(generateICS(item), `${item.title || item.place || 'engagement'}.ics`)} className="inline-flex items-center gap-1.5 rounded-md border border-[#D6DAE3] bg-white px-3 py-1.5 text-xs font-medium text-[#1B2A4B] transition hover:border-[#D9A404] hover:text-[#D9A404]">
             <Download className="h-3.5 w-3.5" />Download .ics
