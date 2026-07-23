@@ -3,7 +3,7 @@ import { daysUntil,asArray } from '@/lib/speaking';
 import PlaceBreakdown from './PlaceBreakdown';
 import MonthBreakdown from './MonthBreakdown';
 export default function Dashboard({items,onSelect}){
-  const today=new Date().toISOString().slice(0,10), now=new Date(), monthStart=new Date(now.getFullYear(),now.getMonth(),1).toISOString().slice(0,10), monthEnd=new Date(now.getFullYear(),now.getMonth()+1,1).toISOString().slice(0,10), upcoming=items.filter(x=>x.speaking_date>=today&&x.status!=='Completed'), thisMonth=items.filter(x=>{const d=x.speaking_date||x.deploy_date;return d&&d>=monthStart&&d<monthEnd});
+  const today=new Date().toISOString().slice(0,10), now=new Date(), monthStart=new Date(now.getFullYear(),now.getMonth(),1).toISOString().slice(0,10), monthEnd=new Date(now.getFullYear(),now.getMonth()+1,1).toISOString().slice(0,10), upcoming=items.filter(x=>x.speaking_date>=today&&x.status!=='Completed'), thisMonth=items.filter(x=>x.deploy_date&&x.deploy_date>=monthStart&&x.deploy_date<monthEnd);
   const urgent=upcoming.filter(x=>x.progress!=='Ready to Deploy'&&daysUntil(x.speaking_date)<=14);
   const types=items.reduce((a,x)=>{asArray(x.presentation_type).forEach(t=>{a[t]=(a[t]||0)+1});return a},{}),top=Object.entries(types).sort((a,b)=>b[1]-a[1])[0];
   const cards=[{icon:CalendarDays,label:'Upcoming engagements',value:thisMonth.length,note:'This month'},{icon:Clock3,label:'Upcoming deadlines',value:urgent.length,note:'Within 14 days'},{icon:Tags,label:'Top presentation type',value:top?.[1]||0,note:top?.[0]||'No type set'}];
