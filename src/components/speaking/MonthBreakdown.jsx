@@ -9,11 +9,12 @@ export default function MonthBreakdown({ items }) {
 
   const monthEvents = items
     .filter(x => {
-      if (!x.speaking_date || x.status === 'Completed') return false;
-      const d = new Date(`${x.speaking_date}T00:00:00`);
+      const date = x.speaking_date || x.deploy_date;
+      if (!date || x.status === 'Completed') return false;
+      const d = new Date(`${date}T00:00:00`);
       return d.getFullYear() === year && d.getMonth() === month;
     })
-    .sort((a, b) => a.speaking_date.localeCompare(b.speaking_date));
+    .sort((a, b) => (a.speaking_date || a.deploy_date).localeCompare(b.speaking_date || b.deploy_date));
 
   return (
     <section>
@@ -29,7 +30,7 @@ export default function MonthBreakdown({ items }) {
                   <CalendarDays className="h-4 w-4 text-[#D9A404]" />
                   <p className="text-sm font-medium text-[#1B2A4B]">{x.title}</p>
                 </div>
-                <span className="font-mono text-xs text-[#5A6781]">{formatDate(x.speaking_date)}</span>
+                <span className="font-mono text-xs text-[#5A6781]">{formatDate(x.speaking_date || x.deploy_date)}</span>
               </li>
             ))}
           </ul>
