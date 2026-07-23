@@ -9,7 +9,7 @@ export default function Dashboard({items,onSelect}){
   const metrics=[{icon:Clock3,label:'Upcoming deadlines',value:urgent.length,note:'Within 14 days',accent:'border-l-[#B43A2E]'},{icon:Tags,label:'Top presentation type',value:top?.[1]||0,note:top?.[0]||'No type set',accent:'border-l-[#D9A404]'}];
   return <section className="space-y-7"><div><h2 className="mb-3 font-display text-lg font-semibold">A Quick Look</h2><div className="grid gap-3 md:grid-cols-3 items-start">
     <article className="rounded-lg border border-[#D6DAE3] border-l-4 border-l-[#1B2A4B] bg-white p-5 shadow-sm">
-      <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-[#5A6781]"><CalendarDays className="h-4 w-4"/>Upcoming engagements · This month</div>
+      <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-[#5A6781]"><CalendarDays className="h-4 w-4"/>Current Month Engagements</div>
       <p className="mt-3 font-display text-4xl font-bold">{thisMonth.length}</p>
       {thisMonth.length>0?(
         <ul className="mt-3 space-y-1">
