@@ -7,7 +7,8 @@ import RichTextDisplay from './RichTextDisplay';
 
 export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAdmin, trip, onViewTrip }) {
   if (!item) return null;
-  const isRange = item.end_date && item.end_date !== item.speaking_date;
+  const dateForDisplay = item.speaking_date || item.deploy_date;
+  const isRange = item.end_date && item.end_date !== dateForDisplay;
   const isPresentation = asArray(item.presentation_type).includes('Presentation(s)');
   return (
     <Dialog open={!!item} onOpenChange={v => !v && onClose()}>
@@ -25,7 +26,7 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
         <div className="space-y-2 text-sm">
           <p className="flex gap-2">
             <CalendarDays className="h-4 w-4" />
-            {isRange ? `${formatDate(item.speaking_date)} – ${formatDate(item.end_date)}` : formatDate(item.speaking_date)}
+            {isRange ? `${formatDate(dateForDisplay)} – ${formatDate(item.end_date)}` : formatDate(dateForDisplay)}
             {item.start_time && ` · ${formatTime(item.start_time)}${item.end_time ? `–${formatTime(item.end_time)}` : ''}`}
             {item.timezone && ` (${TIMEZONES.find(z => z.value === item.timezone)?.label || item.timezone})`}
           </p>

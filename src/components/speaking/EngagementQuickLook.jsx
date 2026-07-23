@@ -4,7 +4,8 @@ import { formatDate, formatTime, TIMEZONES, asArray } from '@/lib/speaking';
 
 export default function EngagementQuickLook({ item, onClose }) {
   if (!item) return null;
-  const isRange = item.end_date && item.end_date !== item.speaking_date;
+  const dateForDisplay = item.speaking_date || item.deploy_date;
+  const isRange = item.end_date && item.end_date !== dateForDisplay;
   return (
     <Dialog open={!!item} onOpenChange={v => !v && onClose()}>
       <DialogContent className="max-h-[92vh] overflow-y-auto bg-white sm:max-w-xl">
@@ -25,10 +26,10 @@ export default function EngagementQuickLook({ item, onClose }) {
         )}
 
         <div className="space-y-2 text-sm">
-          {item.speaking_date && (
+          {dateForDisplay && (
             <p className="flex gap-2">
               <CalendarDays className="h-4 w-4 shrink-0 text-[#5A6781]" />
-              {isRange ? `${formatDate(item.speaking_date)} – ${formatDate(item.end_date)}` : formatDate(item.speaking_date)}
+              {isRange ? `${formatDate(dateForDisplay)} – ${formatDate(item.end_date)}` : formatDate(dateForDisplay)}
             </p>
           )}
           {item.start_time && (
