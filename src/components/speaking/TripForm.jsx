@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DEPARTMENTS, defaultTrip, calcPerDiemTotal, calcTotalCost, calcTravelTotal, formatCurrency } from '@/lib/trips';
+import { DEPARTMENTS, defaultTrip, calcPerDiemTotal, calcTotalCost, calcTravelTotal, calcLodgingTotal, formatCurrency } from '@/lib/trips';
 import FormTravel from './FormTravel';
 import FormPerDiem from './FormPerDiem';
+import FormLodging from './FormLodging';
 import MultiTypeSelect from './MultiTypeSelect';
 
 export default function TripForm({ open, item, engagements, onClose, onSave }) {
@@ -30,8 +31,9 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
   }, {})), [engagements]);
 
   const travelTotal = calcTravelTotal(form.travel_entries);
+  const lodgingTotal = calcLodgingTotal(form.lodging_entries);
   const totalPerDiem = calcPerDiemTotal(form.per_diem_days);
-  const totalCost = calcTotalCost(travelTotal, totalPerDiem);
+  const totalCost = calcTotalCost(travelTotal, totalPerDiem, lodgingTotal);
 
   const handleSubmit = async () => {
     setSaving(true);
@@ -90,11 +92,12 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
           </div>
 
           <FormTravel form={form} set={set} />
+          <FormLodging form={form} set={set} />
           <FormPerDiem form={form} set={set} />
 
           {/* Totals */}
           <div className="flex justify-between rounded-lg bg-[#1B2A4B] px-4 py-3 text-white">
-            <span className="text-sm font-medium">Total Cost (Travel + Per Diem)</span>
+            <span className="text-sm font-medium">Total Cost (Travel + Lodging + Per Diem)</span>
             <span className="font-display text-lg font-semibold text-[#D9A404]">{formatCurrency(totalCost)}</span>
           </div>
         </div>

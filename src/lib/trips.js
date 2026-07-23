@@ -7,6 +7,8 @@ export const PER_DIEM_RATES = { 'Full Day': 60.0, 'Half Day': 30.0 };
 
 export const defaultTravelEntry = () => ({ type: '', description: '', airline: '', departure_airport: '', arrival_airport: '', rental_company: '', rental_pickup_location: '', dropoff_location: '', cost: 0, receipt: { name: '', url: '' } });
 
+export const defaultLodgingEntry = () => ({ name: '', check_in_date: '', check_out_date: '', cost: 0, receipt: { name: '', url: '' } });
+
 export const defaultTrip = {
   place: [],
   department: '',
@@ -17,6 +19,7 @@ export const defaultTrip = {
   departure_airport: '',
   rental_pickup_location: '',
   travel_entries: [],
+  lodging_entries: [],
   per_diem_days: [],
   expense_report: { name: '', url: '' },
   total_per_diem: 0,
@@ -31,10 +34,14 @@ export const calcPerDiemTotal = (days) =>
 export const calcTravelTotal = (entries) =>
   (entries || []).reduce((sum, e) => sum + (Number(e.cost) || 0), 0);
 
+export const calcLodgingTotal = (entries) =>
+  (entries || []).reduce((sum, e) => sum + (Number(e.cost) || 0), 0);
+
 export const exportTripCSV = (trip) => {
   const esc = (val) => `"${String(val ?? '').replace(/"/g, '""')}"`;
   const rows = [];
   const byType = calcTravelByType(trip.travel_entries);
+  const lodgingTotal = calcLodgingTotal(trip.lodging_entries);
 
   rows.push(['Engagement Log — Trip Details']);
   rows.push([]);
@@ -47,6 +54,9 @@ export const exportTripCSV = (trip) => {
   (trip.travel_entries || []).forEach((e) => {
     const desc = e.type === 'Flight' ? e.airline : e.type === 'Rental' ? e.rental_company : '';
     rows.push(['Travel', e.type || '', desc, '', (e.cost || 0).toFixed(2), e.receipt?.name || '']);
+  });
+  (trip.lodging_entries || []).forEach((l) => {
+    rows.push(['Lodging', '', l.name || '', `${l.check_in_date || ''} → ${l.check_out_date || ''}`, (l.cost || 0).toFixed(2), l.receipt?.name || '']);
   });
   (trip.per_diem_days || []).forEach((d) => {
     rows.push(['Per Diem', d.type || '', '', d.date || '', (d.amount || 0).toFixed(2), '']);
@@ -61,6 +71,7 @@ export const exportTripCSV = (trip) => {
   if (byType.Flight > 0) rows.push(['Airfare', byType.Flight.toFixed(2)]);
   if (byType.Rental > 0) rows.push(['Rental', byType.Rental.toFixed(2)]);
   if (byType['Personal Auto'] > 0) rows.push(['Personal Auto', byType['Personal Auto'].toFixed(2)]);
+  if (lodgingTotal > 0) rows.push(['Lodging', lodgingTotal.toFixed(2)]);
   rows.push(['Per Diem', (trip.total_per_diem || 0).toFixed(2)]);
   rows.push(['Total Cost', (trip.total_cost || 0).toFixed(2)]);
 
@@ -82,8 +93,8 @@ export const calcTravelByType = (entries) => {
   return byType;
 };
 
-export const calcTotalCost = (travelTotal, perDiemTotal) =>
-  (Number(travelTotal) || 0) + (Number(perDiemTotal) || 0);
+export const calcTotalCost = (travelTotal, perDiemTotal, lodgingTotal) =>
+  (Number(travelTotal) || 0) + (Number(perDiemTotal) || 0) + (Number(lodgingTotal) || 0);
 
 export const formatCurrency = (n) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n || 0);

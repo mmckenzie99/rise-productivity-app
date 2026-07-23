@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2, FileText, Plane, Car, CalendarDays, Building2, DollarSign, Download, MapPin } from 'lucide-react';
-import { formatCurrency, calcTravelByType, exportTripCSV, formatPlaces } from '@/lib/trips';
+import { formatCurrency, calcTravelByType, calcLodgingTotal, exportTripCSV, formatPlaces } from '@/lib/trips';
 import { formatTime } from '@/lib/speaking';
 
 function Row({ icon: Icon, label, children }) {
@@ -17,6 +17,7 @@ function Row({ icon: Icon, label, children }) {
 export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin }) {
   if (!trip) return null;
   const travelByType = calcTravelByType(trip.travel_entries);
+  const lodgingTotal = calcLodgingTotal(trip.lodging_entries);
 
   return (
     <Dialog open={!!trip} onOpenChange={(v) => !v && onClose()}>
@@ -72,6 +73,30 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
             )}
           </div>
 
+          {/* Lodging Details */}
+          <div className="rounded-lg border border-[#D6DAE3] bg-white p-4">
+            <h3 className="font-display text-sm font-semibold text-[#1B2A4B] mb-2">Lodging Details</h3>
+            {trip.lodging_entries?.length ? (
+              trip.lodging_entries.map((entry, i) => (
+                <div key={i} className="space-y-1 border-b border-[#E8EAF0] pb-2 mb-2 last:border-0 last:mb-0 last:pb-0">
+                  <Row icon={Building2} label="Name">{entry.name || '—'}</Row>
+                  <Row icon={CalendarDays} label="Check-in">{entry.check_in_date || '—'}</Row>
+                  <Row icon={CalendarDays} label="Check-out">{entry.check_out_date || '—'}</Row>
+                  <Row icon={DollarSign} label="Cost">{formatCurrency(entry.cost)}</Row>
+                  {entry.receipt?.url && (
+                    <div className="flex items-center gap-2 py-1.5">
+                      <FileText className="h-4 w-4 text-[#5A6781]" />
+                      <span className="text-sm text-[#5A6781] min-w-[120px]">Receipt</span>
+                      <a href={entry.receipt.url} target="_blank" rel="noreferrer" className="text-sm text-[#D9A404] underline">{entry.receipt.name}</a>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-[#5A6781]">No lodging details.</p>
+            )}
+          </div>
+
           {/* Per Diem */}
           <div className="rounded-lg border border-[#D6DAE3] bg-white p-4">
             <h3 className="font-display text-sm font-semibold text-[#1B2A4B] mb-2">Per Diem</h3>
@@ -118,6 +143,12 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
                 <div className="flex justify-between">
                   <span className="text-[#5A6781]">Personal Auto</span>
                   <span className="font-medium text-[#1B2A4B]">{formatCurrency(travelByType['Personal Auto'])}</span>
+                </div>
+              )}
+              {lodgingTotal > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-[#5A6781]">Lodging</span>
+                  <span className="font-medium text-[#1B2A4B]">{formatCurrency(lodgingTotal)}</span>
                 </div>
               )}
               <div className="flex justify-between border-t border-[#E8EAF0] pt-1.5">

@@ -94,6 +94,40 @@
         }
       }
     },
+    "lodging_entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Lodging place / hotel name for this entry"
+          },
+          "check_in_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "check_out_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "cost": {
+            "type": "number"
+          },
+          "receipt": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "per_diem_days": {
       "type": "array",
       "items": {
