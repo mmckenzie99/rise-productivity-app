@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { ChevronDown, MapPin, ArrowRight } from 'lucide-react';
+import { ChevronDown, ArrowRight } from 'lucide-react';
+import { Image } from '@/components/ui/image';
+
+const COMPASS_ICON = 'https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/63dd1c7cf_Icon.png';
 
 export default function PlaceBreakdown({ items, onSelect }) {
   const [cardOpen, setCardOpen] = useState(true);
@@ -22,7 +25,7 @@ export default function PlaceBreakdown({ items, onSelect }) {
           className="flex w-full items-center justify-between gap-2 p-5 text-left"
         >
           <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-[#D9A404]" />
+            <Image src={COMPASS_ICON} alt="Place" fittingType="fit" className="h-4 w-4 shrink-0" />
             <span className="text-sm font-medium text-[#1B2A4B]">{sorted.length} place{sorted.length === 1 ? '' : 's'}</span>
           </div>
           <ChevronDown className={`h-4 w-4 text-[#5A6781] transition-transform ${cardOpen ? 'rotate-180' : ''}`} />
@@ -44,7 +47,7 @@ export default function PlaceBreakdown({ items, onSelect }) {
                           className="flex w-full items-center justify-between gap-2 text-left"
                         >
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-[#D9A404]" />
+                            <Image src={COMPASS_ICON} alt="Place" fittingType="fit" className="h-4 w-4 shrink-0" />
                             <span className="text-sm font-medium text-[#1B2A4B]">{place}</span>
                           </div>
                           <ChevronDown className={`h-3.5 w-3.5 text-[#5A6781] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -55,7 +58,7 @@ export default function PlaceBreakdown({ items, onSelect }) {
                           className="flex w-full items-center justify-between gap-2 text-left"
                         >
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-[#D9A404]" />
+                            <Image src={COMPASS_ICON} alt="Place" fittingType="fit" className="h-4 w-4 shrink-0" />
                             <span className="text-sm font-medium text-[#1B2A4B]">{placeItems[0].title}</span>
                           </div>
                           <ArrowRight className="h-3.5 w-3.5 text-[#D9A404]" />
