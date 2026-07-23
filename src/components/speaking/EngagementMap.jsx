@@ -4,8 +4,8 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { asArray } from '@/lib/speaking';
 const icon=L.divIcon({html:'<div style="width:18px;height:18px;background:#D9A404;border:2px solid #FFFFFF;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 4px #1B2A4B66"></div>',className:'',iconSize:[20,20],iconAnchor:[10,20]});
-function Fit({points}){const map=useMap();if(points.length) setTimeout(()=>map.setView(points[points.length-1],18,{animate:true}),0);return null}
-function FocusController({focusItem,markerRefs}){const map=useMap();useEffect(()=>{if(!focusItem?.item)return;const lat=Number(focusItem.item.latitude);const lng=Number(focusItem.item.longitude);if(!Number.isFinite(lat)||!Number.isFinite(lng))return;map.setView([lat,lng],18,{animate:true});const key=`${lat},${lng}`;const m=markerRefs.current[key];if(m)setTimeout(()=>m.openPopup(),400)},[focusItem?.nonce]);return null}
+function Fit({points}){const map=useMap();if(points.length){if(points.length>1){const b=L.latLngBounds(points);setTimeout(()=>map.fitBounds(b,{padding:[40,40],animate:true}),0)}else{setTimeout(()=>map.setView(points[0],5,{animate:true}),0)}}return null}
+function FocusController({focusItem,markerRefs}){const map=useMap();useEffect(()=>{if(!focusItem?.item)return;const lat=Number(focusItem.item.latitude);const lng=Number(focusItem.item.longitude);if(!Number.isFinite(lat)||!Number.isFinite(lng))return;map.setView([lat,lng],13,{animate:true});const key=`${lat},${lng}`;const m=markerRefs.current[key];if(m)setTimeout(()=>m.openPopup(),400)},[focusItem?.nonce]);return null}
 export default function EngagementMap({items,onView,focusItem}){const markerRefs=useRef({});
   const located=items.filter(x=>Number.isFinite(Number(x.latitude))&&Number.isFinite(Number(x.longitude)));
   const groups=Object.values(located.reduce((acc,x)=>{const key=`${x.latitude},${x.longitude}`;if(!acc[key])acc[key]={lat:x.latitude,lng:x.longitude,address:x.address||'',items:[]};acc[key].items.push(x);return acc},{}));
