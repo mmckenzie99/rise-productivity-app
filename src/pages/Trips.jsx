@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
-import { ArrowLeft, Plus, Plane, Building2, CalendarDays } from 'lucide-react';
+import { ArrowLeft, Plus, Building2, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import useTrips from '@/hooks/useTrips';
 import useEngagements from '@/hooks/useEngagements';
@@ -83,7 +83,7 @@ export default function Trips() {
                   className="flex w-full items-center gap-4 rounded-lg border border-[#D6DAE3] bg-white p-4 text-left transition hover:border-[#D9A404]"
                 >
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[#F7F8FA]">
-                    <Plane className="h-5 w-5 text-[#1B2A4B]" />
+                    <img src="https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/4323b7e34_ChatGPTImageJul22202605_46_19PM.png" alt="Trip logo" className="h-7 w-7 object-contain" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-[#1B2A4B]">{formatPlaces(t)}</p>
