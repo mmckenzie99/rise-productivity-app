@@ -53,7 +53,11 @@ export default function LocationGroup({ place, items, onClick, onDuplicate, isAd
       </div>
       {expanded && (
         <div className={`mt-4 ${GRID}`}>
-          {[...items].sort((a, b) => (a.start_time || '99:99').localeCompare(b.start_time || '99:99')).map(x => (
+          {[...items].sort((a, b) => {
+            const t = (a.start_time || '99:99').localeCompare(b.start_time || '99:99');
+            if (t !== 0) return t;
+            return (a.deploy_date || '').localeCompare(b.deploy_date || '');
+          }).map(x => (
             <EngagementCard key={x.id} item={x} onClick={onClick} onDuplicate={onDuplicate} isAdmin={isAdmin} hasTrip={tripPlaces?.has((x.place||'').trim().toLowerCase())} onLocate={onLocate} />
           ))}
         </div>
