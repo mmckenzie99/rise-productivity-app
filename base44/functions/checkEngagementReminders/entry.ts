@@ -1,12 +1,11 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 
+// Countdown reminders are anchored to the deploy date (not the creation/speaking date).
 const WINDOWS = [
   { label: '14 Days', minutes: 20160, minMinutes: 10080 },
-  { label: '7 Days', minutes: 10080, minMinutes: 1440 },
-  { label: '1 Day', minutes: 1440, minMinutes: 60 },
-  { label: '60 Minutes', minutes: 60, minMinutes: 30 },
-  { label: '30 Minutes', minutes: 30, minMinutes: 15 },
-  { label: '15 Minutes', minutes: 15, minMinutes: 0 },
+  { label: '7 Days', minutes: 10080, minMinutes: 4320 },
+  { label: '3 Days', minutes: 4320, minMinutes: 1440 },
+  { label: '1 Day', minutes: 1440, minMinutes: 0 },
 ];
 
 function getMinutesUntil(engagement, now) {
@@ -38,14 +37,27 @@ function getMinutesUntil(engagement, now) {
 function getMinutesUntilDeploy(engagement, now) {
   const dateStr = engagement.deploy_date;
   if (!dateStr) return null;
+  const tz = engagement.timezone || 'UTC';
   const [y, mo, d] = dateStr.split('-').map(Number);
-  // Deploy date is a calendar day; trigger at start of that day
-  const realUTC = Date.UTC(y, mo - 1, d, 0, 0);
+  // Deploy date is a calendar day; anchor to the start of that day in the engagement timezone
+  const guess = Date.UTC(y, mo - 1, d, 0, 0);
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false
+  }).formatToParts(new Date(guess));
+  const p = {};
+  parts.forEach(pt => { if (pt.type !== 'literal') p[pt.type] = pt.value; });
+  const tzAsUTC = Date.UTC(
+    +p.year, +p.month - 1, +p.day,
+    +(p.hour === '24' ? '0' : p.hour), +p.minute
+  );
+  const realUTC = 2 * guess - tzAsUTC;
   return (realUTC - now.getTime()) / 60000;
 }
 
 function buildEmailBody(eng, windowLabel, tzLabel) {
-  const dateStr = eng.speaking_date || eng.start_date || 'TBD';
+  const dateStr = eng.deploy_date || eng.speaking_date || eng.start_date || 'TBD';
   const timeStr = eng.start_time || 'TBD';
   const addr = eng.address || 'TBD';
   return `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B">
@@ -106,14 +118,12 @@ Deno.serve(async (req) => {
     const results = [];
 
     for (const eng of engagements) {
-      const minutesUntil = getMinutesUntil(eng, now);
-      if (minutesUntil === null || minutesUntil <= 0) continue;
+      const deployMinutes = getMinutesUntilDeploy(eng, now);
 
       // --- Deploy date reminder ---
     // When the deploy date is reached (today or just passed), remind to update progress.
     const deployKey = `${eng.id}:Deploy Date`;
     if (!sentKeys.has(deployKey) && eng.deploy_date) {
-      const deployMinutes = getMinutesUntilDeploy(eng, now);
       // Trigger once deploy date has arrived (<= 0 minutes until) and within 7 days after
       if (deployMinutes !== null && deployMinutes <= 0 && deployMinutes > -10080) {
         const notif = await base44.asServiceRole.entities.Notification.create({
@@ -158,16 +168,18 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Countdown reminders fire relative to the deploy date
+    if (deployMinutes === null || deployMinutes <= 0) continue;
     for (const w of WINDOWS) {
         const key = `${eng.id}:${w.label}`;
         if (sentKeys.has(key)) continue;
 
-        if (minutesUntil <= w.minutes && minutesUntil > w.minMinutes) {
+        if (deployMinutes <= w.minutes && deployMinutes > w.minMinutes) {
           // Create in-app notification
           const notif = await base44.asServiceRole.entities.Notification.create({
             engagement_id: eng.id,
             engagement_title: eng.title,
-            speaking_date: eng.speaking_date || eng.start_date,
+            speaking_date: eng.deploy_date || eng.speaking_date || eng.start_date,
             speaking_time: eng.start_time,
             timezone: eng.timezone,
             window_label: w.label,

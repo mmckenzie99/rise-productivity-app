@@ -38,6 +38,6 @@
       "ends_after_count": null
     }
   },
-  "description": "Every 5 minutes, checks engagements for due reminders (deploy date and countdown windows) and sends in-app + email notifications. Invokes checkEngagementReminders with the cron secret so anonymous direct HTTP calls are rejected.",
+  "description": "Every 5 minutes, checks engagements for due reminders anchored to the deploy date (14, 7, 3, and 1 day windows) and sends in-app + email notifications. Invokes checkEngagementReminders with the cron secret so anonymous direct HTTP calls are rejected.",
   "name": "Engagement Reminder Check"
 }
