@@ -41,7 +41,7 @@ export default function LocationGroup({ place, items, onClick, onDuplicate, isAd
         )}
         <button onClick={() => setExpanded(!expanded)} className="flex flex-1 items-center justify-between gap-2 text-left">
           <div className="flex flex-wrap items-center gap-2">
-            <img src="https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/4323b7e34_ChatGPTImageJul22202605_46_19PM.png" alt="" className="h-5 w-5 object-contain" />
+            <img src="https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/9f7bd64d0_Icon.png" alt="" className="h-5 w-5" />
             <span className="text-sm font-medium text-[#1B2A4B]">{place || 'No place set'}</span>
             <span className="rounded-full border border-[#D6DAE3] px-2 py-0.5 font-mono text-[10px] text-[#5A6781]">
               {items.length} engagement{items.length === 1 ? '' : 's'}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 
-const COMPASS_ICON = 'https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/4323b7e34_ChatGPTImageJul22202605_46_19PM.png';
+const COMPASS_ICON = 'https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/9f7bd64d0_Icon.png';
 
 export default function PlaceBreakdown({ items, onSelect }) {
   const [cardOpen, setCardOpen] = useState(true);
