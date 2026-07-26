@@ -11,6 +11,11 @@
       "format": "date",
       "description": "The day this plan is scheduled"
     },
+    "all_day": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this plan spans the whole day rather than a specific time"
+    },
     "start_time": {
       "type": "string",
       "description": "Start time (HH:MM, 24h)"

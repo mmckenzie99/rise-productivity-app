@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const EMPTY = {
   title: '',
   date: '',
+  all_day: true,
   start_time: '',
   end_time: '',
   category: 'Personal',
@@ -93,26 +94,32 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
               </Select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label>Start</Label>
-              <Input
-                type="time"
-                value={form.start_time || ''}
-                onChange={(e) => set('start_time', e.target.value)}
-                className="border-[#D6DAE3]"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>End</Label>
-              <Input
-                type="time"
-                value={form.end_time || ''}
-                onChange={(e) => set('end_time', e.target.value)}
-                className="border-[#D6DAE3]"
-              />
-            </div>
+          <div className="flex items-center justify-between rounded-md border border-[#D6DAE3] bg-[#F7F8FA] px-3 py-2">
+            <Label className="text-sm">All day</Label>
+            <Switch checked={!!form.all_day} onCheckedChange={(v) => setForm((f) => ({ ...f, all_day: v, start_time: v ? '' : f.start_time, end_time: v ? '' : f.end_time }))} />
           </div>
+          {!form.all_day && (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Start</Label>
+                <Input
+                  type="time"
+                  value={form.start_time || ''}
+                  onChange={(e) => set('start_time', e.target.value)}
+                  className="border-[#D6DAE3]"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>End</Label>
+                <Input
+                  type="time"
+                  value={form.end_time || ''}
+                  onChange={(e) => set('end_time', e.target.value)}
+                  className="border-[#D6DAE3]"
+                />
+              </div>
+            </div>
+          )}
 
           {form.category === 'Work' && (
             <div className="space-y-1.5">
