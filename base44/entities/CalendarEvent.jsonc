@@ -27,6 +27,23 @@
       ],
       "default": "Personal"
     },
+    "assignee_id": {
+      "type": "string",
+      "description": "User id of the administrator this work plan is assigned to"
+    },
+    "assignee_name": {
+      "type": "string",
+      "description": "Cached display name of the assignee"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When the plan was marked complete"
+    },
     "notes": {
       "type": "string",
       "description": "Optional details about the plan"
@@ -38,13 +55,23 @@
   ],
   "rls": {
     "read": {
-      "created_by_id": "{{user.id}}"
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.assignee_id": "{{user.id}}"
+        }
+      ]
     },
     "create": null,
     "update": {
       "$or": [
         {
           "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.assignee_id": "{{user.id}}"
         },
         {
           "user_condition": {
