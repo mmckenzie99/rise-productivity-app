@@ -16,6 +16,11 @@
       "default": true,
       "description": "Whether this plan spans the whole day rather than a specific time"
     },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional end date for a multi-day all-day plan; blank means single day"
+    },
     "start_time": {
       "type": "string",
       "description": "Start time (HH:MM, 24h)"

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { formatDate, calPlanTone, calEngagementTone } from '@/lib/speaking';
+import { formatDate, calPlanTone, calEngagementTone, planDateKeys } from '@/lib/speaking';
 import DayPlanner from './DayPlanner';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -50,7 +50,9 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
     });
     (events || []).forEach((x) => {
       if (!x.date) return;
-      (byDate[x.date] = byDate[x.date] || []).push({ ...x, _kind: 'event' });
+      planDateKeys(x).forEach((k) => {
+        (byDate[k] = byDate[k] || []).push({ ...x, _kind: 'event' });
+      });
     });
 
     const cells = [];

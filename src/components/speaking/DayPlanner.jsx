@@ -1,4 +1,4 @@
-import { formatTime, calPlanTone, calEngagementTone } from '@/lib/speaking';
+import { formatTime, calPlanTone, calEngagementTone, planDateKeys } from '@/lib/speaking';
 
 const START_HOUR = 6;
 const END_HOUR = 23; // grid spans 6:00 → 23:00
@@ -45,7 +45,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
   // Merge engagements (keyed by speaking_date) and personal/work plans (keyed by date)
   const merged = [
     ...(items || []).map((e) => ({ ...e, _kind: 'eng', _dateKey: e.speaking_date })),
-    ...(events || []).map((e) => ({ ...e, _kind: 'event', _dateKey: e.date })),
+    ...(events || []).flatMap((e) => planDateKeys(e).map((k) => ({ ...e, _kind: 'event', _dateKey: k }))),
   ];
 
   const byDate = merged

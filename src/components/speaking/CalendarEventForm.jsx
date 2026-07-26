@@ -11,6 +11,7 @@ const EMPTY = {
   title: '',
   date: '',
   all_day: true,
+  end_date: '',
   start_time: '',
   end_time: '',
   category: 'Personal',
@@ -96,8 +97,21 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
           </div>
           <div className="flex items-center justify-between rounded-md border border-[#D6DAE3] bg-[#F7F8FA] px-3 py-2">
             <Label className="text-sm">All day</Label>
-            <Switch checked={!!form.all_day} onCheckedChange={(v) => setForm((f) => ({ ...f, all_day: v, start_time: v ? '' : f.start_time, end_time: v ? '' : f.end_time }))} />
+            <Switch checked={!!form.all_day} onCheckedChange={(v) => setForm((f) => ({ ...f, all_day: v, start_time: v ? '' : f.start_time, end_time: v ? '' : f.end_time, end_date: v ? f.end_date : '' }))} />
           </div>
+          {form.all_day && (
+            <div className="space-y-1.5">
+              <Label>End date (optional)</Label>
+              <Input
+                type="date"
+                value={form.end_date || ''}
+                min={form.date || undefined}
+                onChange={(e) => set('end_date', e.target.value)}
+                className="border-[#D6DAE3]"
+              />
+              <p className="text-[11px] text-[#5A6781]">Leave blank for a single day. Set a later date to span multiple days.</p>
+            </div>
+          )}
           {!form.all_day && (
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">

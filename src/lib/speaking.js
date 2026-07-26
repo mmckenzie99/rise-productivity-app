@@ -24,3 +24,12 @@ export const formatDate=(d)=>d?new Date(`${d}T00:00:00`).toLocaleDateString(unde
 export const formatTime=(t)=>{if(!t)return '';const[h,m]=t.split(':').map(Number);const p=h>=12?'PM':'AM';const h12=h%12||12;return `${h12}:${String(m).padStart(2,'0')} ${p}`};
 export const statusTone={Planning:'bg-[#FBF0D0] text-[#8A6A00]',Confirmed:'bg-[#E8EBF2] text-[#1B2A4B]',Completed:'bg-[#E8EAF0] text-[#5A6781]'};export const eventTone={Personal:'bg-[#EDE3F8] text-[#5B2DA0]',Work:'bg-[#DCEAF5] text-[#1B4A6B]'};export const calPlanTone='bg-[#D7F0DD] text-[#1E6B3A]';export const calEngagementTone='bg-[#FBE3C8] text-[#8A4B0E]';
 export const daysUntil=(d)=>Math.ceil((new Date(`${d}T00:00:00`)-new Date().setHours(0,0,0,0))/86400000);
+export const planDateKeys=(ev)=>{
+  if(!ev||!ev.date)return[];
+  const start=new Date(`${ev.date}T00:00:00`);
+  let end=ev.end_date?new Date(`${ev.end_date}T00:00:00`):null;
+  if(!end||end<start)return [ev.date];
+  const out=[];const cur=new Date(start);
+  while(cur<=end){out.push(`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`);cur.setDate(cur.getDate()+1);}
+  return out;
+};
