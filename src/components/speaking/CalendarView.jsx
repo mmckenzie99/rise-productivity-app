@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { statusTone, eventTone, formatDate } from '@/lib/speaking';
+import { formatDate, calPlanTone, calEngagementTone } from '@/lib/speaking';
 import DayPlanner from './DayPlanner';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -78,9 +78,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
             <p className="text-xs font-medium">{cell.day}</p>
             {cell.entries?.map((x) => {
               const isEvent = x._kind === 'event';
-              const tone = isEvent
-                ? eventTone[x.category] || 'bg-[#E8EAF0] text-[#5A6781]'
-                : statusTone[x.status] || 'bg-[#E8EAF0] text-[#5A6781]';
+              const tone = isEvent ? calPlanTone : calEngagementTone;
               return (
                 <button
                   key={x.id}

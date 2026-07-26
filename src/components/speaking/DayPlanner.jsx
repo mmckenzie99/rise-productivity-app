@@ -1,4 +1,4 @@
-import { statusTone, formatTime, eventTone } from '@/lib/speaking';
+import { formatTime, calPlanTone, calEngagementTone } from '@/lib/speaking';
 
 const START_HOUR = 6;
 const END_HOUR = 23; // grid spans 6:00 → 23:00
@@ -71,9 +71,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
 
   const renderBlock = (x) => {
     const isEvent = x._kind === 'event';
-    const tone = isEvent
-      ? eventTone[x.category] || 'bg-[#E8EAF0] text-[#5A6781]'
-      : statusTone[x.status] || 'bg-[#E8EAF0] text-[#5A6781]';
+    const tone = isEvent ? calPlanTone : calEngagementTone;
     const onClick = (e) => {
       e.stopPropagation();
       isEvent ? onEventSelect?.(x) : onSelect?.(x);
@@ -156,9 +154,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                 >
                   {allDay.map((x) => {
                     const isEvent = x._kind === 'event';
-                    const tone = isEvent
-                      ? eventTone[x.category] || 'bg-[#E8EAF0] text-[#5A6781]'
-                      : statusTone[x.status] || 'bg-[#E8EAF0] text-[#5A6781]';
+                    const tone = isEvent ? calPlanTone : calEngagementTone;
                     return (
                       <button
                         key={x.id}
