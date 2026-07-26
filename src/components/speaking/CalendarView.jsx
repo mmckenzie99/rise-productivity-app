@@ -72,7 +72,8 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
         {cells.map((cell, i) => (
           <div
             key={i}
-            className={`min-h-[72px] rounded-md border p-1.5 ${cell.muted ? 'border-transparent bg-[#F0F2F6]/50 text-[#5A6781]' : cell.date === todayKey ? 'border-[#D9A404] bg-[#FBF0D0]/40' : 'border-[#D6DAE3] bg-white'}`}
+            onClick={() => { if (!cell.muted && cell.date) { setMode('day'); setCursor(new Date(cell.date + 'T00:00:00')); } }}
+            className={`min-h-[72px] cursor-pointer rounded-md border p-1.5 ${cell.muted ? 'border-transparent bg-[#F0F2F6]/50 text-[#5A6781]' : cell.date === todayKey ? 'border-[#D9A404] bg-[#FBF0D0]/40' : 'border-[#D6DAE3] bg-white'}`}
           >
             <p className="text-xs font-medium">{cell.day}</p>
             {cell.entries?.map((x) => {
@@ -83,7 +84,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
               return (
                 <button
                   key={x.id}
-                  onClick={() => (isEvent ? onEventSelect?.(x) : onSelect?.(x))}
+                  onClick={(e) => { e.stopPropagation(); isEvent ? onEventSelect?.(x) : onSelect?.(x); }}
                   className="mt-1 block w-full truncate rounded px-1 py-0.5 text-left text-[11px] font-medium"
                   title={x.title}
                 >
