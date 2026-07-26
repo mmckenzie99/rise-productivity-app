@@ -1,4 +1,4 @@
-import { statusTone, formatTime } from '@/lib/speaking';
+import { statusTone, formatTime, eventTone } from '@/lib/speaking';
 
 const START_HOUR = 6;
 const END_HOUR = 23; // grid spans 6:00 → 23:00
@@ -28,7 +28,7 @@ const hourLabel = (h) => {
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function DayPlanner({ items, mode, cursor, onSelect, onAddSlot }) {
+export default function DayPlanner({ items, events, mode, cursor, onSelect, onEventSelect, onAddSlot }) {
   const days = [];
   if (mode === 'day') {
     days.push(new Date(cursor));
@@ -42,10 +42,16 @@ export default function DayPlanner({ items, mode, cursor, onSelect, onAddSlot })
     }
   }
 
-  const byDate = items
-    .filter((x) => x.speaking_date)
+  // Merge engagements (keyed by speaking_date) and personal/work plans (keyed by date)
+  const merged = [
+    ...(items || []).map((e) => ({ ...e, _kind: 'eng', _dateKey: e.speaking_date })),
+    ...(events || []).map((e) => ({ ...e, _kind: 'event', _dateKey: e.date })),
+  ];
+
+  const byDate = merged
+    .filter((x) => x._dateKey)
     .reduce((acc, x) => {
-      (acc[x.speaking_date] = acc[x.speaking_date] || []).push(x);
+      (acc[x._dateKey] = acc[x._dateKey] || []).push(x);
       return acc;
     }, {});
 
@@ -61,6 +67,31 @@ export default function DayPlanner({ items, mode, cursor, onSelect, onAddSlot })
       Math.min((END_HOUR - 1) * 60, Math.round(raw / 15) * 15)
     );
     onAddSlot(dateKey, fmtTime(snapped));
+  };
+
+  const renderBlock = (x) => {
+    const isEvent = x._kind === 'event';
+    const tone = isEvent
+      ? eventTone[x.category] || 'bg-[#E8EAF0] text-[#5A6781]'
+      : statusTone[x.status] || 'bg-[#E8EAF0] text-[#5A6781]';
+    const onClick = (e) => {
+      e.stopPropagation();
+      isEvent ? onEventSelect?.(x) : onSelect?.(x);
+    };
+    const label = isEvent ? x.title : (x.place || x.title || 'Engagement');
+    const sub = isEvent ? (x.category) : formatTime(x.start_time);
+    return (
+      <button
+        key={x.id}
+        onClick={onClick}
+        title={isEvent ? `${x.title} — ${formatTime(x.start_time)}` : `${x.title} — ${formatTime(x.start_time)}`}
+        className={`absolute left-0.5 right-0.5 overflow-hidden rounded px-1 py-0.5 text-left text-[10px] font-medium shadow-sm ${tone}`}
+        style={{ top: x._top, height: x._height }}
+      >
+        <div className="truncate font-semibold">{label}</div>
+        <div className="opacity-70">{sub}</div>
+      </button>
+    );
   };
 
   return (
@@ -105,6 +136,17 @@ export default function DayPlanner({ items, mode, cursor, onSelect, onAddSlot })
             const timed = dayItems.filter((x) => toMin(x.start_time) !== null);
             const allDay = dayItems.filter((x) => toMin(x.start_time) === null);
 
+            const positioned = timed.map((x) => {
+              const sMin = toMin(x.start_time);
+              const eMinRaw = toMin(x.end_time);
+              const eMin = eMinRaw && eMinRaw > sMin ? eMinRaw : sMin + 60;
+              const clampS = Math.max(START_HOUR * 60, sMin);
+              const top = (clampS - START_HOUR * 60) * PX_PER_MIN;
+              const maxBottom = ROWS.length * HOUR_PX;
+              const height = Math.max(22, Math.min((eMin - clampS) * PX_PER_MIN, maxBottom - top));
+              return { ...x, _top: top, _height: height };
+            });
+
             return (
               <div key={di} className="relative flex-1 border-l border-[#D6DAE3]">
                 {/* All-day strip */}
@@ -112,16 +154,22 @@ export default function DayPlanner({ items, mode, cursor, onSelect, onAddSlot })
                   className="overflow-hidden border-b border-[#EDEFF4] bg-[#F7F8FA] px-1 py-0.5"
                   style={{ height: ALL_DAY_PX }}
                 >
-                  {allDay.map((eng) => (
-                    <button
-                      key={eng.id}
-                      onClick={() => onSelect(eng)}
-                      title={eng.title}
-                      className={`mb-0.5 block w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-medium ${statusTone[eng.status] || 'bg-[#E8EAF0] text-[#5A6781]'}`}
-                    >
-                      {eng.place || eng.title || 'Engagement'}
-                    </button>
-                  ))}
+                  {allDay.map((x) => {
+                    const isEvent = x._kind === 'event';
+                    const tone = isEvent
+                      ? eventTone[x.category] || 'bg-[#E8EAF0] text-[#5A6781]'
+                      : statusTone[x.status] || 'bg-[#E8EAF0] text-[#5A6781]';
+                    return (
+                      <button
+                        key={x.id}
+                        onClick={() => (isEvent ? onEventSelect?.(x) : onSelect?.(x))}
+                        title={x.title}
+                        className={`mb-0.5 block w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-medium ${tone}`}
+                      >
+                        {isEvent ? x.title : (x.place || x.title || 'Engagement')}
+                      </button>
+                    );
+                  })}
                 </div>
 
                 {/* Time grid */}
@@ -133,30 +181,7 @@ export default function DayPlanner({ items, mode, cursor, onSelect, onAddSlot })
                   {ROWS.map((h) => (
                     <div key={h} className="border-b border-[#EDEFF4]" style={{ height: HOUR_PX }} />
                   ))}
-                  {timed.map((eng) => {
-                    const sMin = toMin(eng.start_time);
-                    const eMinRaw = toMin(eng.end_time);
-                    const eMin = eMinRaw && eMinRaw > sMin ? eMinRaw : sMin + 60;
-                    const clampS = Math.max(START_HOUR * 60, sMin);
-                    const top = (clampS - START_HOUR * 60) * PX_PER_MIN;
-                    const maxBottom = ROWS.length * HOUR_PX;
-                    const height = Math.max(22, Math.min((eMin - clampS) * PX_PER_MIN, maxBottom - top));
-                    return (
-                      <button
-                        key={eng.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelect(eng);
-                        }}
-                        title={`${eng.title} — ${formatTime(eng.start_time)}`}
-                        className={`absolute left-0.5 right-0.5 overflow-hidden rounded px-1 py-0.5 text-left text-[10px] font-medium shadow-sm ${statusTone[eng.status] || 'bg-[#E8EAF0] text-[#5A6781]'}`}
-                        style={{ top, height }}
-                      >
-                        <div className="truncate font-semibold">{eng.place || eng.title}</div>
-                        <div className="opacity-70">{formatTime(eng.start_time)}</div>
-                      </button>
-                    );
-                  })}
+                  {positioned.map(renderBlock)}
                 </div>
               </div>
             );
@@ -165,7 +190,7 @@ export default function DayPlanner({ items, mode, cursor, onSelect, onAddSlot })
 
         {onAddSlot && (
           <p className="mt-2 text-[11px] text-[#5A6781]">
-            Click an empty time slot to add a plan.
+            Click an empty time slot to add a personal or work plan.
           </p>
         )}
       </div>

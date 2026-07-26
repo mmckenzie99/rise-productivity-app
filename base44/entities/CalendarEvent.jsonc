@@ -1,0 +1,69 @@
+{
+  "name": "CalendarEvent",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "What the plan/item is"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "The day this plan is scheduled"
+    },
+    "start_time": {
+      "type": "string",
+      "description": "Start time (HH:MM, 24h)"
+    },
+    "end_time": {
+      "type": "string",
+      "description": "End time (HH:MM, 24h)"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Personal",
+        "Work"
+      ],
+      "default": "Personal"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional details about the plan"
+    }
+  },
+  "required": [
+    "title",
+    "date"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": null,
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

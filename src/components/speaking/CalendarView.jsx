@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { statusTone, formatDate } from '@/lib/speaking';
+import { statusTone, eventTone, formatDate } from '@/lib/speaking';
 import DayPlanner from './DayPlanner';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -11,7 +11,7 @@ const keyOf = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, 
 
 const MODES = ['month', 'week', 'day'];
 
-export default function CalendarView({ items, onSelect, onAddSlot }) {
+export default function CalendarView({ items, events, onSelect, onEventSelect, onAddSlot }) {
   const today = new Date();
   const [mode, setMode] = useState('month');
   const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
@@ -43,18 +43,21 @@ export default function CalendarView({ items, onSelect, onAddSlot }) {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const prevMonthDays = new Date(year, month, 0).getDate();
 
-    const byDate = items
-      .filter((x) => x.deploy_date)
-      .reduce((acc, x) => {
-        (acc[x.deploy_date] = acc[x.deploy_date] || []).push(x);
-        return acc;
-      }, {});
+    const byDate = {};
+    (items || []).forEach((x) => {
+      if (!x.deploy_date) return;
+      (byDate[x.deploy_date] = byDate[x.deploy_date] || []).push({ ...x, _kind: 'eng' });
+    });
+    (events || []).forEach((x) => {
+      if (!x.date) return;
+      (byDate[x.date] = byDate[x.date] || []).push({ ...x, _kind: 'event' });
+    });
 
     const cells = [];
     for (let i = firstDay - 1; i >= 0; i--) cells.push({ day: prevMonthDays - i, muted: true });
     for (let d = 1; d <= daysInMonth; d++) {
       const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-      cells.push({ day: d, muted: false, date: key, engagements: byDate[key] || [] });
+      cells.push({ day: d, muted: false, date: key, entries: byDate[key] || [] });
     }
     const trailing = 42 - cells.length;
     for (let i = 1; i <= trailing; i++) cells.push({ day: i, muted: true });
@@ -72,18 +75,24 @@ export default function CalendarView({ items, onSelect, onAddSlot }) {
             className={`min-h-[72px] rounded-md border p-1.5 ${cell.muted ? 'border-transparent bg-[#F0F2F6]/50 text-[#5A6781]' : cell.date === todayKey ? 'border-[#D9A404] bg-[#FBF0D0]/40' : 'border-[#D6DAE3] bg-white'}`}
           >
             <p className="text-xs font-medium">{cell.day}</p>
-            {cell.engagements?.map((eng) => (
-              <button
-                key={eng.id}
-                onClick={() => onSelect(eng)}
-                className="mt-1 block w-full truncate rounded px-1 py-0.5 text-left text-[11px] font-medium"
-                title={`${eng.place || 'Engagement'} — ${formatDate(eng.deploy_date)}`}
-              >
-                <span className={`rounded px-1 ${statusTone[eng.status] || 'bg-[#E8EAF0] text-[#5A6781]'}`}>
-                  {eng.place || 'Engagement'}
-                </span>
-              </button>
-            ))}
+            {cell.entries?.map((x) => {
+              const isEvent = x._kind === 'event';
+              const tone = isEvent
+                ? eventTone[x.category] || 'bg-[#E8EAF0] text-[#5A6781]'
+                : statusTone[x.status] || 'bg-[#E8EAF0] text-[#5A6781]';
+              return (
+                <button
+                  key={x.id}
+                  onClick={() => (isEvent ? onEventSelect?.(x) : onSelect?.(x))}
+                  className="mt-1 block w-full truncate rounded px-1 py-0.5 text-left text-[11px] font-medium"
+                  title={x.title}
+                >
+                  <span className={`rounded px-1 ${tone}`}>
+                    {isEvent ? x.title : (x.place || 'Engagement')}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         ))}
       </div>
@@ -116,7 +125,7 @@ export default function CalendarView({ items, onSelect, onAddSlot }) {
       </div>
       {mode === 'month'
         ? renderMonth()
-        : <DayPlanner items={items} mode={mode} cursor={cursor} onSelect={onSelect} onAddSlot={onAddSlot} />}
+        : <DayPlanner items={items} events={events} mode={mode} cursor={cursor} onSelect={onSelect} onEventSelect={onEventSelect} onAddSlot={onAddSlot} />}
     </div>
   );
 }
