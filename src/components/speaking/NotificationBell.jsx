@@ -43,7 +43,7 @@ export default function NotificationBell() {
                 <div className="flex-1">
                   <p className="text-sm font-medium leading-tight">{n.engagement_title}</p>
                   <p className="mt-0.5 text-xs text-[#5A6781]">
-                    {n.window_label} reminder · {formatDate(n.speaking_date)}
+                    {n.window_label==='Assigned to you'||n.window_label==='Completed'?n.window_label:`${n.window_label} reminder`} · {formatDate(n.speaking_date)}
                     {n.speaking_time && ` · ${formatTime(n.speaking_time)}`}
                   </p>
                   {n.email_sent && (

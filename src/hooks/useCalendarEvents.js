@@ -19,10 +19,11 @@ export default function useCalendarEvents() {
 
   const save = async (item) => {
     const { id, created_date, updated_date, created_by_id, ...fields } = item;
-    id
+    const result = id
       ? await base44.entities.CalendarEvent.update(id, fields)
       : await base44.entities.CalendarEvent.create(fields);
     await load();
+    return result;
   };
 
   const remove = async (id) => {

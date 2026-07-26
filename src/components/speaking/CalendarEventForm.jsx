@@ -4,17 +4,43 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const EMPTY = { title: '', date: '', start_time: '', end_time: '', category: 'Personal', notes: '' };
+const EMPTY = {
+  title: '',
+  date: '',
+  start_time: '',
+  end_time: '',
+  category: 'Personal',
+  notes: '',
+  assignee_id: '',
+  assignee_name: '',
+  completed: false,
+  completed_date: '',
+};
 
-export default function CalendarEventForm({ open, item, onClose, onSave }) {
+const todayStr = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+export default function CalendarEventForm({ open, item, admins, currentUserId, onClose, onSave }) {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => setForm({ ...EMPTY, ...(item || {}) }), [item, open]);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const toggleComplete = (v) => {
+    setForm((f) => ({ ...f, completed: v, completed_date: v ? todayStr() : '' }));
+  };
+
+  const onAssigneeChange = (v) => {
+    const assignee = (admins || []).find((u) => u.id === v);
+    setForm((f) => ({ ...f, assignee_id: v === 'none' ? '' : v, assignee_name: assignee ? assignee.full_name || assignee.email : '' }));
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -23,6 +49,8 @@ export default function CalendarEventForm({ open, item, onClose, onSave }) {
     setSaving(false);
     onClose();
   };
+
+  const assignees = (admins || []).filter((u) => u.id !== currentUserId);
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -70,7 +98,7 @@ export default function CalendarEventForm({ open, item, onClose, onSave }) {
               <Label>Start</Label>
               <Input
                 type="time"
-                value={form.start_time}
+                value={form.start_time || ''}
                 onChange={(e) => set('start_time', e.target.value)}
                 className="border-[#D6DAE3]"
               />
@@ -79,12 +107,42 @@ export default function CalendarEventForm({ open, item, onClose, onSave }) {
               <Label>End</Label>
               <Input
                 type="time"
-                value={form.end_time}
+                value={form.end_time || ''}
                 onChange={(e) => set('end_time', e.target.value)}
                 className="border-[#D6DAE3]"
               />
             </div>
           </div>
+
+          {form.category === 'Work' && (
+            <div className="space-y-1.5">
+              <Label>Assign to (administrator)</Label>
+              <Select value={form.assignee_id || 'none'} onValueChange={onAssigneeChange}>
+                <SelectTrigger className="border-[#D6DAE3]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No one</SelectItem>
+                  {assignees.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.full_name || u.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {form.assignee_id && (
+            <div className="flex items-center justify-between rounded-md border border-[#D6DAE3] bg-[#F7F8FA] px-3 py-2">
+              <div>
+                <Label className="text-sm">Mark complete</Label>
+                <p className="text-xs text-[#5A6781]">Notifies whoever assigned this plan.</p>
+              </div>
+              <Switch checked={!!form.completed} onCheckedChange={toggleComplete} />
+            </div>
+          )}
+
           <div className="space-y-1.5">
             <Label>Notes</Label>
             <Textarea
