@@ -60,6 +60,12 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
         <DialogHeader>
           <DialogTitle className="font-display text-xl">{item?.id ? 'Edit' : 'New'} plan</DialogTitle>
         </DialogHeader>
+        {form.category === 'Personal' && (
+          <div className="flex items-center gap-2 rounded-md bg-[#EDE3F8] px-3 py-2 text-[#5B2DA0]">
+            <span className="h-2 w-2 rounded-full bg-[#5B2DA0]" />
+            <span className="text-xs font-semibold">Personal plan</span>
+          </div>
+        )}
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
             <Label>Title</Label>
