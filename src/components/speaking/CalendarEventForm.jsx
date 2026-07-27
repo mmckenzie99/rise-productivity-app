@@ -21,11 +21,35 @@ const EMPTY = {
   assignee_name: '',
   completed: false,
   completed_date: '',
+  recurrence: 'none',
+  recurrence_count: 4,
 };
 
 const todayStr = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const shiftDate = (dateStr, freq, n) => {
+  const d = new Date(`${dateStr}T00:00:00`);
+  if (freq === 'daily') d.setDate(d.getDate() + n);
+  else if (freq === 'weekly') d.setDate(d.getDate() + n * 7);
+  else if (freq === 'monthly') d.setMonth(d.getMonth() + n);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const buildOccurrences = (f) => {
+  const { recurrence, recurrence_count, ...base } = f;
+  if (!base.date || !recurrence || recurrence === 'none') return [base];
+  const count = Math.min(Math.max(Number(recurrence_count) || 1, 1), 60);
+  const out = [];
+  for (let i = 0; i < count; i++) {
+    const newDate = shiftDate(base.date, recurrence, i);
+    let newEnd = base.end_date;
+    if (base.all_day && base.end_date) newEnd = shiftDate(base.end_date, recurrence, i);
+    out.push({ ...base, date: newDate, end_date: newEnd, completed: false, completed_date: '' });
+  }
+  return out;
 };
 
 export default function CalendarEventForm({ open, item, admins, currentUserId, onClose, onSave }) {
@@ -48,7 +72,10 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
   const submit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    await onSave(form);
+    const occurrences = buildOccurrences(form);
+    for (const occ of occurrences) {
+      await onSave(occ);
+    }
     setSaving(false);
     onClose();
   };
@@ -151,6 +178,38 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
                   className="border-[#D6DAE3]"
                 />
               </div>
+            </div>
+          )}
+
+          {!item?.id && (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Repeat</Label>
+                <Select value={form.recurrence} onValueChange={(v) => set('recurrence', v)}>
+                  <SelectTrigger className="border-[#D6DAE3]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Does not repeat</SelectItem>
+                    <SelectItem value="daily">Daily</SelectItem>
+                    <SelectItem value="weekly">Weekly</SelectItem>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {form.recurrence !== 'none' && (
+                <div className="space-y-1.5">
+                  <Label>Occurrences</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={60}
+                    value={form.recurrence_count}
+                    onChange={(e) => set('recurrence_count', e.target.value)}
+                    className="border-[#D6DAE3]"
+                  />
+                </div>
+              )}
             </div>
           )}
 
