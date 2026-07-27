@@ -22,6 +22,10 @@
     "note": {
       "type": "string",
       "description": "Rich-text note with formatting (bold, italics, underline, highlight, links)"
+    },
+    "linked_engagement_id": {
+      "type": "string",
+      "description": "ID of the engagement this reflection note is linked to for syncing"
     }
   },
   "required": [

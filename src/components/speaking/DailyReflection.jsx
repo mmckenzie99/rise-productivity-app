@@ -3,16 +3,22 @@ import { base44 } from '@/api/base44Client';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Target, BookOpen, StickyNote } from 'lucide-react';
+import { Target, BookOpen, StickyNote, Send } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
+import { Button } from '@/components/ui/button';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { formatDate } from '@/lib/speaking';
 
-export default function DailyReflection({ dateKey }) {
+export default function DailyReflection({ dateKey, engagements = [] }) {
   const [record, setRecord] = useState(null);
   const [goals, setGoals] = useState('');
   const [meditation, setMeditation] = useState('');
   const [reference, setReference] = useState('');
   const [note, setNote] = useState('');
   const noteTimer = useRef(null);
+  const [linkedId, setLinkedId] = useState('');
+  const [syncing, setSyncing] = useState(false);
+  const [synced, setSynced] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -28,6 +34,8 @@ export default function DailyReflection({ dateKey }) {
         setMeditation(rec?.meditation || '');
         setReference(rec?.meditation_reference || '');
         setNote(rec?.note || '');
+        setLinkedId(rec?.linked_engagement_id || '');
+        setSynced(false);
       })
       .finally(() => active && setLoading(false));
     return () => { active = false; };
@@ -65,6 +73,31 @@ export default function DailyReflection({ dateKey }) {
   };
   const onBlurReference = () => {
     if (reference !== (record?.meditation_reference || '')) persist({ meditation_reference: reference });
+  };
+
+  const linkable = (engagements || [])
+    .filter((e) => e.status !== 'Completed')
+    .sort((a, b) => (a.speaking_date || '').localeCompare(b.speaking_date || ''));
+
+  const onLinkChange = (v) => {
+    setLinkedId(v);
+    setSynced(false);
+    persist({ linked_engagement_id: v });
+  };
+
+  const syncToEngagement = async () => {
+    if (!linkedId || !note) return;
+    setSyncing(true);
+    try {
+      const eng = await base44.entities.Engagement.get(linkedId);
+      const dateLabel = formatDate(dateKey);
+      const entry = `<div style="border-top:1px solid #E3E6EC;margin-top:8px;padding-top:8px"><p style="font-size:11px;color:#5A6781;margin:0 0 4px"><strong>${dateLabel}</strong></p>${note}</div>`;
+      const newNotes = (eng?.notes || '') + entry;
+      await base44.entities.Engagement.update(linkedId, { notes: newNotes });
+      setSynced(true);
+    } finally {
+      setSyncing(false);
+    }
   };
 
   if (loading) {
@@ -120,6 +153,30 @@ export default function DailyReflection({ dateKey }) {
             onChange={setNote}
             placeholder="Add a note — bold, italics, underline, highlight, or link…"
           />
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <Select value={linkedId} onValueChange={onLinkChange}>
+              <SelectTrigger className="h-8 w-full min-w-[180px] border-[#D6DAE3] text-xs">
+                <SelectValue placeholder="Link an engagement…" />
+              </SelectTrigger>
+              <SelectContent>
+                {linkable.map((e) => (
+                  <SelectItem key={e.id} value={e.id}>
+                    {e.place || 'No place'} — {e.title || e.speaker_name || 'Engagement'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={!linkedId || !note || syncing}
+              onClick={syncToEngagement}
+              className="h-8 border-[#D6DAE3] bg-white"
+            >
+              <Send className="mr-1 h-3.5 w-3.5" />
+              {syncing ? 'Syncing…' : synced ? 'Synced ✓' : 'Sync to Engagement'}
+            </Button>
+          </div>
         </div>
       </div>
       {saving && <p className="text-[10px] text-[#5A6781] sm:col-span-2">Saving…</p>}

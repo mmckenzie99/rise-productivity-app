@@ -115,7 +115,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
       <div className={mode === 'day' ? 'min-w-[320px]' : 'min-w-[640px]'}>
         {dayKey && (
           <div className="mb-3">
-            <DailyReflection dateKey={dayKey} />
+            <DailyReflection dateKey={dayKey} engagements={items} />
           </div>
         )}
         {/* Day headers */}
