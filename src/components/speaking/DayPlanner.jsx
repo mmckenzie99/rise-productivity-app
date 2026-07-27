@@ -1,4 +1,4 @@
-import { formatTime, calPlanTone, calEngagementTone, calMultiDayTone, planDateKeys, isMultiDayPlan } from '@/lib/speaking';
+import { formatTime, calEngagementTone, planCalTone, planMultiTone, planDateKeys, isMultiDayPlan } from '@/lib/speaking';
 
 const START_HOUR = 6;
 const END_HOUR = 23; // grid spans 6:00 → 23:00
@@ -86,7 +86,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
 
   const renderBlock = (x) => {
     const isEvent = x._kind === 'event';
-    const tone = isEvent ? calPlanTone : calEngagementTone;
+    const tone = isEvent ? planCalTone(x) : calEngagementTone;
     const onClick = (e) => {
       e.stopPropagation();
       isEvent ? onEventSelect?.(x) : onSelect?.(x);
@@ -137,7 +137,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                   key={i}
                   onClick={() => onEventSelect?.(b.ev)}
                   title={b.ev.title}
-                  className={`absolute top-0.5 bottom-0.5 flex items-center truncate rounded px-1 py-0.5 text-left text-[10px] font-medium ${calMultiDayTone}`}
+                  className={`absolute top-0.5 bottom-0.5 flex items-center truncate rounded px-1 py-0.5 text-left text-[10px] font-medium ${planMultiTone(b.ev)}`}
                   style={{ left: `calc(${(b.startIdx / days.length) * 100}% + 2px)`, width: `calc(${((b.endIdx - b.startIdx + 1) / days.length) * 100}% - 4px)` }}
                 >
                   {b.extendsLeft ? '‹ ' : ''}{b.ev.title}{b.extendsRight ? ' ›' : ''}
@@ -188,7 +188,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                 >
                   {allDay.map((x) => {
                     const isEvent = x._kind === 'event';
-                    const tone = isEvent ? calPlanTone : calEngagementTone;
+                    const tone = isEvent ? planCalTone(x) : calEngagementTone;
                     return (
                       <button
                         key={x.id}

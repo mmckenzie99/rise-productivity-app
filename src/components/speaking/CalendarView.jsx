@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { formatDate, calPlanTone, calEngagementTone, isMultiDayPlan, calMultiDayTone } from '@/lib/speaking';
+import { formatDate, calEngagementTone, isMultiDayPlan, planCalTone, planMultiTone } from '@/lib/speaking';
 import DayPlanner from './DayPlanner';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -105,7 +105,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                       style={{ gridColumn: `${b.colStart + 1} / span ${b.colEnd - b.colStart + 1}` }}
                       onClick={() => onEventSelect?.(b.ev)}
                       title={b.ev.title}
-                      className={`flex h-5 items-center truncate rounded px-1 text-[10px] font-medium ${calMultiDayTone}`}
+                      className={`flex h-5 items-center truncate rounded px-1 text-[10px] font-medium ${planMultiTone(b.ev)}`}
                     >
                       {b.extendsLeft ? '‹ ' : ''}{b.ev.title}{b.extendsRight ? ' ›' : ''}
                     </button>
@@ -122,7 +122,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                     <p className="text-xs font-medium">{cell.day}</p>
                     {cell.entries.map((x) => {
                       const isEvent = x._kind === 'event';
-                      const tone = isEvent ? calPlanTone : calEngagementTone;
+                      const tone = isEvent ? planCalTone(x) : calEngagementTone;
                       return (
                         <button
                           key={x.id}
