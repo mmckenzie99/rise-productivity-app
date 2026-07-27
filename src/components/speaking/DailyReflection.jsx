@@ -1,15 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Target, BookOpen } from 'lucide-react';
+import { Target, BookOpen, StickyNote } from 'lucide-react';
+import RichTextEditor from './RichTextEditor';
 
 export default function DailyReflection({ dateKey }) {
   const [record, setRecord] = useState(null);
   const [goals, setGoals] = useState('');
   const [meditation, setMeditation] = useState('');
   const [reference, setReference] = useState('');
+  const [note, setNote] = useState('');
+  const noteTimer = useRef(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -24,6 +27,7 @@ export default function DailyReflection({ dateKey }) {
         setGoals(rec?.goals || '');
         setMeditation(rec?.meditation || '');
         setReference(rec?.meditation_reference || '');
+        setNote(rec?.note || '');
       })
       .finally(() => active && setLoading(false));
     return () => { active = false; };
@@ -43,6 +47,15 @@ export default function DailyReflection({ dateKey }) {
       setSaving(false);
     }
   };
+
+  useEffect(() => {
+    if (noteTimer.current) clearTimeout(noteTimer.current);
+    noteTimer.current = setTimeout(() => {
+      if (note !== (record?.note || '')) persist({ note });
+    }, 700);
+    return () => { if (noteTimer.current) clearTimeout(noteTimer.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [note]);
 
   const onBlurGoals = () => {
     if (goals !== (record?.goals || '')) persist({ goals });
@@ -95,6 +108,17 @@ export default function DailyReflection({ dateKey }) {
             onBlur={onBlurReference}
             placeholder="e.g. John 3:16, Desire of Ages p. 123"
             className="border-[#D6DAE3]"
+          />
+        </div>
+        <div className="mt-2 space-y-1">
+          <div className="flex items-center gap-1.5 text-[#1B2A4B]">
+            <StickyNote className="h-3.5 w-3.5 text-[#D9A404]" />
+            <span className="text-xs font-semibold uppercase tracking-wider">Note</span>
+          </div>
+          <RichTextEditor
+            value={note}
+            onChange={setNote}
+            placeholder="Add a note — bold, italics, underline, highlight, or link…"
           />
         </div>
       </div>

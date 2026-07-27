@@ -18,6 +18,10 @@
     "meditation_reference": {
       "type": "string",
       "description": "Reference or source for the meditation text (e.g. John 3:16, Desire of Ages p. 123)"
+    },
+    "note": {
+      "type": "string",
+      "description": "Rich-text note with formatting (bold, italics, underline, highlight, links)"
     }
   },
   "required": [
