@@ -15,6 +15,7 @@ const EMPTY = {
   start_time: '',
   end_time: '',
   category: 'Personal',
+  location_type: 'In-person',
   notes: '',
   assignee_id: '',
   assignee_name: '',
@@ -77,7 +78,7 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
               className="border-[#D6DAE3]"
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="space-y-1.5">
               <Label>Date</Label>
               <Input
@@ -97,6 +98,18 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
                 <SelectContent>
                   <SelectItem value="Personal">Personal</SelectItem>
                   <SelectItem value="Work">Work</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Location</Label>
+              <Select value={form.location_type} onValueChange={(v) => set('location_type', v)}>
+                <SelectTrigger className="border-[#D6DAE3]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="In-person">In-person</SelectItem>
+                  <SelectItem value="Online">Online</SelectItem>
                 </SelectContent>
               </Select>
             </div>

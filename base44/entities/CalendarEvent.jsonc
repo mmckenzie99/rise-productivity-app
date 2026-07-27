@@ -37,6 +37,15 @@
       ],
       "default": "Personal"
     },
+    "location_type": {
+      "type": "string",
+      "enum": [
+        "In-person",
+        "Online"
+      ],
+      "default": "In-person",
+      "description": "Whether this plan is attended online or in person"
+    },
     "assignee_id": {
       "type": "string",
       "description": "User id of the administrator this work plan is assigned to"
