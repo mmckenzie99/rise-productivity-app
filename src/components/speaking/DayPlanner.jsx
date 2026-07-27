@@ -112,7 +112,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
 
   return (
     <div className="overflow-x-auto">
-      <div className="min-w-[640px]">
+      <div className={mode === 'day' ? 'min-w-[320px]' : 'min-w-[640px]'}>
         {dayKey && (
           <div className="mb-3">
             <DailyReflection dateKey={dayKey} />

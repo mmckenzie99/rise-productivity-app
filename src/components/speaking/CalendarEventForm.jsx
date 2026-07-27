@@ -57,7 +57,7 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="bg-white sm:max-w-md">
+      <DialogContent className="max-h-[90vh] w-[calc(100vw-1.5rem)] overflow-y-auto bg-white sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-display text-xl">{item?.id ? 'Edit' : 'New'} plan</DialogTitle>
         </DialogHeader>
