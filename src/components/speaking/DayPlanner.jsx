@@ -1,4 +1,4 @@
-import { formatTime, calPlanTone, calEngagementTone, planDateKeys } from '@/lib/speaking';
+import { formatTime, calPlanTone, calEngagementTone, calMultiDayTone, planDateKeys, isMultiDayPlan } from '@/lib/speaking';
 
 const START_HOUR = 6;
 const END_HOUR = 23; // grid spans 6:00 → 23:00
@@ -57,6 +57,21 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
 
   const todayKey = keyOf(new Date());
 
+  const multiDayEvents = (events || []).filter(isMultiDayPlan);
+  const multiDayIds = new Set(multiDayEvents.map((e) => e.id));
+  const visKeys = days.map(keyOf);
+  const multiBars = multiDayEvents.map((ev) => {
+    const idxs = planDateKeys(ev).map((k) => visKeys.indexOf(k)).filter((i) => i >= 0);
+    if (!idxs.length) return null;
+    return {
+      ev,
+      startIdx: Math.min(...idxs),
+      endIdx: Math.max(...idxs),
+      extendsLeft: ev.date < visKeys[0],
+      extendsRight: ev.end_date > visKeys[visKeys.length - 1],
+    };
+  }).filter(Boolean);
+
   const handleSlotClick = (e, dateKey) => {
     if (!onAddSlot) return;
     const rect = e.currentTarget.getBoundingClientRect();
@@ -113,6 +128,25 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
           ))}
         </div>
 
+        {multiBars.length > 0 && (
+          <div className="flex border-b border-[#EDEFF4] bg-[#F7F8FA]">
+            <div className="w-12 shrink-0" />
+            <div className="relative flex-1 px-0.5" style={{ height: ALL_DAY_PX }}>
+              {multiBars.map((b, i) => (
+                <button
+                  key={i}
+                  onClick={() => onEventSelect?.(b.ev)}
+                  title={b.ev.title}
+                  className={`absolute top-0.5 bottom-0.5 flex items-center truncate rounded px-1 py-0.5 text-left text-[10px] font-medium ${calMultiDayTone}`}
+                  style={{ left: `calc(${(b.startIdx / days.length) * 100}% + 2px)`, width: `calc(${((b.endIdx - b.startIdx + 1) / days.length) * 100}% - 4px)` }}
+                >
+                  {b.extendsLeft ? '‹ ' : ''}{b.ev.title}{b.extendsRight ? ' ›' : ''}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Body */}
         <div className="flex">
           {/* Hour gutter */}
@@ -132,7 +166,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
             const key = keyOf(day);
             const dayItems = byDate[key] || [];
             const timed = dayItems.filter((x) => toMin(x.start_time) !== null);
-            const allDay = dayItems.filter((x) => toMin(x.start_time) === null);
+            const allDay = dayItems.filter((x) => toMin(x.start_time) === null && !(x._kind === 'event' && multiDayIds.has(x.id)));
 
             const positioned = timed.map((x) => {
               const sMin = toMin(x.start_time);

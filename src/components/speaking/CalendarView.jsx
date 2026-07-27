@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { formatDate, calPlanTone, calEngagementTone, planDateKeys } from '@/lib/speaking';
+import { formatDate, calPlanTone, calEngagementTone, isMultiDayPlan, calMultiDayTone } from '@/lib/speaking';
 import DayPlanner from './DayPlanner';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -39,9 +39,9 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
   const renderMonth = () => {
     const year = cursor.getFullYear();
     const month = cursor.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const prevMonthDays = new Date(year, month, 0).getDate();
+    const firstOfMonth = new Date(year, month, 1);
+    const startOffset = firstOfMonth.getDay();
+    const gridStart = new Date(year, month, 1 - startOffset);
 
     const byDate = {};
     (items || []).forEach((x) => {
@@ -49,53 +49,99 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
       (byDate[x.deploy_date] = byDate[x.deploy_date] || []).push({ ...x, _kind: 'eng' });
     });
     (events || []).forEach((x) => {
-      if (!x.date) return;
-      planDateKeys(x).forEach((k) => {
-        (byDate[k] = byDate[k] || []).push({ ...x, _kind: 'event' });
-      });
+      if (!x.date || isMultiDayPlan(x)) return;
+      (byDate[x.date] = byDate[x.date] || []).push({ ...x, _kind: 'event' });
     });
 
+    const multi = (events || []).filter(isMultiDayPlan);
+
     const cells = [];
-    for (let i = firstDay - 1; i >= 0; i--) cells.push({ day: prevMonthDays - i, muted: true });
-    for (let d = 1; d <= daysInMonth; d++) {
-      const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-      cells.push({ day: d, muted: false, date: key, entries: byDate[key] || [] });
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(gridStart);
+      d.setDate(gridStart.getDate() + i);
+      const key = keyOf(d);
+      cells.push({ date: d, key, day: d.getDate(), muted: d.getMonth() !== month, entries: byDate[key] || [] });
     }
-    const trailing = 42 - cells.length;
-    for (let i = 1; i <= trailing; i++) cells.push({ day: i, muted: true });
+    const weeks = [];
+    for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
 
     const todayKey = keyOf(today);
 
+    const weekBars = (week) => {
+      const ws = week[0].date;
+      const we = week[6].date;
+      return multi.map((ev) => {
+        const s = new Date(ev.date + 'T00:00:00');
+        const e = new Date(ev.end_date + 'T00:00:00');
+        if (e < ws || s > we) return null;
+        const segStart = s < ws ? ws : s;
+        const segEnd = e > we ? we : e;
+        return {
+          ev,
+          colStart: Math.round((segStart - ws) / 86400000),
+          colEnd: Math.round((segEnd - ws) / 86400000),
+          extendsLeft: s < ws,
+          extendsRight: e > we,
+        };
+      }).filter(Boolean);
+    };
+
     return (
-      <div className="grid grid-cols-7 gap-1">
-        {DAYS.map((d) => (
-          <div key={d} className="pb-1 text-center font-mono text-[10px] uppercase tracking-wider text-[#5A6781]">{d}</div>
-        ))}
-        {cells.map((cell, i) => (
-          <div
-            key={i}
-            onClick={() => { if (!cell.muted && cell.date) { setMode('day'); setCursor(new Date(cell.date + 'T00:00:00')); } }}
-            className={`min-h-[72px] cursor-pointer rounded-md border p-1.5 ${cell.muted ? 'border-transparent bg-[#F0F2F6]/50 text-[#5A6781]' : cell.date === todayKey ? 'border-[#D9A404] bg-[#FBF0D0]/40' : 'border-[#D6DAE3] bg-white'}`}
-          >
-            <p className="text-xs font-medium">{cell.day}</p>
-            {cell.entries?.map((x) => {
-              const isEvent = x._kind === 'event';
-              const tone = isEvent ? calPlanTone : calEngagementTone;
-              return (
-                <button
-                  key={x.id}
-                  onClick={(e) => { e.stopPropagation(); isEvent ? onEventSelect?.(x) : onSelect?.(x); }}
-                  className="mt-1 block w-full truncate rounded px-1 py-0.5 text-left text-[11px] font-medium"
-                  title={x.title}
-                >
-                  <span className={`rounded px-1 ${tone}`}>
-                    {isEvent ? x.title : (x.place || 'Engagement')}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        ))}
+      <div className="space-y-1">
+        <div className="grid grid-cols-7 gap-1">
+          {DAYS.map((d) => (
+            <div key={d} className="pb-1 text-center font-mono text-[10px] uppercase tracking-wider text-[#5A6781]">{d}</div>
+          ))}
+        </div>
+        {weeks.map((week, wi) => {
+          const bars = weekBars(week);
+          return (
+            <div key={wi}>
+              {bars.length > 0 && (
+                <div className="mb-0.5 grid grid-cols-7 gap-1">
+                  {bars.map((b, i) => (
+                    <button
+                      key={i}
+                      style={{ gridColumn: `${b.colStart + 1} / span ${b.colEnd - b.colStart + 1}` }}
+                      onClick={() => onEventSelect?.(b.ev)}
+                      title={b.ev.title}
+                      className={`flex h-5 items-center truncate rounded px-1 text-[10px] font-medium ${calMultiDayTone}`}
+                    >
+                      {b.extendsLeft ? '‹ ' : ''}{b.ev.title}{b.extendsRight ? ' ›' : ''}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div className="grid grid-cols-7 gap-1">
+                {week.map((cell, ci) => (
+                  <div
+                    key={ci}
+                    onClick={() => { if (!cell.muted) { setMode('day'); setCursor(new Date(cell.key + 'T00:00:00')); } }}
+                    className={`min-h-[72px] cursor-pointer rounded-md border p-1.5 ${cell.muted ? 'border-transparent bg-[#F0F2F6]/50 text-[#5A6781]' : cell.key === todayKey ? 'border-[#D9A404] bg-[#FBF0D0]/40' : 'border-[#D6DAE3] bg-white'}`}
+                  >
+                    <p className="text-xs font-medium">{cell.day}</p>
+                    {cell.entries.map((x) => {
+                      const isEvent = x._kind === 'event';
+                      const tone = isEvent ? calPlanTone : calEngagementTone;
+                      return (
+                        <button
+                          key={x.id}
+                          onClick={(e) => { e.stopPropagation(); isEvent ? onEventSelect?.(x) : onSelect?.(x); }}
+                          className="mt-1 block w-full truncate rounded px-1 py-0.5 text-left text-[11px] font-medium"
+                          title={x.title}
+                        >
+                          <span className={`rounded px-1 ${tone}`}>
+                            {isEvent ? x.title : (x.place || 'Engagement')}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   };
