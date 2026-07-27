@@ -1,4 +1,5 @@
 import { formatTime, calEngagementTone, planCalTone, planMultiTone, planDateKeys, isMultiDayPlan } from '@/lib/speaking';
+import DailyReflection from './DailyReflection';
 
 const START_HOUR = 6;
 const END_HOUR = 23; // grid spans 6:00 → 23:00
@@ -107,9 +108,16 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
     );
   };
 
+  const dayKey = mode === 'day' ? keyOf(days[0]) : null;
+
   return (
     <div className="overflow-x-auto">
       <div className="min-w-[640px]">
+        {dayKey && (
+          <div className="mb-3">
+            <DailyReflection dateKey={dayKey} />
+          </div>
+        )}
         {/* Day headers */}
         <div className="flex border-b border-[#D6DAE3]">
           <div className="w-12 shrink-0" />

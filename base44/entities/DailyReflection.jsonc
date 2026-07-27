@@ -1,0 +1,56 @@
+{
+  "name": "DailyReflection",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "The day this reflection belongs to"
+    },
+    "goals": {
+      "type": "string",
+      "description": "Goals for the day"
+    },
+    "meditation": {
+      "type": "string",
+      "description": "Bible verse or Spirit of Prophecy statement to meditate on"
+    },
+    "meditation_reference": {
+      "type": "string",
+      "description": "Reference or source for the meditation text (e.g. John 3:16, Desire of Ages p. 123)"
+    }
+  },
+  "required": [
+    "date"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": null,
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
