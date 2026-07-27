@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { LayoutDashboard, ClipboardList, CalendarClock, CalendarDays, CheckCircle2 } from 'lucide-react';
 import AppHeader from '@/components/speaking/AppHeader';
@@ -20,6 +20,8 @@ const CAT_COLORS = { Personal: '#5B2DA0', Work: '#1B4A6B' };
 export default function Dashboard() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
+  const navigate = useNavigate();
+  const goHome = (action) => navigate(`/?action=${action}`);
   const { items: engagements, loading } = useEngagements();
   const { items: events } = useCalendarEvents();
 
@@ -67,7 +69,7 @@ export default function Dashboard() {
   return (
     <main className="min-h-screen bg-[#F7F8FA] text-[#1B2A4B]">
       <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
-        <AppHeader isAdmin={isAdmin} />
+        <AppHeader isAdmin={isAdmin} onAdd={() => goHome('new')} onInvite={() => goHome('invite')} onTimeline={() => goHome('timeline')} />
         <div className="flex items-center gap-2">
           <LayoutDashboard className="h-5 w-5 text-[#D9A404]" />
           <h1 className="font-display text-2xl font-semibold">Dashboard</h1>
