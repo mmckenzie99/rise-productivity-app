@@ -66,6 +66,14 @@
     "notes": {
       "type": "string",
       "description": "Optional details about the plan"
+    },
+    "series_id": {
+      "type": "string",
+      "description": "Links all occurrences of a recurring plan series for future-branch edits"
+    },
+    "recurrence_rule": {
+      "type": "string",
+      "description": "JSON-encoded recurrence config used to regenerate future occurrences when branching"
     }
   },
   "required": [

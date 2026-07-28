@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import RecurrenceEditor from './RecurrenceEditor';
 import { generateOccurrences } from '@/lib/recurrence';
 
@@ -37,13 +38,46 @@ const todayStr = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-// Recurrence generation lives in @/lib/recurrence (generateOccurrences).
+const genSeriesId = () => `ser_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
-export default function CalendarEventForm({ open, item, admins, currentUserId, onClose, onSave }) {
+const buildRule = (f) => JSON.stringify({
+  freq: f.recurrence_freq || 'none',
+  interval: Number(f.recurrence_interval) || 1,
+  weekdays: f.recurrence_weekdays || [],
+  monthly_mode: f.recurrence_monthly_mode || 'day_of_month',
+  end_mode: f.recurrence_end_mode || 'never',
+  end_count: Number(f.recurrence_end_count) || 1,
+  end_until: f.recurrence_end_until || '',
+});
+
+const prefillFromRule = (base, ruleStr) => {
+  if (!ruleStr) return base;
+  try {
+    const r = JSON.parse(ruleStr);
+    return {
+      ...base,
+      recurrence_freq: r.freq || 'none',
+      recurrence_interval: r.interval ?? 1,
+      recurrence_weekdays: r.weekdays || [],
+      recurrence_monthly_mode: r.monthly_mode || 'day_of_month',
+      recurrence_end_mode: r.end_mode || 'never',
+      recurrence_end_count: r.end_count ?? 5,
+      recurrence_end_until: r.end_until || '',
+    };
+  } catch {
+    return base;
+  }
+};
+
+export default function CalendarEventForm({ open, item, admins, currentUserId, onClose, onSave, onDelete, onDeleteFuture }) {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
+  const [editScope, setEditScope] = useState('single');
 
-  useEffect(() => setForm({ ...EMPTY, ...(item || {}) }), [item, open]);
+  useEffect(() => {
+    setForm(prefillFromRule({ ...EMPTY, ...(item || {}) }, item?.recurrence_rule));
+    setEditScope('single');
+  }, [item, open]);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -59,15 +93,36 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
   const submit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    const occurrences = generateOccurrences(form);
-    for (const occ of occurrences) {
-      await onSave(occ);
+    const rule = buildRule(form);
+    try {
+      if (!item?.id) {
+        const isRecurring = form.recurrence_freq && form.recurrence_freq !== 'none';
+        const seriesId = isRecurring ? genSeriesId() : '';
+        const occurrences = generateOccurrences(form);
+        for (const occ of occurrences) {
+          await onSave({ ...occ, series_id: seriesId, recurrence_rule: seriesId ? rule : '' });
+        }
+      } else if (item.series_id && editScope === 'future') {
+        const seriesId = item.series_id;
+        if (onDeleteFuture) await onDeleteFuture(seriesId, form.date);
+        const occurrences = generateOccurrences(form);
+        await onSave({ ...occurrences[0], id: item.id, series_id: seriesId, recurrence_rule: rule });
+        for (let i = 1; i < occurrences.length; i++) {
+          await onSave({ ...occurrences[i], series_id: seriesId, recurrence_rule: rule });
+        }
+      } else {
+        const occurrences = generateOccurrences(form);
+        await onSave(occurrences[0]);
+      }
+    } finally {
+      setSaving(false);
+      onClose();
     }
-    setSaving(false);
-    onClose();
   };
 
   const assignees = (admins || []).filter((u) => u.id !== currentUserId);
+  const isSeriesOccurrence = !!item?.series_id;
+  const showRecurrence = !item?.id || (isSeriesOccurrence && editScope === 'future');
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -79,6 +134,21 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
           <div className="flex items-center gap-2 rounded-md bg-[#EDE3F8] px-3 py-2 text-[#5B2DA0]">
             <span className="h-2 w-2 rounded-full bg-[#5B2DA0]" />
             <span className="text-xs font-semibold">Personal plan</span>
+          </div>
+        )}
+        {isSeriesOccurrence && (
+          <div className="space-y-1.5 rounded-md border border-[#D6DAE3] bg-[#F7F8FA] p-3">
+            <Label>Apply changes to</Label>
+            <RadioGroup value={editScope} onValueChange={setEditScope} className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="single" id="es-single" />
+                <Label htmlFor="es-single" className="text-sm font-normal">Only this instance</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="future" id="es-future" />
+                <Label htmlFor="es-future" className="text-sm font-normal">This and all future instances</Label>
+              </div>
+            </RadioGroup>
           </div>
         )}
         <form onSubmit={submit} className="space-y-4">
@@ -168,9 +238,7 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
             </div>
           )}
 
-          {!item?.id && (
-            <RecurrenceEditor form={form} set={set} />
-          )}
+          {showRecurrence && <RecurrenceEditor form={form} set={set} />}
 
           {form.category === 'Work' && (
             <div className="space-y-1.5">
@@ -211,6 +279,20 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
             />
           </div>
           <DialogFooter>
+            {item?.id && onDelete && (
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={async () => {
+                  if (window.confirm('Delete this plan?')) {
+                    setSaving(true);
+                    try { await onDelete(item.id); } finally { setSaving(false); onClose(); }
+                  }
+                }}
+              >
+                Delete
+              </Button>
+            )}
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
