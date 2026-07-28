@@ -100,8 +100,8 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
         key={x.id}
         onClick={onClick}
         title={isEvent ? `${x.title} — ${formatTime(x.start_time)}` : `${x.title} — ${formatTime(x.start_time)}`}
-        className={`absolute overflow-hidden rounded px-1 py-0.5 text-left text-[10px] font-medium shadow-sm ${tone}`}
-        style={{ top: x._top, height: x._height, left: `calc(${(x._col / x._totalCols) * 100}% + 2px)`, width: `calc(${(1 / x._totalCols) * 100}% - 4px)` }}
+        className={`absolute left-0.5 right-0.5 overflow-hidden rounded px-1 py-0.5 text-left text-[10px] font-medium shadow-sm ${tone}`}
+        style={{ top: x._top + x._col * 16, height: x._height, zIndex: x._col }}
       >
         <div className="truncate font-semibold">{label}</div>
         <div className="opacity-70">{sub}</div>
