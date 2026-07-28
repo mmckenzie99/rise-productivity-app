@@ -1,4 +1,5 @@
 import { formatTime, calEngagementTone, planCalTone, planMultiTone, planDateKeys, isMultiDayPlan } from '@/lib/speaking';
+import { layoutColumns } from '@/lib/eventLayout';
 import DailyReflection from './DailyReflection';
 
 const START_HOUR = 6;
@@ -99,8 +100,8 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
         key={x.id}
         onClick={onClick}
         title={isEvent ? `${x.title} — ${formatTime(x.start_time)}` : `${x.title} — ${formatTime(x.start_time)}`}
-        className={`absolute left-0.5 right-0.5 overflow-hidden rounded px-1 py-0.5 text-left text-[10px] font-medium shadow-sm ${tone}`}
-        style={{ top: x._top, height: x._height }}
+        className={`absolute overflow-hidden rounded px-1 py-0.5 text-left text-[10px] font-medium shadow-sm ${tone}`}
+        style={{ top: x._top, height: x._height, left: `calc(${(x._col / x._totalCols) * 100}% + 2px)`, width: `calc(${(1 / x._totalCols) * 100}% - 4px)` }}
       >
         <div className="truncate font-semibold">{label}</div>
         <div className="opacity-70">{sub}</div>
@@ -184,7 +185,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
               const top = (clampS - START_HOUR * 60) * PX_PER_MIN;
               const maxBottom = ROWS.length * HOUR_PX;
               const height = Math.max(22, Math.min((eMin - clampS) * PX_PER_MIN, maxBottom - top));
-              return { ...x, _top: top, _height: height };
+              return { ...x, _top: top, _height: height, _sMin: sMin, _eMin: eMin };
             });
 
             return (
@@ -219,7 +220,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                   {ROWS.map((h) => (
                     <div key={h} className="border-b border-[#EDEFF4]" style={{ height: HOUR_PX }} />
                   ))}
-                  {positioned.map(renderBlock)}
+                  {layoutColumns(positioned).map(renderBlock)}
                 </div>
               </div>
             );
