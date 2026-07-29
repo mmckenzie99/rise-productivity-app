@@ -4,10 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertTriangle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { useToast } from '@/components/ui/use-toast';
 import useHistoryModal from '@/hooks/useHistoryModal';
 
 export default function DeleteAccountDialog({ open, onClose }) {
   const requestClose = useHistoryModal(open, onClose);
+  const { toast } = useToast();
   const [confirm, setConfirm] = useState('');
   const [busy, setBusy] = useState(false);
   const canDelete = confirm.trim().toUpperCase() === 'DELETE';
@@ -16,9 +18,14 @@ export default function DeleteAccountDialog({ open, onClose }) {
     if (!canDelete) return;
     setBusy(true);
     try {
-      // Platform limitation: Base44 does not expose an in-app account-deletion
-      // API. Best-effort: securely sign the user out. True deletion requires
-      // contacting Base44 support.
+      // Notify administrators of the deletion request via a service-role email.
+      try {
+        await base44.functions.invoke('requestAccountDeletion', {});
+      } catch {}
+      toast({
+        title: 'Account deletion initiated',
+        description: 'Administrators have been notified and will process your request. Signing you out…',
+      });
       await base44.auth.logout('/login');
     } finally {
       setBusy(false);

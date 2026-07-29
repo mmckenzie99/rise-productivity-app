@@ -1,0 +1,4 @@
+{
+  "name": "requestAccountDeletion",
+  "entry": "entry.ts"
+}

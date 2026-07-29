@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Target, BookOpen, StickyNote, Send } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 import { Button } from '@/components/ui/button';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import ResponsiveSelect from './ResponsiveSelect';
 import { formatDate } from '@/lib/speaking';
 
 export default function DailyReflection({ dateKey, engagements = [] }) {
@@ -154,18 +154,13 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
             placeholder="Add a note — bold, italics, underline, highlight, or link…"
           />
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <Select value={linkedId} onValueChange={onLinkChange}>
-              <SelectTrigger className="h-8 w-full min-w-[180px] border-[#D6DAE3] text-xs">
-                <SelectValue placeholder="Link an engagement…" />
-              </SelectTrigger>
-              <SelectContent>
-                {linkable.map((e) => (
-                  <SelectItem key={e.id} value={e.id}>
-                    {e.place || 'No place'} — {e.title || e.speaker_name || 'Engagement'}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <ResponsiveSelect
+              value={linkedId}
+              onValueChange={onLinkChange}
+              options={linkable.map((e) => ({ value: e.id, label: `${e.place || 'No place'} — ${e.title || e.speaker_name || 'Engagement'}` }))}
+              placeholder="Link an engagement…"
+              triggerClassName="h-8 w-full min-w-[180px] border-[#D6DAE3] text-xs"
+            />
             <Button
               size="sm"
               variant="outline"

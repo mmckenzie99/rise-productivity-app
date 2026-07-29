@@ -7,6 +7,7 @@ import StatCard from '@/components/speaking/StatCard';
 import useEngagements from '@/hooks/useEngagements';
 import useCalendarEvents from '@/hooks/useCalendarEvents';
 import PlanListSection from '@/components/speaking/PlanListSection';
+import PullToRefresh from '@/components/speaking/PullToRefresh';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
 import { useAuth } from '@/lib/AuthContext';
 
@@ -24,8 +25,8 @@ export default function Dashboard() {
   const isAdmin = user?.role === 'admin';
   const navigate = useNavigate();
   const goHome = (action) => navigate(`/?action=${action}`);
-  const { items: engagements, loading } = useEngagements();
-  const { items: events } = useCalendarEvents();
+  const { items: engagements, loading, load: loadEngagements } = useEngagements();
+  const { items: events, load: loadCalEvents } = useCalendarEvents();
 
   const today = todayStr();
 
@@ -78,8 +79,9 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen bg-[#F7F8FA] text-[#1B2A4B] pt-safe pb-safe">
-      <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
-        <AppHeader isAdmin={isAdmin} onAdd={() => goHome('new')} onInvite={() => goHome('invite')} onTimeline={() => goHome('timeline')} />
+      <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); }}>
+        <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
+          <AppHeader isAdmin={isAdmin} onAdd={() => goHome('new')} onInvite={() => goHome('invite')} onTimeline={() => goHome('timeline')} />
         <div className="flex items-center gap-2">
           <LayoutDashboard className="h-5 w-5 text-[#D9A404]" />
           <h1 className="font-display text-2xl font-semibold">Dashboard</h1>
@@ -163,7 +165,8 @@ export default function Dashboard() {
         <div className="flex justify-center">
           <Link to="/" className="text-sm font-medium text-[#D9A404] hover:underline">← Back to engagements</Link>
         </div>
-      </div>
+        </div>
+      </PullToRefresh>
       <div className="h-16 lg:hidden" />
       <BottomTabBar />
     </main>
