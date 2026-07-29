@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { LayoutDashboard, ClipboardList, CalendarClock, CalendarDays, CheckCircle2 } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw } from 'lucide-react';
 import AppHeader from '@/components/speaking/AppHeader';
 import StatCard from '@/components/speaking/StatCard';
 import useEngagements from '@/hooks/useEngagements';
 import useCalendarEvents from '@/hooks/useCalendarEvents';
+import PlanListSection from '@/components/speaking/PlanListSection';
 import { useAuth } from '@/lib/AuthContext';
 
 const todayStr = () => {
@@ -58,6 +59,14 @@ export default function Dashboard() {
     return Object.entries(counts).map(([name, value]) => ({ name, value }));
   }, [stats.upcomingPlans]);
 
+  const planSections = useMemo(() => {
+    const upcoming = events.filter((x) => x.date && x.date >= today && !x.completed);
+    const completed = events.filter((x) => x.completed);
+    const edited = events.filter((x) => x.was_edited);
+    const rescheduled = events.filter((x) => x.was_rescheduled);
+    return { upcoming, completed, edited, rescheduled };
+  }, [events, today]);
+
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#F7F8FA]">
@@ -80,6 +89,13 @@ export default function Dashboard() {
           <StatCard label="Upcoming Plans" value={stats.upcomingPlans.length} icon={CalendarClock} tone="navy" />
           <StatCard label="Plans This Month" value={stats.plansThisMonth.length} icon={CalendarDays} tone="green" />
           <StatCard label="Completed Engagements" value={stats.completedEng.length} icon={CheckCircle2} tone="slate" />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <PlanListSection title="Upcoming Plans" icon={CalendarClock} tone="bg-[#FBF0D0] text-[#D9A404]" items={planSections.upcoming} emptyText="No upcoming plans" />
+          <PlanListSection title="Completed Plans" icon={CheckCircle2} tone="bg-[#E6F4EA] text-[#2E7D32]" items={planSections.completed} emptyText="No completed plans" />
+          <PlanListSection title="Edited Plans" icon={Edit} tone="bg-[#E7EEF6] text-[#1B2A4B]" items={planSections.edited} emptyText="No edited plans" />
+          <PlanListSection title="Rescheduled Plans" icon={RefreshCw} tone="bg-[#EDE3F8] text-[#5B2DA0]" items={planSections.rescheduled} emptyText="No rescheduled plans" />
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">

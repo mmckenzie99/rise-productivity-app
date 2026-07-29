@@ -74,6 +74,16 @@
     "recurrence_rule": {
       "type": "string",
       "description": "JSON-encoded recurrence config used to regenerate future occurrences when branching"
+    },
+    "was_edited": {
+      "type": "boolean",
+      "default": false,
+      "description": "True once an existing plan has been edited after creation"
+    },
+    "was_rescheduled": {
+      "type": "boolean",
+      "default": false,
+      "description": "True once an existing plan's date has been changed after creation"
     }
   },
   "required": [
