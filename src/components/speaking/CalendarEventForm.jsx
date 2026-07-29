@@ -111,8 +111,8 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
           await onSave({ ...occurrences[i], series_id: seriesId, recurrence_rule: rule });
         }
       } else {
-        const occurrences = generateOccurrences(form);
-        await onSave(occurrences[0]);
+        const { recurrence_freq, recurrence_interval, recurrence_weekdays, recurrence_monthly_mode, recurrence_end_mode, recurrence_end_count, recurrence_end_until, ...rest } = form;
+        await onSave({ ...rest, id: item.id });
       }
     } finally {
       setSaving(false);
