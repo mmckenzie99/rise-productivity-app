@@ -18,7 +18,7 @@ export default function AppHeader({ onAdd, onInvite, onTimeline, isAdmin, newOpe
       <Brand />
       <div className="flex flex-wrap items-center gap-2">
         {/* Desktop nav buttons */}
-        <div className="hidden items-center gap-2 sm:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           <Link to="/dashboard"><Button variant="outline" className={pathname === '/dashboard' ? ACTIVE : IDLE}><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Button></Link>
           {isAdmin && <Button variant="outline" onClick={onAdd} className={newOpen ? ACTIVE : IDLE}>New engagement</Button>}
           <Link to="/trips"><Button variant="outline" className={pathname === '/trips' ? ACTIVE : IDLE}><Plane className="mr-2 h-4 w-4" />Engagement Trips</Button></Link>
@@ -27,7 +27,7 @@ export default function AppHeader({ onAdd, onInvite, onTimeline, isAdmin, newOpe
         </div>
 
         {/* Mobile menu dropdown */}
-        <div className="sm:hidden">
+        <div className="lg:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className={IDLE}><Menu className="mr-2 h-4 w-4" />Menu</Button>
