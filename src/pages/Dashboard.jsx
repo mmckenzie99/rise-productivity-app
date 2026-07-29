@@ -162,7 +162,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="flex justify-center">
+        <div className="hidden justify-center lg:flex">
           <Link to="/" className="text-sm font-medium text-[#D9A404] hover:underline">← Back to engagements</Link>
         </div>
         </div>
