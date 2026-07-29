@@ -8,13 +8,15 @@ import useEngagements from '@/hooks/useEngagements';
 import { formatCurrency, getTripStatus, formatPlaces } from '@/lib/trips';
 import TripForm from '@/components/speaking/TripForm';
 import TripDetail from '@/components/speaking/TripDetail';
+import BottomTabBar from '@/components/speaking/BottomTabBar';
+import PullToRefresh from '@/components/speaking/PullToRefresh';
 
 const FILTERS = ['all', 'upcoming', 'completed'];
 
 export default function Trips() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
-  const { items: trips, loading, save, remove } = useTrips();
+  const { items: trips, loading, save, remove, load } = useTrips();
   const { items: engagements } = useEngagements();
   const [filter, setFilter] = useState('all');
   const [formOpen, setFormOpen] = useState(false);
@@ -41,8 +43,9 @@ export default function Trips() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F7F8FA] text-[#1B2A4B]">
+    <main className="min-h-screen bg-[#F7F8FA] text-[#1B2A4B] pt-safe">
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
+        <PullToRefresh onRefresh={load}>
         <div className="flex items-center justify-between">
           <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-[#5A6781] hover:text-[#1B2A4B]">
             <ArrowLeft className="h-4 w-4" /> Back to Home
@@ -114,10 +117,13 @@ export default function Trips() {
             </p>
           </div>
         )}
+        </PullToRefresh>
       </div>
 
       <TripForm open={!!formOpen} item={formOpen === true ? null : formOpen} engagements={engagements} onClose={() => setFormOpen(false)} onSave={async t => { await save(t); setFormOpen(false); }} />
       <TripDetail trip={selected} onClose={() => setSelected(null)} onEdit={() => edit(selected)} onDelete={() => del(selected)} isAdmin={isAdmin} />
+      <div className="h-16 lg:hidden" />
+      <BottomTabBar />
     </main>
   );
 }

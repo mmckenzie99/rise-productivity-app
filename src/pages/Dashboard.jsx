@@ -7,6 +7,7 @@ import StatCard from '@/components/speaking/StatCard';
 import useEngagements from '@/hooks/useEngagements';
 import useCalendarEvents from '@/hooks/useCalendarEvents';
 import PlanListSection from '@/components/speaking/PlanListSection';
+import BottomTabBar from '@/components/speaking/BottomTabBar';
 import { useAuth } from '@/lib/AuthContext';
 
 const todayStr = () => {
@@ -163,6 +164,8 @@ export default function Dashboard() {
           <Link to="/" className="text-sm font-medium text-[#D9A404] hover:underline">← Back to engagements</Link>
         </div>
       </div>
+      <div className="h-16 lg:hidden" />
+      <BottomTabBar />
     </main>
   );
 }

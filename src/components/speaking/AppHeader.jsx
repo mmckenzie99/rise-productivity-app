@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import Brand from './Brand';
 import NotificationBell from './NotificationBell';
+import ProfileMenu from './ProfileMenu';
 
 const ACTIVE = 'bg-[#D9A404] text-white border-[#D9A404] hover:bg-[#B89003] hover:text-white';
 const IDLE = 'border-[#D6DAE3] bg-white';
@@ -14,7 +15,7 @@ export default function AppHeader({ onAdd, onInvite, onTimeline, isAdmin, newOpe
   const { pathname } = useLocation();
   const navigate = useNavigate();
   return (
-    <header className="flex flex-col gap-5 border-b border-[#D6DAE3] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <header className="flex flex-col gap-5 border-b border-[#D6DAE3] pb-6 pt-safe sm:flex-row sm:items-center sm:justify-between">
       <Brand />
       <div className="flex flex-wrap items-center gap-2">
         {/* Desktop nav buttons */}
@@ -56,6 +57,7 @@ export default function AppHeader({ onAdd, onInvite, onTimeline, isAdmin, newOpe
           </DropdownMenu>
         </div>
 
+        <ProfileMenu />
         <NotificationBell />
         <Button size="icon" variant="ghost" aria-label="Sign out" onClick={() => base44.auth.logout('/login')}><LogOut className="h-4 w-4" /></Button>
       </div>
