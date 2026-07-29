@@ -15,7 +15,7 @@ export default function AppHeader({ onAdd, onInvite, onTimeline, isAdmin, newOpe
   const { pathname } = useLocation();
   const navigate = useNavigate();
   return (
-    <header className="flex flex-col gap-5 border-b border-[#D6DAE3] pb-6 pt-safe sm:flex-row sm:items-center sm:justify-between">
+    <header className="flex flex-col gap-5 border-b border-[#D6DAE3] pb-6 sm:flex-row sm:items-center sm:justify-between">
       <Brand />
       <div className="flex flex-wrap items-center gap-2">
         {/* Desktop nav buttons */}

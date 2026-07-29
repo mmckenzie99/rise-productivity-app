@@ -47,10 +47,10 @@ const AuthenticatedApp = () => {
     <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.18 }}
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '-30%' }}
+        transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
       >
       <Routes location={location}>
       <Route path="/login" element={<Login />} />

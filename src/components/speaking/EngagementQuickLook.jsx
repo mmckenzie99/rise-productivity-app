@@ -1,13 +1,15 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { CalendarDays, MapPin, Clock3, Tags, AlignLeft } from 'lucide-react';
 import { formatDate, formatTime, TIMEZONES, asArray } from '@/lib/speaking';
+import useHistoryModal from '@/hooks/useHistoryModal';
 
 export default function EngagementQuickLook({ item, onClose }) {
+  const requestClose = useHistoryModal(!!item, onClose);
   if (!item) return null;
   const dateForDisplay = item.speaking_date || item.deploy_date;
   const isRange = item.end_date && item.end_date !== dateForDisplay;
   return (
-    <Dialog open={!!item} onOpenChange={v => !v && onClose()}>
+    <Dialog open={!!item} onOpenChange={v => !v && requestClose()}>
       <DialogContent className="max-h-[92vh] overflow-y-auto bg-white sm:max-w-xl">
         <DialogHeader className="text-center items-center">
           <DialogTitle className="font-display text-2xl">{item.place || 'Place not set'}</DialogTitle>

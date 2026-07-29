@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import useHistoryModal from '@/hooks/useHistoryModal';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ResponsiveSelect from './ResponsiveSelect';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import RecurrenceEditor from './RecurrenceEditor';
 import { generateOccurrences } from '@/lib/recurrence';
@@ -72,6 +73,7 @@ const prefillFromRule = (base, ruleStr) => {
 export default function CalendarEventForm({ open, item, admins, currentUserId, onClose, onSave, onDelete, onDeleteFuture }) {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
+  const requestClose = useHistoryModal(open, onClose);
   const [editScope, setEditScope] = useState('single');
 
   useEffect(() => {
@@ -116,7 +118,7 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
       }
     } finally {
       setSaving(false);
-      onClose();
+      requestClose();
     }
   };
 
@@ -125,7 +127,7 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
   const showRecurrence = !item?.id || (isSeriesOccurrence && editScope === 'future');
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => !v && requestClose()}>
       <DialogContent className="max-h-[90vh] w-[calc(100vw-1.5rem)] overflow-y-auto bg-white sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-display text-xl">{item?.id ? 'Edit' : 'New'} plan</DialogTitle>
@@ -175,27 +177,11 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
             </div>
             <div className="space-y-1.5">
               <Label>Category</Label>
-              <Select value={form.category} onValueChange={(v) => set('category', v)}>
-                <SelectTrigger className="border-[#D6DAE3]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Personal">Personal</SelectItem>
-                  <SelectItem value="Work">Work</SelectItem>
-                </SelectContent>
-              </Select>
+              <ResponsiveSelect value={form.category} onValueChange={(v) => set('category', v)} options={[{ value: 'Personal', label: 'Personal' }, { value: 'Work', label: 'Work' }]} triggerClassName="border-[#D6DAE3]" />
             </div>
             <div className="space-y-1.5">
               <Label>Location</Label>
-              <Select value={form.location_type} onValueChange={(v) => set('location_type', v)}>
-                <SelectTrigger className="border-[#D6DAE3]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="In-person">In-person</SelectItem>
-                  <SelectItem value="Online">Online</SelectItem>
-                </SelectContent>
-              </Select>
+              <ResponsiveSelect value={form.location_type} onValueChange={(v) => set('location_type', v)} options={[{ value: 'In-person', label: 'In-person' }, { value: 'Online', label: 'Online' }]} triggerClassName="border-[#D6DAE3]" />
             </div>
           </div>
           <div className="flex items-center justify-between rounded-md border border-[#D6DAE3] bg-[#F7F8FA] px-3 py-2">
@@ -243,19 +229,12 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
           {form.category === 'Work' && (
             <div className="space-y-1.5">
               <Label>Assign to (administrator)</Label>
-              <Select value={form.assignee_id || 'none'} onValueChange={onAssigneeChange}>
-                <SelectTrigger className="border-[#D6DAE3]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No one</SelectItem>
-                  {assignees.map((u) => (
-                    <SelectItem key={u.id} value={u.id}>
-                      {u.full_name || u.email}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <ResponsiveSelect
+                value={form.assignee_id || 'none'}
+                onValueChange={onAssigneeChange}
+                options={[{ value: 'none', label: 'No one' }, ...assignees.map((u) => ({ value: u.id, label: u.full_name || u.email }))]}
+                triggerClassName="border-[#D6DAE3]"
+              />
             </div>
           )}
 
@@ -284,14 +263,14 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
                 onClick={async () => {
                   if (window.confirm('Delete this plan?')) {
                     setSaving(true);
-                    try { await onDelete(item.id); } finally { setSaving(false); onClose(); }
+                    try { await onDelete(item.id); } finally { setSaving(false); requestClose(); }
                   }
                 }}
               >
                 Delete
               </Button>
             )}
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={requestClose}>
               Cancel
             </Button>
             <Button disabled={saving} className="bg-[#D9A404] hover:bg-[#B89003]">

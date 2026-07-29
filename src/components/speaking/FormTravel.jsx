@@ -1,7 +1,7 @@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ResponsiveSelect from './ResponsiveSelect';
 import { Plus, Trash2 } from 'lucide-react';
 import { TRAVEL_TYPES, defaultTravelEntry, calcTravelTotal, formatCurrency } from '@/lib/trips';
 import FileUploadButton from './FileUploadButton';
@@ -39,12 +39,7 @@ export default function FormTravel({ form, set }) {
 
           <div>
             <Label className="text-xs text-[#5A6781]">Type of Travel</Label>
-            <Select value={entry.type || ''} onValueChange={(v) => updateEntry(i, 'type', v)}>
-              <SelectTrigger className="mt-1 border-[#D6DAE3] bg-white"><SelectValue placeholder="Select travel type" /></SelectTrigger>
-              <SelectContent>
-                {TRAVEL_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <ResponsiveSelect value={entry.type || ''} onValueChange={(v) => updateEntry(i, 'type', v)} options={TRAVEL_TYPES.map((t) => ({ value: t, label: t }))} placeholder="Select travel type" triggerClassName="mt-1 border-[#D6DAE3] bg-white" />
           </div>
 
           <div>

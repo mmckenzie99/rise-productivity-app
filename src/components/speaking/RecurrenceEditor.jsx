@@ -1,6 +1,6 @@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ResponsiveSelect from './ResponsiveSelect';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { recurrenceSummary } from '@/lib/recurrence';
 
@@ -24,17 +24,7 @@ export default function RecurrenceEditor({ form, set }) {
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label>Repeat</Label>
-          <Select value={freq} onValueChange={(v) => set('recurrence_freq', v)}>
-            <SelectTrigger className="border-[#D6DAE3]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Does not repeat</SelectItem>
-              <SelectItem value="daily">Daily</SelectItem>
-              <SelectItem value="weekly">Weekly</SelectItem>
-              <SelectItem value="monthly">Monthly</SelectItem>
-            </SelectContent>
-          </Select>
+          <ResponsiveSelect value={freq} onValueChange={(v) => set('recurrence_freq', v)} options={[{ value: 'none', label: 'Does not repeat' }, { value: 'daily', label: 'Daily' }, { value: 'weekly', label: 'Weekly' }, { value: 'monthly', label: 'Monthly' }]} triggerClassName="border-[#D6DAE3]" />
         </div>
         {freq !== 'none' && (
           <div className="space-y-1.5">

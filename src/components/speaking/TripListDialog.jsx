@@ -2,10 +2,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Plus, Plane, Building2, CalendarDays } from 'lucide-react';
 import { formatCurrency, formatPlaces } from '@/lib/trips';
+import useHistoryModal from '@/hooks/useHistoryModal';
 
 export default function TripListDialog({ open, trips, loading, isAdmin, onClose, onAdd, onSelect }) {
+  const requestClose = useHistoryModal(open, onClose);
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => !v && requestClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-xl">Trip Details</DialogTitle>

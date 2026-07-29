@@ -22,17 +22,28 @@ export default function useComments(engagementId) {
 
   const add = async (body, author_name) => {
     if (!body?.trim() || !engagementId) return;
-    await base44.entities.Comment.create({
-      engagement_id: engagementId,
-      body: body.trim(),
-      author_name: author_name || 'Anonymous'
-    });
-    await load();
+    const payload = { engagement_id: engagementId, body: body.trim(), author_name: author_name || 'Anonymous' };
+    const temp = { id: `temp_${Date.now()}`, ...payload, created_date: new Date().toISOString() };
+    setItems((prev) => [...prev, temp]);
+    try {
+      await base44.entities.Comment.create(payload);
+      await load();
+    } catch (e) {
+      setItems((prev) => prev.filter((c) => c.id !== temp.id));
+      throw e;
+    }
   };
 
   const remove = async (id) => {
-    await base44.entities.Comment.delete(id);
-    await load();
+    const snapshot = items;
+    setItems((prev) => prev.filter((c) => c.id !== id));
+    try {
+      await base44.entities.Comment.delete(id);
+      await load();
+    } catch (e) {
+      setItems(snapshot);
+      throw e;
+    }
   };
 
   return { items, loading, add, remove };

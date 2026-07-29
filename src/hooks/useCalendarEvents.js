@@ -19,16 +19,30 @@ export default function useCalendarEvents() {
 
   const save = async (item) => {
     const { id, created_date, updated_date, created_by_id, ...fields } = item;
-    const result = id
-      ? await base44.entities.CalendarEvent.update(id, fields)
-      : await base44.entities.CalendarEvent.create(fields);
-    await load();
-    return result;
+    const tempId = id || `temp_${Date.now()}`;
+    const optimistic = { ...item, id: tempId };
+    setItems((prev) => (id ? prev.map((x) => (x.id === id ? { ...x, ...fields } : x)) : [...prev, optimistic]));
+    try {
+      const result = id
+        ? await base44.entities.CalendarEvent.update(id, fields)
+        : await base44.entities.CalendarEvent.create(fields);
+      await load();
+      return result;
+    } catch (e) {
+      await load();
+      throw e;
+    }
   };
 
   const remove = async (id) => {
-    await base44.entities.CalendarEvent.delete(id);
-    await load();
+    setItems((prev) => prev.filter((x) => x.id !== id));
+    try {
+      await base44.entities.CalendarEvent.delete(id);
+      await load();
+    } catch (e) {
+      await load();
+      throw e;
+    }
   };
 
   return { items, loading, save, remove, load };

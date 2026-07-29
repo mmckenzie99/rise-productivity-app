@@ -3,14 +3,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ResponsiveSelect from './ResponsiveSelect';
 import { DEPARTMENTS, defaultTrip, calcPerDiemTotal, calcTotalCost, calcTravelTotal, calcLodgingTotal, formatCurrency } from '@/lib/trips';
 import FormTravel from './FormTravel';
 import FormPerDiem from './FormPerDiem';
 import FormLodging from './FormLodging';
 import MultiTypeSelect from './MultiTypeSelect';
+import useHistoryModal from '@/hooks/useHistoryModal';
 
 export default function TripForm({ open, item, engagements, onClose, onSave }) {
+  const requestClose = useHistoryModal(open, onClose);
   const [form, setForm] = useState(defaultTrip);
   const [saving, setSaving] = useState(false);
 
@@ -43,11 +45,11 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
       total_cost: totalCost
     });
     setSaving(false);
-    onClose();
+    requestClose();
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => !v && requestClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display">{item ? 'Edit Trip Details' : 'New Trip Details'}</DialogTitle>
@@ -60,12 +62,7 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
           {/* Department */}
           <div>
             <Label className="text-xs text-[#5A6781]">Department</Label>
-            <Select value={form.department || ''} onValueChange={(v) => set('department', v)}>
-              <SelectTrigger className="mt-1 border-[#D6DAE3] bg-white"><SelectValue placeholder="Select department" /></SelectTrigger>
-              <SelectContent>
-                {DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <ResponsiveSelect value={form.department || ''} onValueChange={(v) => set('department', v)} options={DEPARTMENTS.map((d) => ({ value: d, label: d }))} placeholder="Select department" triggerClassName="mt-1 border-[#D6DAE3] bg-white" />
           </div>
 
           {/* Travel Schedule */}
@@ -103,7 +100,7 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} className="border-[#D6DAE3] bg-white">Cancel</Button>
+          <Button variant="outline" onClick={requestClose} className="border-[#D6DAE3] bg-white">Cancel</Button>
           <Button onClick={handleSubmit} disabled={saving || !form.place.length || !form.department} className="bg-[#D9A404] hover:bg-[#B89003]">
             {saving ? 'Saving…' : 'Save Trip'}
           </Button>

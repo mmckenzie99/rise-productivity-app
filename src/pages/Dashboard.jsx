@@ -70,14 +70,14 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#F7F8FA]">
+      <main className="flex min-h-screen items-center justify-center bg-[#F7F8FA] pt-safe pb-safe">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-800" />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F8FA] text-[#1B2A4B]">
+    <main className="min-h-screen bg-[#F7F8FA] text-[#1B2A4B] pt-safe pb-safe">
       <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
         <AppHeader isAdmin={isAdmin} onAdd={() => goHome('new')} onInvite={() => goHome('invite')} onTimeline={() => goHome('timeline')} />
         <div className="flex items-center gap-2">

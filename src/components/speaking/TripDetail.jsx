@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Pencil, Trash2, FileText, Plane, Car, CalendarDays, Building2, DollarSign, Download, MapPin } from 'lucide-react';
 import { formatCurrency, calcTravelByType, calcLodgingTotal, exportTripCSV, formatPlaces } from '@/lib/trips';
 import { formatTime } from '@/lib/speaking';
+import useHistoryModal from '@/hooks/useHistoryModal';
 
 function Row({ icon: Icon, label, children }) {
   return (
@@ -15,12 +16,13 @@ function Row({ icon: Icon, label, children }) {
 }
 
 export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin }) {
+  const requestClose = useHistoryModal(!!trip, onClose);
   if (!trip) return null;
   const travelByType = calcTravelByType(trip.travel_entries);
   const lodgingTotal = calcLodgingTotal(trip.lodging_entries);
 
   return (
-    <Dialog open={!!trip} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={!!trip} onOpenChange={(v) => !v && requestClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-xl">Trip Details</DialogTitle>

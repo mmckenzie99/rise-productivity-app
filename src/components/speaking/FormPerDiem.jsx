@@ -1,7 +1,7 @@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ResponsiveSelect from './ResponsiveSelect';
 import { Plus, Trash2 } from 'lucide-react';
 import { PER_DIEM_TYPES, PER_DIEM_RATES, defaultPerDiemDay, calcPerDiemTotal, formatCurrency } from '@/lib/trips';
 import FileUploadButton from './FileUploadButton';
@@ -37,12 +37,7 @@ export default function FormPerDiem({ form, set }) {
           </div>
           <div className="w-[130px]">
             <Label className="text-xs text-[#5A6781]">Type</Label>
-            <Select value={day.type} onValueChange={(v) => updateDay(i, 'type', v)}>
-              <SelectTrigger className="mt-1 border-[#D6DAE3] bg-white"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {PER_DIEM_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <ResponsiveSelect value={day.type} onValueChange={(v) => updateDay(i, 'type', v)} options={PER_DIEM_TYPES.map((t) => ({ value: t, label: t }))} triggerClassName="mt-1 border-[#D6DAE3] bg-white" />
           </div>
           <div className="w-[90px]">
             <Label className="text-xs text-[#5A6781]">Amount</Label>

@@ -2,17 +2,14 @@ import { useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ResponsiveSelect from './ResponsiveSelect';
 import { PROGRESS, STATUSES, TYPES, TIMEZONES, asArray, detectTimezone } from '@/lib/speaking';
 import MultiTypeSelect from './MultiTypeSelect';
 
 const Picker = ({ label, value, items, onChange }) => (
   <div>
     <Label>{label}</Label>
-    <Select value={value || ''} onValueChange={onChange}>
-      <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
-      <SelectContent>{items.map(x => <SelectItem key={x} value={x}>{x}</SelectItem>)}</SelectContent>
-    </Select>
+    <ResponsiveSelect value={value || ''} onValueChange={onChange} options={items.map(x => ({ value: x, label: x }))} placeholder="Select…" />
   </div>
 );
 
@@ -42,10 +39,7 @@ export default function FormSchedule({ form, set }) {
         </div>
         <div>
           <Label>Time zone</Label>
-          <Select value={tz} onValueChange={v => set('timezone', v)}>
-            <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
-            <SelectContent>{TIMEZONES.map(z => <SelectItem key={z.value} value={z.value}>{z.label}</SelectItem>)}</SelectContent>
-          </Select>
+          <ResponsiveSelect value={tz} onValueChange={v => set('timezone', v)} options={TIMEZONES.map(z => ({ value: z.value, label: z.label }))} placeholder="Select…" />
         </div>
       </div>
 

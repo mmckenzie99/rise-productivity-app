@@ -43,7 +43,7 @@ export default function Trips() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F7F8FA] text-[#1B2A4B] pt-safe">
+    <main className="min-h-screen bg-[#F7F8FA] text-[#1B2A4B] pt-safe pb-safe">
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={load}>
         <div className="flex items-center justify-between">
