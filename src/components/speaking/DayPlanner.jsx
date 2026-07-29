@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react';
 import { formatTime, calEngagementTone, planCalTone, planMultiTone, planDateKeys, isMultiDayPlan } from '@/lib/speaking';
 import { layoutColumns } from '@/lib/eventLayout';
 import DailyReflection from './DailyReflection';
@@ -100,9 +101,14 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
         key={x.id}
         onClick={onClick}
         title={isEvent ? `${x.title} — ${formatTime(x.start_time)}` : `${x.title} — ${formatTime(x.start_time)}`}
-        className={`absolute left-0.5 right-0.5 overflow-hidden rounded px-1 py-0.5 text-left text-[10px] font-medium shadow-sm ${tone}`}
+        className={`absolute left-0.5 right-0.5 overflow-hidden rounded px-1 py-0.5 text-left text-[10px] font-medium shadow-sm ${tone} ${isEvent && x.completed ? 'opacity-60' : ''}`}
         style={{ top: x._top + x._col * 16, height: x._height, zIndex: x._col }}
       >
+        {isEvent && x.completed && (
+          <span className="absolute right-0.5 top-0.5 z-10 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white/90 text-[#1B2A4B] shadow-sm">
+            <Check className="h-2.5 w-2.5" strokeWidth={3} />
+          </span>
+        )}
         <div className="truncate font-semibold">{label}</div>
         <div className="opacity-70">{sub}</div>
       </button>
@@ -146,10 +152,15 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                   key={i}
                   onClick={() => onEventSelect?.(b.ev)}
                   title={b.ev.title}
-                  className={`absolute top-0.5 bottom-0.5 flex items-center truncate rounded px-1 py-0.5 text-left text-[10px] font-medium ${planMultiTone(b.ev)}`}
+                  className={`absolute top-0.5 bottom-0.5 flex items-center truncate rounded px-1 py-0.5 text-left text-[10px] font-medium ${b.ev.completed ? 'bg-[#E5E7EB] text-[#9CA3AF] line-through' : planMultiTone(b.ev)}`}
                   style={{ left: `calc(${(b.startIdx / days.length) * 100}% + 2px)`, width: `calc(${((b.endIdx - b.startIdx + 1) / days.length) * 100}% - 4px)` }}
                 >
                   {b.extendsLeft ? '‹ ' : ''}{b.ev.title}{b.extendsRight ? ' ›' : ''}
+                  {b.ev.completed && (
+                    <span className="absolute right-0.5 top-0.5 z-10 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white/90 text-[#1B2A4B] shadow-sm">
+                      <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -203,9 +214,14 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                         key={x.id}
                         onClick={() => (isEvent ? onEventSelect?.(x) : onSelect?.(x))}
                         title={x.title}
-                        className={`mb-0.5 block w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-medium ${tone}`}
+                        className={`relative mb-0.5 block w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-medium ${tone} ${isEvent && x.completed ? 'opacity-60' : ''}`}
                       >
                         {isEvent ? x.title : (x.place || x.title || 'Engagement')}
+                        {isEvent && x.completed && (
+                          <span className="absolute right-0.5 top-0.5 z-10 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white/90 text-[#1B2A4B] shadow-sm">
+                            <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                          </span>
+                        )}
                       </button>
                     );
                   })}

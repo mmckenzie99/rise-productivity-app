@@ -259,15 +259,13 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
             </div>
           )}
 
-          {form.assignee_id && (
-            <div className="flex items-center justify-between rounded-md border border-[#D6DAE3] bg-[#F7F8FA] px-3 py-2">
-              <div>
-                <Label className="text-sm">Mark complete</Label>
-                <p className="text-xs text-[#5A6781]">Notifies whoever assigned this plan.</p>
-              </div>
-              <Switch checked={!!form.completed} onCheckedChange={toggleComplete} />
+          <div className="flex items-center justify-between rounded-md border border-[#D6DAE3] bg-[#F7F8FA] px-3 py-2">
+            <div>
+              <Label className="text-sm">Mark complete</Label>
+              <p className="text-xs text-[#5A6781]">{form.assignee_id ? 'Notifies whoever assigned this plan.' : 'Mark this plan as finished.'}</p>
             </div>
-          )}
+            <Switch checked={!!form.completed} onCheckedChange={toggleComplete} />
+          </div>
 
           <div className="space-y-1.5">
             <Label>Notes</Label>

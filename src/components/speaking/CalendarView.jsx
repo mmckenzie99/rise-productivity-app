@@ -105,7 +105,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                       style={{ gridColumn: `${b.colStart + 1} / span ${b.colEnd - b.colStart + 1}` }}
                       onClick={() => onEventSelect?.(b.ev)}
                       title={b.ev.title}
-                      className={`flex h-5 items-center truncate rounded px-1 text-[10px] font-medium ${planMultiTone(b.ev)}`}
+                      className={`flex h-5 items-center truncate rounded px-1 text-[10px] font-medium ${b.ev.completed ? 'bg-[#E5E7EB] text-[#9CA3AF] line-through' : planMultiTone(b.ev)}`}
                     >
                       {b.extendsLeft ? '‹ ' : ''}{b.ev.title}{b.extendsRight ? ' ›' : ''}
                     </button>
@@ -130,7 +130,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                           className="mt-1 block w-full truncate rounded px-1 py-0.5 text-left text-[11px] font-medium"
                           title={x.title}
                         >
-                          <span className={`rounded px-1 ${tone}`}>
+                          <span className={`rounded px-1 ${isEvent && x.completed ? 'bg-[#E5E7EB] text-[#9CA3AF] line-through' : tone}`}>
                             {isEvent ? x.title : (x.place || 'Engagement')}
                           </span>
                         </button>
