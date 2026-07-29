@@ -23,15 +23,15 @@ export default function useNotifications() {
   }, [load]);
 
   const markAsRead = useCallback(async (id) => {
-    await base44.entities.Notification.update(id, { read: true });
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    setNotifications(prev => prev.filter(n => n.id !== id));
+    await base44.entities.Notification.delete(id);
   }, []);
 
   const markAllAsRead = useCallback(async () => {
     const unread = notifications.filter(n => !n.read);
     if (unread.length === 0) return;
-    await base44.entities.Notification.bulkUpdate(unread.map(n => ({ id: n.id, read: true })));
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setNotifications(prev => prev.filter(n => n.read));
+    await base44.entities.Notification.deleteMany({ read: false });
   }, [notifications]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
