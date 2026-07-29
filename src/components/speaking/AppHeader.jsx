@@ -1,5 +1,5 @@
 import { LogOut, Users, GanttChart, Plane, LayoutDashboard, Menu } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
@@ -13,7 +13,6 @@ const ITEM_HOVER = 'hover:bg-[#D9A404] hover:text-white focus:bg-[#D9A404] focus
 
 export default function AppHeader({ onAdd, onInvite, onTimeline, isAdmin, newOpen, timelineOpen, inviteOpen }) {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   return (
     <header className="flex flex-col gap-5 border-b border-[#D6DAE3] pb-6 sm:flex-row sm:items-center sm:justify-between">
       <Brand />
@@ -27,24 +26,18 @@ export default function AppHeader({ onAdd, onInvite, onTimeline, isAdmin, newOpe
           {isAdmin && <Button variant="outline" onClick={onInvite} className={inviteOpen ? ACTIVE : IDLE}><Users className="mr-2 h-4 w-4" />Invite</Button>}
         </div>
 
-        {/* Mobile menu dropdown */}
+        {/* Mobile actions (core navigation lives in the BottomTabBar) */}
         <div className="lg:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className={IDLE}><Menu className="mr-2 h-4 w-4" />Menu</Button>
+              <Button variant="outline" className={IDLE}><Menu className="mr-2 h-4 w-4" />More</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem className={ITEM_HOVER} onClick={() => navigate('/dashboard')}>
-                <LayoutDashboard className="mr-2 h-4 w-4" />Dashboard
-              </DropdownMenuItem>
               {isAdmin && (
                 <DropdownMenuItem className={ITEM_HOVER} onClick={onAdd}>
                   New engagement
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem className={ITEM_HOVER} onClick={() => navigate('/trips')}>
-                <Plane className="mr-2 h-4 w-4" />Engagement Trips
-              </DropdownMenuItem>
               <DropdownMenuItem className={ITEM_HOVER} onClick={onTimeline}>
                 <GanttChart className="mr-2 h-4 w-4" />Timeline
               </DropdownMenuItem>
