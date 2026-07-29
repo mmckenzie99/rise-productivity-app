@@ -77,7 +77,7 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
         </div>
         {isAdmin && (
           <div className="flex justify-between pt-3">
-            <Button variant="destructive" onClick={() => onDelete(item)}><Trash2 className="mr-2 h-4 w-4" />Delete</Button>
+            <Button variant="destructive" onClick={async () => { if (await onDelete(item)) requestClose(); }}><Trash2 className="mr-2 h-4 w-4" />Delete</Button>
             <Button onClick={() => onEdit(item)} className="bg-[#D9A404] hover:bg-[#B89003]"><Pencil className="mr-2 h-4 w-4" />Edit</Button>
           </div>
         )}

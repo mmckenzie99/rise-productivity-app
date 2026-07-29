@@ -171,7 +171,7 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
             {isAdmin && (
               <>
                 <Button variant="outline" onClick={onEdit} className="border-[#D6DAE3] bg-white"><Pencil className="mr-1.5 h-4 w-4" />Edit</Button>
-                <Button variant="destructive" onClick={onDelete}><Trash2 className="mr-1.5 h-4 w-4" />Delete</Button>
+                <Button variant="destructive" onClick={async () => { if (await onDelete()) requestClose(); }}><Trash2 className="mr-1.5 h-4 w-4" />Delete</Button>
               </>
             )}
           </div>

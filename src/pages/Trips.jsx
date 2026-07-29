@@ -38,8 +38,9 @@ export default function Trips() {
   const del = async (trip) => {
     if (window.confirm('Delete this trip?')) {
       await remove(trip.id);
-      setSelected(null);
+      return true;
     }
+    return false;
   };
 
   return (
