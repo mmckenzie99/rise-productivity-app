@@ -172,7 +172,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
       </div>
       {mode === 'month'
         ? renderMonth()
-        : <DayPlanner items={items} events={events} mode={mode} cursor={cursor} onSelect={onSelect} onEventSelect={onEventSelect} onAddSlot={onAddSlot} />}
+        : <DayPlanner items={items} events={events} mode={mode} cursor={cursor} onSelect={onSelect} onEventSelect={onEventSelect} onAddSlot={onAddSlot} onGoToDate={(d) => { setMode('day'); setCursor(new Date(d)); }} />}
     </div>
   );
 }

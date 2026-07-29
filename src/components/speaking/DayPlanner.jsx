@@ -31,7 +31,7 @@ const hourLabel = (h) => {
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function DayPlanner({ items, events, mode, cursor, onSelect, onEventSelect, onAddSlot }) {
+export default function DayPlanner({ items, events, mode, cursor, onSelect, onEventSelect, onAddSlot, onGoToDate }) {
   const days = [];
   if (mode === 'day') {
     days.push(new Date(cursor));
@@ -128,19 +128,34 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
         {/* Day headers */}
         <div className="flex border-b border-[#D6DAE3]">
           <div className="w-12 shrink-0" />
-          {days.map((d, i) => (
-            <div
-              key={i}
-              className={`flex-1 px-2 py-1.5 text-center ${keyOf(d) === todayKey ? 'bg-[#FBF0D0]/40' : ''}`}
-            >
-              <div className="text-[10px] uppercase tracking-wider text-[#5A6781]">
-                {DAY_LABELS[d.getDay()]}
+          {days.map((d, i) => {
+            const dateNum = d.getDate();
+            const canJump = mode === 'week' && onGoToDate;
+            return (
+              <div
+                key={i}
+                className={`flex-1 px-2 py-1.5 text-center ${keyOf(d) === todayKey ? 'bg-[#FBF0D0]/40' : ''}`}
+              >
+                <div className="text-[10px] uppercase tracking-wider text-[#5A6781]">
+                  {DAY_LABELS[d.getDay()]}
+                </div>
+                {canJump ? (
+                  <button
+                    type="button"
+                    onClick={() => onGoToDate(new Date(d))}
+                    className="text-sm font-semibold text-[#1B2A4B] underline-offset-2 hover:text-[#D9A404] hover:underline focus:text-[#D9A404] focus:underline"
+                    title="Open day view"
+                  >
+                    {dateNum}
+                  </button>
+                ) : (
+                  <div className={`text-sm font-semibold ${keyOf(d) === todayKey ? 'text-[#D9A404]' : 'text-[#1B2A4B]'}`}>
+                    {dateNum}
+                  </div>
+                )}
               </div>
-              <div className={`text-sm font-semibold ${keyOf(d) === todayKey ? 'text-[#D9A404]' : 'text-[#1B2A4B]'}`}>
-                {d.getDate()}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {multiBars.length > 0 && (
