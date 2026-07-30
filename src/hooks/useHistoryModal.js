@@ -20,10 +20,12 @@ const onGlobalPop = () => {
 export default function useHistoryModal(open, onClose) {
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+  const entryRef = useRef(null);
 
   useEffect(() => {
     if (!open) return;
     const entry = { close: () => onCloseRef.current() };
+    entryRef.current = entry;
     stack.push(entry);
     window.history.pushState({ base44Modal: true }, '');
     if (!popInstalled) {
@@ -33,6 +35,7 @@ export default function useHistoryModal(open, onClose) {
     return () => {
       const i = stack.indexOf(entry);
       if (i !== -1) stack.splice(i, 1);
+      entryRef.current = null;
     };
   }, [open]);
 
@@ -40,9 +43,15 @@ export default function useHistoryModal(open, onClose) {
   // backdrop). It pops the pushed history entry, which fires popstate →
   // the shared handler closes only the topmost overlay.
   const requestClose = useCallback(() => {
-    if (window.history.state && window.history.state.base44Modal) {
+    const entry = entryRef.current;
+    const isTop = entry && stack[stack.length - 1] === entry;
+    if (isTop && window.history.state && window.history.state.base44Modal) {
       window.history.back();
     } else {
+      if (entry) {
+        const i = stack.indexOf(entry);
+        if (i !== -1) stack.splice(i, 1);
+      }
       onCloseRef.current();
     }
   }, []);
