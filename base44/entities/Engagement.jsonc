@@ -85,6 +85,14 @@
     "speaker_photo": {
       "type": "string"
     },
+    "presentation_file_url": {
+      "type": "string",
+      "description": "Link to the presentation file"
+    },
+    "handout_url": {
+      "type": "string",
+      "description": "Link to the presentation handout"
+    },
     "address": {
       "type": "string"
     },

@@ -7,7 +7,7 @@ import FormBasics from './FormBasics';
 import FormSchedule from './FormSchedule';
 import FormLocation from './FormLocation';
 import FormAttachments from './FormAttachments';
-import FormSpeaker from './FormSpeaker';
+import FormPresentation from './FormPresentation';
 import RichTextEditor from './RichTextEditor';
 import useHistoryModal from '@/hooks/useHistoryModal';
 
@@ -38,7 +38,7 @@ export default function EngagementForm({ open, item, onClose, onSave }) {
 
         <div className="space-y-5 py-2">
           <FormBasics form={form} set={set} />
-          <FormSpeaker form={form} set={set} />
+          <FormPresentation form={form} set={set} />
           <FormSchedule form={form} set={set} />
           <FormLocation form={form} set={set} />
 
