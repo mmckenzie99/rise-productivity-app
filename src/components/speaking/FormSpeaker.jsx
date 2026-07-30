@@ -18,22 +18,22 @@ export default function FormSpeaker({ form, set }) {
     setLoading(false);
   };
   return (
-    <div className="space-y-4 rounded-lg border border-[#D6DAE3] bg-[#F7F8FA] p-4">
-      <span className="font-display text-sm font-semibold text-[#1B2A4B]">Speaker</span>
+    <div className="space-y-4 rounded-lg border border-[#D6DAE3] bg-white p-4">
+      <h3 className="font-display text-sm font-semibold text-[#1B2A4B]">Speaker</h3>
       <div>
-        <Label>Speaker name</Label>
-        <Input value={form.speaker_name || ''} onChange={e => set('speaker_name', e.target.value)} placeholder="Full name" />
+        <Label className="text-xs text-[#5A6781]">Speaker name</Label>
+        <Input className="mt-1 border-[#D6DAE3] bg-white" value={form.speaker_name || ''} onChange={e => set('speaker_name', e.target.value)} placeholder="Full name" />
       </div>
       <div>
-        <Label>Speaker bio</Label>
-        <Textarea value={form.speaker_bio || ''} onChange={e => set('speaker_bio', e.target.value)} placeholder="Short bio or credentials…" />
+        <Label className="text-xs text-[#5A6781]">Speaker bio</Label>
+        <Textarea className="mt-1 border-[#D6DAE3] bg-white" value={form.speaker_bio || ''} onChange={e => set('speaker_bio', e.target.value)} placeholder="Short bio or credentials…" />
       </div>
       <div>
-        <Label>Speaker photo</Label>
+        <Label className="text-xs text-[#5A6781]">Speaker photo</Label>
         {form.speaker_photo ? (
           <div className="mt-1 flex items-center gap-3">
             <Image src={form.speaker_photo} alt="Speaker" className="h-20 w-20 overflow-hidden rounded-full" />
-            <Button type="button" variant="outline" size="sm" onClick={() => set('speaker_photo', '')}><X className="mr-1 h-3.5 w-3.5" />Remove</Button>
+            <Button type="button" variant="outline" className="border-[#D6DAE3] bg-white" size="sm" onClick={() => set('speaker_photo', '')}><X className="mr-1 h-3.5 w-3.5" />Remove</Button>
           </div>
         ) : (
           <label className="mt-1 flex cursor-pointer items-center justify-center rounded-md border border-dashed border-[#D9A404] p-4 text-sm text-[#5A6781]">

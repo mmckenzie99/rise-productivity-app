@@ -25,7 +25,7 @@ export default function MultiTypeSelect({ label, values = [], options, onChange 
 
   return (
     <div>
-      <Label>{label}</Label>
+      <Label className="text-xs text-[#5A6781]">{label}</Label>
       {/* Desktop: popover */}
       <div className="hidden sm:block">
         <Popover>

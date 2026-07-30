@@ -6,10 +6,13 @@ import ResponsiveSelect from './ResponsiveSelect';
 import { PROGRESS, STATUSES, TYPES, TIMEZONES, asArray, detectTimezone } from '@/lib/speaking';
 import MultiTypeSelect from './MultiTypeSelect';
 
+const inputCls = 'mt-1 border-[#D6DAE3] bg-white';
+const selectCls = 'mt-1 border-[#D6DAE3] bg-white';
+
 const Picker = ({ label, value, items, onChange }) => (
   <div>
-    <Label>{label}</Label>
-    <ResponsiveSelect value={value || ''} onValueChange={onChange} options={items.map(x => ({ value: x, label: x }))} placeholder="Select…" />
+    <Label className="text-xs text-[#5A6781]">{label}</Label>
+    <ResponsiveSelect value={value || ''} onValueChange={onChange} options={items.map(x => ({ value: x, label: x }))} placeholder="Select…" triggerClassName={selectCls} label={label} />
   </div>
 );
 
@@ -20,7 +23,9 @@ export default function FormSchedule({ form, set }) {
   useEffect(() => { if (isBooth && form.start_date) { set('start_date', ''); } }, [isBooth]);
 
   return (
-    <>
+    <div className="space-y-4 rounded-lg border border-[#D6DAE3] bg-white p-4">
+      <h3 className="font-display text-sm font-semibold text-[#1B2A4B]">Schedule</h3>
+
       {/* Engagement Type + Status */}
       <div className="grid gap-4 sm:grid-cols-2">
         <MultiTypeSelect label="Engagement type" values={form.presentation_type || []} options={TYPES} onChange={v => set('presentation_type', v)} />
@@ -30,51 +35,62 @@ export default function FormSchedule({ form, set }) {
       {/* Times + Timezone */}
       <div className="grid gap-4 sm:grid-cols-3">
         <div>
-          <Label className={!form.start_time ? 'opacity-60' : ''}>Start time</Label>
-          <Input type="time" value={form.start_time || ''} onChange={e => set('start_time', e.target.value)} className={!form.start_time ? 'opacity-60' : ''} />
+          <Label className="text-xs text-[#5A6781]">Start time</Label>
+          <Input type="time" className={inputCls} value={form.start_time || ''} onChange={e => set('start_time', e.target.value)} />
         </div>
         <div>
-          <Label className={!form.end_time ? 'opacity-60' : ''}>End time</Label>
-          <Input type="time" value={form.end_time || ''} onChange={e => set('end_time', e.target.value)} className={!form.end_time ? 'opacity-60' : ''} />
+          <Label className="text-xs text-[#5A6781]">End time</Label>
+          <Input type="time" className={inputCls} value={form.end_time || ''} onChange={e => set('end_time', e.target.value)} />
         </div>
         <div>
-          <Label>Time zone</Label>
-          <ResponsiveSelect value={tz} onValueChange={v => set('timezone', v)} options={TIMEZONES.map(z => ({ value: z.value, label: z.label }))} placeholder="Select…" />
+          <Label className="text-xs text-[#5A6781]">Time zone</Label>
+          <ResponsiveSelect value={tz} onValueChange={v => set('timezone', v)} options={TIMEZONES.map(z => ({ value: z.value, label: z.label }))} placeholder="Select…" triggerClassName={selectCls} label="Time zone" />
         </div>
       </div>
 
-      {/* Speaking date + End date (the actual engagement date) */}
+      {/* Speaking date + End date */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div><Label className={!form.speaking_date ? 'opacity-60' : ''}>Speaking date</Label><Input type="date" value={form.speaking_date || ''} onChange={e => set('speaking_date', e.target.value)} className={!form.speaking_date ? 'opacity-60' : ''} /></div>
-        <div><Label className={!form.end_date ? 'opacity-60' : ''}>End date <span className="font-normal text-[#5A6781]">(multi-day)</span></Label><Input type="date" value={form.end_date || ''} onChange={e => set('end_date', e.target.value)} className={!form.end_date ? 'opacity-60' : ''} /></div>
+        <div>
+          <Label className="text-xs text-[#5A6781]">Speaking date</Label>
+          <Input type="date" className={inputCls} value={form.speaking_date || ''} onChange={e => set('speaking_date', e.target.value)} />
+        </div>
+        <div>
+          <Label className="text-xs text-[#5A6781]">End date <span className="font-normal">(multi-day)</span></Label>
+          <Input type="date" className={inputCls} value={form.end_date || ''} onChange={e => set('end_date', e.target.value)} />
+        </div>
       </div>
+
+      {/* Creation Start Date + Deploy Date */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <Label className="text-xs text-[#5A6781]">Creation start date</Label>
+          <Input type="date" className={inputCls} value={form.start_date || ''} onChange={e => set('start_date', e.target.value)} />
+        </div>
+        <div>
+          <Label className="text-xs text-[#5A6781]">Deploy date</Label>
+          <Input type="date" className={inputCls} value={form.deploy_date || ''} onChange={e => set('deploy_date', e.target.value)} />
+        </div>
+      </div>
+
+      <Picker label="Progress" value={form.progress} items={PROGRESS} onChange={v => set('progress', v)} />
 
       {/* Presentation Details section (only for Presentation(s)) */}
       {isPresentation && (
-        <div className="rounded-lg border border-[#D6DAE3] bg-[#F7F8FA] p-4 space-y-4">
+        <div className="space-y-4 rounded-lg border border-[#D9A404]/40 bg-[#FBF7EA] p-4">
           <div className="flex items-center gap-2">
             <span className="font-display text-sm font-semibold text-[#1B2A4B]">Presentation Details</span>
-            <span className="rounded-full bg-[#D9A404]/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[#D9A404]">Presentation(s)</span>
+            <span className="rounded-full bg-[#D9A404]/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[#D9A404]">Presentation(s)</span>
           </div>
           <div>
-            <Label>Title</Label>
-            <Input value={form.title || ''} onChange={e => set('title', e.target.value)} placeholder="Title of the presentation" />
+            <Label className="text-xs text-[#5A6781]">Title</Label>
+            <Input className={inputCls} value={form.title || ''} onChange={e => set('title', e.target.value)} placeholder="Title of the presentation" />
           </div>
           <div>
-            <Label>Description</Label>
-            <Textarea value={form.presentation_description || ''} onChange={e => set('presentation_description', e.target.value)} placeholder="Description pertaining to the presentation title…" />
+            <Label className="text-xs text-[#5A6781]">Description</Label>
+            <Textarea className={inputCls} value={form.presentation_description || ''} onChange={e => set('presentation_description', e.target.value)} placeholder="Description pertaining to the presentation title…" />
           </div>
         </div>
       )}
-
-      {/* Creation Start Date + Deploy Date (always shown) */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div><Label className={!form.start_date ? 'opacity-60' : ''}>Creation start date</Label><Input type="date" value={form.start_date || ''} onChange={e => set('start_date', e.target.value)} className={!form.start_date ? 'opacity-60' : ''} /></div>
-        <div><Label>Deploy date</Label><Input type="date" value={form.deploy_date || ''} onChange={e => set('deploy_date', e.target.value)} /></div>
-      </div>
-
-      {/* Progress (under Creation Start / Deploy Date) */}
-      <Picker label="Progress" value={form.progress} items={PROGRESS} onChange={v => set('progress', v)} />
-    </>
+    </div>
   );
 }
