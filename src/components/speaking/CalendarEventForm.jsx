@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import ResponsiveSelect from './ResponsiveSelect';
 import RichTextEditor from './RichTextEditor';
+import PlanCommentsSection from './PlanCommentsSection';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import RecurrenceEditor from './RecurrenceEditor';
 import { generateOccurrences } from '@/lib/recurrence';
@@ -123,6 +124,7 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
   };
 
   const assignees = (admins || []).filter((u) => u.id !== currentUserId);
+  const isAdmin = (admins || []).some((u) => u.id === currentUserId);
   const isSeriesOccurrence = !!item?.series_id;
   const showRecurrence = !item?.id || (isSeriesOccurrence && editScope === 'future');
 
@@ -254,6 +256,16 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
               placeholder="Add notes — use the link button to insert a clickable link…"
             />
           </div>
+
+          {item?.id && isAdmin && (
+            <PlanCommentsSection
+              planId={item.id}
+              planTitle={form.title}
+              planDate={form.date}
+              admins={admins}
+              currentUserId={currentUserId}
+            />
+          )}
           <DialogFooter>
             {item?.id && onDelete && (
               <Button
