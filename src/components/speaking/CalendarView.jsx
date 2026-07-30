@@ -162,7 +162,11 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
           {MODES.map((m) => (
             <button
               key={m}
-              onClick={() => setMode(m)}
+              onClick={() => {
+                setMode(m);
+                const now = new Date();
+                setCursor(m === 'month' ? new Date(now.getFullYear(), now.getMonth(), 1) : new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+              }}
               className={`rounded-md px-3 py-1.5 text-sm font-medium capitalize transition ${mode === m ? 'bg-[#D9A404] text-white' : 'bg-white text-[#1B2A4B] border border-[#D6DAE3]'}`}
             >
               {m}
