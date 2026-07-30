@@ -81,7 +81,7 @@ function buildEmailBody(eng, windowLabel, tzLabel) {
       <tr><td style="padding:6px 0;color:#5A6781">Time</td><td style="padding:6px 0">${timeStr} ${tzLabel}</td></tr>
       <tr><td style="padding:6px 0;color:#5A6781">Location</td><td style="padding:6px 0">${location}</td></tr>
     </table>
-    <p style="font-size:13px;color:#5A6781;margin-top:20px">Please review the engagement details in the Engagement Log app.</p>
+    <p style="font-size:13px;color:#5A6781;margin-top:20px">Please review the engagement details in RISE.</p>
   </div>`;
 }
 
@@ -157,7 +157,7 @@ Deno.serve(async (req) => {
           <p style="font-size:16px">The deploy date for <strong>${escapeHtml(eng.title || eng.place || 'this engagement')}</strong> has arrived.</p>
           <p style="font-size:14px;color:#5A6781;margin-top:12px">Current progress: <strong>${escapeHtml(eng.progress || 'Not Started')}</strong></p>
           <p style="font-size:15px;margin-top:12px">Please update the <strong>Progress</strong> field to reflect the appropriate status (e.g. Ready to Deploy or Deploying).</p>
-          <p style="font-size:13px;color:#5A6781;margin-top:20px">Review this engagement in the Engagement Log app.</p>
+          <p style="font-size:13px;color:#5A6781;margin-top:20px">Review this engagement in RISE.</p>
         </div>`;
 
         let emailSent = false;
