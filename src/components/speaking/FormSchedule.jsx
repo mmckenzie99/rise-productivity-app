@@ -43,6 +43,12 @@ export default function FormSchedule({ form, set }) {
         </div>
       </div>
 
+      {/* Speaking date + End date (the actual engagement date) */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div><Label className={!form.speaking_date ? 'opacity-60' : ''}>Speaking date</Label><Input type="date" value={form.speaking_date || ''} onChange={e => set('speaking_date', e.target.value)} className={!form.speaking_date ? 'opacity-60' : ''} /></div>
+        <div><Label className={!form.end_date ? 'opacity-60' : ''}>End date <span className="font-normal text-[#5A6781]">(multi-day)</span></Label><Input type="date" value={form.end_date || ''} onChange={e => set('end_date', e.target.value)} className={!form.end_date ? 'opacity-60' : ''} /></div>
+      </div>
+
       {/* Presentation Details section (only for Presentation(s)) */}
       {isPresentation && (
         <div className="rounded-lg border border-[#D6DAE3] bg-[#F7F8FA] p-4 space-y-4">

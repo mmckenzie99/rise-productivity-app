@@ -88,9 +88,9 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
 
     return (
       <div className="space-y-1">
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-1 border-b border-[#D6DAE3] pb-1">
           {DAYS.map((d) => (
-            <div key={d} className="pb-1 text-center font-mono text-[10px] uppercase tracking-wider text-[#5A6781]">{d}</div>
+            <div key={d} className="pb-1 text-center text-[11px] font-semibold uppercase tracking-wider text-[#5A6781]">{d}</div>
           ))}
         </div>
         {weeks.map((week, wi) => {
