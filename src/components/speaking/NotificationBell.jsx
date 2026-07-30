@@ -1,11 +1,11 @@
-import { Bell, Check, CheckCheck } from 'lucide-react';
+import { Bell, Bookmark, CheckCheck, Trash2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { formatDate, formatTime, TIMEZONES } from '@/lib/speaking';
 import useNotifications from '@/hooks/useNotifications';
 
 export default function NotificationBell() {
-  const { notifications, loading, markAsRead, markAllAsRead, unreadCount } = useNotifications();
+  const { notifications, loading, keepForReview, deleteNotification, markAllAsRead, unreadCount } = useNotifications();
 
   return (
     <Popover>
@@ -50,15 +50,26 @@ export default function NotificationBell() {
                     <p className="mt-0.5 text-[10px] font-mono uppercase text-[#5A6781]">Email sent</p>
                   )}
                 </div>
-                {!n.read && (
+                <div className="flex shrink-0 items-center gap-1">
+                  {!n.read && (
+                    <button
+                      onClick={() => keepForReview(n.id)}
+                      className="shrink-0 rounded p-1 text-[#1B2A4B] hover:bg-[#F0F2F6]"
+                      aria-label="Keep for review"
+                      title="Keep for review"
+                    >
+                      <Bookmark className="h-4 w-4" />
+                    </button>
+                  )}
                   <button
-                    onClick={() => markAsRead(n.id)}
-                    className="shrink-0 rounded p-1 text-[#D9A404] hover:bg-[#D9A404]/10"
-                    aria-label="Mark as read"
+                    onClick={() => deleteNotification(n.id)}
+                    className="shrink-0 rounded p-1 text-[#B43A2E] hover:bg-[#B43A2E]/10"
+                    aria-label="Delete"
+                    title="Delete"
                   >
-                    <Check className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
-                )}
+                </div>
               </div>
             ))
           )}
