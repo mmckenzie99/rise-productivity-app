@@ -38,8 +38,8 @@ export default function EngagementForm({ open, item, onClose, onSave }) {
 
         <div className="space-y-5 py-2">
           <FormBasics form={form} set={set} />
-          <FormPresentation form={form} set={set} />
           <FormSchedule form={form} set={set} />
+          <FormPresentation form={form} set={set} />
           <FormLocation form={form} set={set} />
 
           <div className="space-y-2 rounded-lg border border-[#D6DAE3] bg-white p-4">
