@@ -4,9 +4,9 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import useHistoryModal from '@/hooks/useHistoryModal';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import ResponsiveSelect from './ResponsiveSelect';
+import RichTextEditor from './RichTextEditor';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import RecurrenceEditor from './RecurrenceEditor';
 import { generateOccurrences } from '@/lib/recurrence';
@@ -248,11 +248,10 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
 
           <div className="space-y-1.5">
             <Label>Notes</Label>
-            <Textarea
+            <RichTextEditor
               value={form.notes || ''}
-              onChange={(e) => set('notes', e.target.value)}
-              rows={2}
-              className="border-[#D6DAE3]"
+              onChange={(v) => set('notes', v)}
+              placeholder="Add notes — use the link button to insert a clickable link…"
             />
           </div>
           <DialogFooter>
