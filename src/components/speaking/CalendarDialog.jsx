@@ -8,20 +8,22 @@ export default function CalendarDialog({ open, onClose, items, events, onSelect,
   const requestClose = useHistoryModal(open, onClose);
   return (
     <Dialog open={open} onOpenChange={v => !v && requestClose()}>
-      <DialogContent className="max-h-[92vh] w-[calc(100vw-1.5rem)] overflow-y-auto bg-white sm:max-w-3xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">Calendar</DialogTitle>
         </DialogHeader>
-        <div className="mb-4 flex justify-end">
-          <button
-            onClick={() => downloadICS(generateICSBatch(items), 'all-engagements.ics')}
-            disabled={!items.length}
-            className="inline-flex items-center gap-1.5 rounded-md border border-[#D6DAE3] bg-white px-3 py-1.5 text-xs font-medium text-[#1B2A4B] transition hover:border-[#D9A404] hover:text-[#D9A404] disabled:opacity-40"
-          >
-            <Download className="h-3.5 w-3.5" />Export all (.ics)
-          </button>
+        <div className="space-y-5 py-2">
+          <div className="flex justify-end">
+            <button
+              onClick={() => downloadICS(generateICSBatch(items), 'all-engagements.ics')}
+              disabled={!items.length}
+              className="inline-flex items-center gap-1.5 rounded-md border border-[#D6DAE3] bg-white px-3 py-1.5 text-xs font-medium text-[#1B2A4B] transition hover:border-[#D9A404] hover:text-[#D9A404] disabled:opacity-40"
+            >
+              <Download className="h-3.5 w-3.5" />Export all (.ics)
+            </button>
+          </div>
+          <CalendarView items={items} events={events} onSelect={onSelect} onEventSelect={onEventSelect} onAddSlot={onAddSlot} />
         </div>
-        <CalendarView items={items} events={events} onSelect={onSelect} onEventSelect={onEventSelect} onAddSlot={onAddSlot} />
       </DialogContent>
     </Dialog>
   );
