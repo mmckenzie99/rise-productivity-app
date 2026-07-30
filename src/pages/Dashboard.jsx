@@ -81,7 +81,7 @@ export default function Dashboard() {
     <main className="min-h-screen bg-[#F7F8FA] text-[#1B2A4B] pt-safe pb-safe">
       <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); }}>
         <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
-          <AppHeader isAdmin={isAdmin} onAdd={() => goHome('new')} onInvite={() => goHome('invite')} onTimeline={() => goHome('timeline')} />
+          <AppHeader isAdmin={isAdmin} onAdd={() => goHome('new')} onInvite={() => goHome('invite')} onCalendar={() => goHome('calendar')} />
         <div className="flex items-center gap-2">
           <LayoutDashboard className="h-5 w-5 text-[#D9A404]" />
           <h1 className="font-display text-2xl font-semibold">Dashboard</h1>

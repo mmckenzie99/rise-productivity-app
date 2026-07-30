@@ -1,4 +1,4 @@
-import { LogOut, Users, GanttChart, Plane, LayoutDashboard, Menu } from 'lucide-react';
+import { LogOut, Users, CalendarDays, Plane, LayoutDashboard, Menu } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
@@ -11,7 +11,7 @@ const ACTIVE = 'bg-[#D9A404] text-white border-[#D9A404] hover:bg-[#B89003] hove
 const IDLE = 'border-[#D6DAE3] bg-white';
 const ITEM_HOVER = 'hover:bg-[#D9A404] hover:text-white focus:bg-[#D9A404] focus:text-white data-[highlighted]:bg-[#D9A404] data-[highlighted]:text-white';
 
-export default function AppHeader({ onAdd, onInvite, onTimeline, isAdmin, newOpen, timelineOpen, inviteOpen }) {
+export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, newOpen, calendarOpen, inviteOpen }) {
   const { pathname } = useLocation();
   return (
     <header className="flex flex-col gap-5 border-b border-[#D6DAE3] pb-6 sm:flex-row sm:items-center sm:justify-between">
@@ -22,7 +22,7 @@ export default function AppHeader({ onAdd, onInvite, onTimeline, isAdmin, newOpe
           <Link to="/dashboard"><Button variant="outline" className={pathname === '/dashboard' ? ACTIVE : IDLE}><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Button></Link>
           {isAdmin && <Button variant="outline" onClick={onAdd} className={newOpen ? ACTIVE : IDLE}>New engagement</Button>}
           <Link to="/trips"><Button variant="outline" className={pathname === '/trips' ? ACTIVE : IDLE}><Plane className="mr-2 h-4 w-4" />Engagement Trips</Button></Link>
-          <Button variant="outline" onClick={onTimeline} className={timelineOpen ? ACTIVE : IDLE}><GanttChart className="mr-2 h-4 w-4" />Timeline</Button>
+          <Button variant="outline" onClick={onCalendar} className={calendarOpen ? ACTIVE : IDLE}><CalendarDays className="mr-2 h-4 w-4" />Calendar</Button>
           {isAdmin && <Button variant="outline" onClick={onInvite} className={inviteOpen ? ACTIVE : IDLE}><Users className="mr-2 h-4 w-4" />Invite</Button>}
         </div>
 
@@ -38,8 +38,8 @@ export default function AppHeader({ onAdd, onInvite, onTimeline, isAdmin, newOpe
                   New engagement
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem className={ITEM_HOVER} onClick={onTimeline}>
-                <GanttChart className="mr-2 h-4 w-4" />Timeline
+              <DropdownMenuItem className={ITEM_HOVER} onClick={onCalendar}>
+                <CalendarDays className="mr-2 h-4 w-4" />Calendar
               </DropdownMenuItem>
               {isAdmin && (
                 <DropdownMenuItem className={ITEM_HOVER} onClick={onInvite}>
