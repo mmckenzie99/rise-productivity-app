@@ -5,7 +5,7 @@ import { Image } from '@/components/ui/image';
 const COMPASS_ICON = 'https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/9f7bd64d0_Icon.png';
 
 export default function PlaceBreakdown({ items, onSelect }) {
-  const [cardOpen, setCardOpen] = useState(true);
+  const [cardOpen, setCardOpen] = useState(false);
   const [openPlace, setOpenPlace] = useState(null);
 
   const byPlace = items.reduce((acc, x) => {
