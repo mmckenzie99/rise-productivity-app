@@ -14,6 +14,7 @@ import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 import Home from '@/pages/Home';
 import Trips from '@/pages/Trips';
+import UserManagement from '@/pages/UserManagement';
 import Dashboard from '@/pages/Dashboard';
 import { AnimatePresence, motion } from 'framer-motion';
 import useSystemDarkMode from '@/hooks/useSystemDarkMode';
@@ -60,6 +61,7 @@ const AuthenticatedApp = () => {
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/trips" element={<Trips />} />
+            <Route path="/users" element={<UserManagement />} />
           </Route>
           <Route path="*" element={<PageNotFound />} />
         </Routes>

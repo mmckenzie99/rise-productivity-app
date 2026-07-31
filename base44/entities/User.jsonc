@@ -1,4 +1,6 @@
 {
+  "name": "User",
+  "type": "object",
   "properties": {
     "role": {
       "type": "string",
@@ -7,11 +9,19 @@
         "admin",
         "user"
       ]
+    },
+    "can_comment": {
+      "type": "boolean",
+      "default": false,
+      "description": "Allows this user to participate in internal engagement and plan discussions. Administrators always can."
+    },
+    "can_be_assigned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Allows this user to be assigned to work plans. Administrators always can."
     }
   },
   "required": [
     "role"
-  ],
-  "name": "User",
-  "type": "object"
+  ]
 }

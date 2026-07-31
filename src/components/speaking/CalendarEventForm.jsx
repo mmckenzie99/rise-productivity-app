@@ -11,6 +11,8 @@ import PlanCommentsSection from './PlanCommentsSection';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import RecurrenceEditor from './RecurrenceEditor';
 import { generateOccurrences } from '@/lib/recurrence';
+import { useAuth } from '@/lib/AuthContext';
+import { canComment } from '@/lib/permissions';
 
 const EMPTY = {
   title: '',
@@ -71,7 +73,7 @@ const prefillFromRule = (base, ruleStr) => {
   }
 };
 
-export default function CalendarEventForm({ open, item, admins, currentUserId, onClose, onSave, onDelete, onDeleteFuture }) {
+export default function CalendarEventForm({ open, item, admins, assignableUsers, currentUserId, onClose, onSave, onDelete, onDeleteFuture }) {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const requestClose = useHistoryModal(open, onClose);
@@ -123,8 +125,10 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
     }
   };
 
-  const assignees = (admins || []).filter((u) => u.id !== currentUserId);
-  const isAdmin = (admins || []).some((u) => u.id === currentUserId);
+  const { user } = useAuth();
+  const userCanComment = canComment(user);
+  const isAdmin = user?.role === 'admin';
+  const assignees = (assignableUsers || []).filter((u) => u.id !== currentUserId);
   const isSeriesOccurrence = !!item?.series_id;
   const showRecurrence = !item?.id || (isSeriesOccurrence && editScope === 'future');
 
@@ -257,7 +261,7 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
             />
           </div>
 
-          {item?.id && isAdmin && (
+          {item?.id && (isAdmin || userCanComment) && (
             <PlanCommentsSection
               planId={item.id}
               planTitle={form.title}

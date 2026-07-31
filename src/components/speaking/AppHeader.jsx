@@ -24,6 +24,7 @@ export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, newOpe
           <Link to="/trips"><Button variant="outline" className={pathname === '/trips' ? ACTIVE : IDLE}><Plane className="mr-2 h-4 w-4" />Engagement Trips</Button></Link>
           <Button variant="outline" onClick={onCalendar} className={calendarOpen ? ACTIVE : IDLE}><CalendarDays className="mr-2 h-4 w-4" />Calendar</Button>
           {isAdmin && <Button variant="outline" onClick={onInvite} className={inviteOpen ? ACTIVE : IDLE}><Users className="mr-2 h-4 w-4" />Invite</Button>}
+          {isAdmin && <Link to="/users"><Button variant="outline" className={pathname === '/users' ? ACTIVE : IDLE}><Users className="mr-2 h-4 w-4" />Manage Users</Button></Link>}
         </div>
 
         {/* Mobile actions (core navigation lives in the BottomTabBar) */}
@@ -44,6 +45,11 @@ export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, newOpe
               {isAdmin && (
                 <DropdownMenuItem className={ITEM_HOVER} onClick={onInvite}>
                   <Users className="mr-2 h-4 w-4" />Invite
+                </DropdownMenuItem>
+              )}
+              {isAdmin && (
+                <DropdownMenuItem className={ITEM_HOVER} asChild>
+                  <Link to="/users" className="flex w-full items-center"><Users className="mr-2 h-4 w-4" />Manage Users</Link>
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>

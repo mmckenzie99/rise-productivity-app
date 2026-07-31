@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { base44 } from '@/api/base44Client';
 import ResponsiveSelect from './ResponsiveSelect';
+import { canComment } from '@/lib/permissions';
 import usePlanComments from '@/hooks/usePlanComments';
 
 const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -15,6 +16,7 @@ export default function PlanCommentsSection({ planId, planTitle, planDate, admin
   const [draft, setDraft] = useState('');
   const [notifyId, setNotifyId] = useState('none');
   const [saving, setSaving] = useState(false);
+  if (!canComment(user)) return null;
 
   const notifyOptions = (admins || []).filter((u) => u.id !== currentUserId);
 
