@@ -10,9 +10,12 @@ const TABS = [
 export default function BottomTabBar() {
   const { pathname } = useLocation();
 
-  const handleTap = (to) => {
+  const handleTap = (e, to) => {
     const match = to === '/' ? pathname === '/' : pathname === to;
     if (match) {
+      // Already on this tab: don't push a duplicate history entry (keeps the
+      // back stack clean). Just scroll up and reset filters.
+      e.preventDefault();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       window.dispatchEvent(new CustomEvent('b44:reset-filters'));
     }
@@ -26,7 +29,7 @@ export default function BottomTabBar() {
             key={t.to}
             to={t.to}
             end={t.end}
-            onClick={() => handleTap(t.to)}
+            onClick={(e) => handleTap(e, t.to)}
             className={({ isActive }) =>
               `flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium select-none transition-colors ${
                 isActive ? 'text-[#D9A404]' : 'text-[#5A6781]'
