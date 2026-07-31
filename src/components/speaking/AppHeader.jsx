@@ -11,7 +11,7 @@ const ACTIVE = 'bg-[#D9A404] text-white border-[#D9A404] hover:bg-[#B89003] hove
 const IDLE = 'border-border bg-card';
 const ITEM_HOVER = 'hover:bg-[#D9A404] hover:text-white focus:bg-[#D9A404] focus:text-white data-[highlighted]:bg-[#D9A404] data-[highlighted]:text-white';
 
-export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, newOpen, calendarOpen, inviteOpen }) {
+export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, isOwner, newOpen, calendarOpen, inviteOpen }) {
   const { pathname } = useLocation();
   return (
     <header className="flex flex-col gap-5 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
@@ -24,7 +24,7 @@ export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, newOpe
           <Link to="/trips"><Button variant="outline" className={pathname === '/trips' ? ACTIVE : IDLE}><Plane className="mr-2 h-4 w-4" />Engagement Trips</Button></Link>
           <Button variant="outline" onClick={onCalendar} className={calendarOpen ? ACTIVE : IDLE}><CalendarDays className="mr-2 h-4 w-4" />Calendar</Button>
           {isAdmin && <Button variant="outline" onClick={onInvite} className={inviteOpen ? ACTIVE : IDLE}><Users className="mr-2 h-4 w-4" />Invite</Button>}
-          {isAdmin && <Link to="/users"><Button variant="outline" className={pathname === '/users' ? ACTIVE : IDLE}><Users className="mr-2 h-4 w-4" />Manage Users</Button></Link>}
+          {isOwner && <Link to="/users"><Button variant="outline" className={pathname === '/users' ? ACTIVE : IDLE}><Users className="mr-2 h-4 w-4" />Manage Users</Button></Link>}
         </div>
 
         {/* Mobile actions (core navigation lives in the BottomTabBar) */}
@@ -47,7 +47,7 @@ export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, newOpe
                   <Users className="mr-2 h-4 w-4" />Invite
                 </DropdownMenuItem>
               )}
-              {isAdmin && (
+              {isOwner && (
                 <DropdownMenuItem className={ITEM_HOVER} asChild>
                   <Link to="/users" className="flex w-full items-center"><Users className="mr-2 h-4 w-4" />Manage Users</Link>
                 </DropdownMenuItem>

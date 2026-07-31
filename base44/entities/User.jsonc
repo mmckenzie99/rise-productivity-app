@@ -10,6 +10,11 @@
         "user"
       ]
     },
+    "is_owner": {
+      "type": "boolean",
+      "default": false,
+      "description": "True for the single app Owner. The Owner is a super-administrator: they always have full access and are the only user who can manage access roles in User Management."
+    },
     "can_comment": {
       "type": "boolean",
       "default": false,

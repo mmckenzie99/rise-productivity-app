@@ -83,7 +83,7 @@ function RoleDefaultsCard({ settings, update }) {
 
 export default function UserManagement() {
   const { user } = useAuth();
-  const isAdminUser = user?.role === 'admin';
+  const isOwnerUser = !!user?.is_owner;
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
@@ -102,7 +102,7 @@ export default function UserManagement() {
   };
 
   useEffect(() => {
-    if (isAdminUser) load();
+    if (isOwnerUser) load();
     else setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -119,7 +119,7 @@ export default function UserManagement() {
     }
   };
 
-  if (!isAdminUser) {
+  if (!isOwnerUser) {
     return (
       <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
         <div className="mx-auto max-w-3xl px-4 py-16 text-center">
@@ -162,7 +162,7 @@ export default function UserManagement() {
                     </div>
                     <div className="flex items-center gap-2">
                       {saving && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
-                      <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${adminLocked ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'}`}>{adminLocked ? 'Administrator' : 'Collaborator'}</span>
+                      <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${u.is_owner ? 'bg-primary text-primary-foreground' : adminLocked ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'}`}>{u.is_owner ? 'Owner' : adminLocked ? 'Administrator' : 'Collaborator'}</span>
                     </div>
                   </div>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
