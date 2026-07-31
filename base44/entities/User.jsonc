@@ -17,23 +17,19 @@
     },
     "can_comment": {
       "type": "boolean",
-      "default": false,
-      "description": "Allows this user to participate in internal engagement and plan discussions. Administrators always can."
+      "description": "Explicit per-user override for commenting in engagement and plan discussions. true forces on, false forces off; when unset the role default applies."
     },
     "can_be_assigned": {
       "type": "boolean",
-      "default": false,
-      "description": "Allows this user to be assigned to work plans. Administrators always can."
+      "description": "Explicit per-user override for being assigned to work plans. true forces on, false forces off; when unset the role default applies."
     },
     "can_create_personal_plans": {
       "type": "boolean",
-      "default": false,
-      "description": "Per-user grant letting this administrator create personal (family) calendar plans. Active when the role default is off and this flag is on."
+      "description": "Explicit per-user override for creating personal (family) calendar plans. true forces on, false forces off; when unset the role default applies."
     },
     "can_create_work_plans": {
       "type": "boolean",
-      "default": false,
-      "description": "Per-user grant letting this administrator create work (coworker) calendar plans. Active when the role default is off and this flag is on."
+      "description": "Explicit per-user override for creating work (coworker) calendar plans. true forces on, false forces off; when unset the role default applies."
     }
   },
   "required": [

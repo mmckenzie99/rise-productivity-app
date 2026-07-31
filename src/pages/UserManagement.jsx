@@ -50,7 +50,7 @@ function RoleDefaultsCard({ settings, update }) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-display text-lg font-semibold">Default access by role</h2>
-          <p className="text-xs text-muted-foreground">Defaults applied to each role. Turn an admin default off to assign that feature to specific administrators individually.</p>
+          <p className="text-xs text-muted-foreground">Defaults apply to anyone you haven't individually toggled. Individual on/off toggles override these for that person.</p>
         </div>
         {saving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
       </div>
@@ -219,33 +219,33 @@ export default function UserManagement() {
                     <PermissionToggle
                       icon={<MessageSquare className="h-4 w-4" />}
                       label="Can comment"
-                      description={settings?.features?.can_comment?.[u.role] ? 'Turn off the role default to assign individually' : 'Engagement & plan discussions'}
+                      description="Engagement & plan discussions"
                       checked={resolveFeature(u, settings, 'can_comment')}
-                      disabled={!!settings?.features?.can_comment?.[u.role]}
+                      disabled={isSelf}
                       onCheckedChange={(v) => updateField(u.id, 'can_comment', v)}
                     />
                     <PermissionToggle
                       icon={<UserCheck className="h-4 w-4" />}
                       label="Can be assigned"
-                      description={settings?.features?.can_be_assigned?.[u.role] ? 'Turn off the role default to assign individually' : 'Assignable to work plans'}
+                      description="Assignable to work plans"
                       checked={resolveFeature(u, settings, 'can_be_assigned')}
-                      disabled={!!settings?.features?.can_be_assigned?.[u.role]}
+                      disabled={isSelf}
                       onCheckedChange={(v) => updateField(u.id, 'can_be_assigned', v)}
                     />
                     <PermissionToggle
                       icon={<CalendarDays className="h-4 w-4" />}
                       label="Create personal plans"
-                      description={settings?.features?.can_create_personal_plans?.[u.role] ? 'Turn off the role default to assign individually' : 'Family / personal calendar entries'}
+                      description="Family / personal calendar entries"
                       checked={resolvePlanFlag(u, settings, 'can_create_personal_plans')}
-                      disabled={!!settings?.features?.can_create_personal_plans?.[u.role]}
+                      disabled={isSelf}
                       onCheckedChange={(v) => updateField(u.id, 'can_create_personal_plans', v)}
                     />
                     <PermissionToggle
                       icon={<Briefcase className="h-4 w-4" />}
                       label="Create work plans"
-                      description={settings?.features?.can_create_work_plans?.[u.role] ? 'Turn off the role default to assign individually' : 'Coworker / work calendar entries'}
+                      description="Coworker / work calendar entries"
                       checked={resolvePlanFlag(u, settings, 'can_create_work_plans')}
-                      disabled={!!settings?.features?.can_create_work_plans?.[u.role]}
+                      disabled={isSelf}
                       onCheckedChange={(v) => updateField(u.id, 'can_create_work_plans', v)}
                     />
                   </div>
