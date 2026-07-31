@@ -6,7 +6,6 @@ import { EMPTY, asArray } from '@/lib/speaking';
 import FormBasics from './FormBasics';
 import FormSchedule from './FormSchedule';
 import FormLocation from './FormLocation';
-import FormAttachments from './FormAttachments';
 import FormPresentation from './FormPresentation';
 import RichTextEditor from './RichTextEditor';
 import useHistoryModal from '@/hooks/useHistoryModal';
@@ -48,7 +47,6 @@ export default function EngagementForm({ open, item, onClose, onSave }) {
             <RichTextEditor value={form.notes || ''} onChange={v => set('notes', v)} placeholder="Preparation notes, ideas, and reminders…" />
           </div>
 
-          <FormAttachments form={form} set={set} />
         </div>
 
         <DialogFooter>
