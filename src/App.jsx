@@ -8,14 +8,15 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import { Navigate } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
-import ForgotPassword from '@/pages/ForgotPassword';
-import ResetPassword from '@/pages/ResetPassword';
-import Home from '@/pages/Home';
-import Trips from '@/pages/Trips';
-import UserManagement from '@/pages/UserManagement';
-import Dashboard from '@/pages/Dashboard';
+import { lazy, Suspense } from 'react';
+const Login = lazy(() => import('@/pages/Login'));
+const Register = lazy(() => import('@/pages/Register'));
+const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
+const Home = lazy(() => import('@/pages/Home'));
+const Trips = lazy(() => import('@/pages/Trips'));
+const UserManagement = lazy(() => import('@/pages/UserManagement'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
 import { AnimatePresence, motion } from 'framer-motion';
 import useSystemDarkMode from '@/hooks/useSystemDarkMode';
 
@@ -52,6 +53,7 @@ const AuthenticatedApp = () => {
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.18, ease: 'easeOut' }}
       >
+        <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div></div>}>
         <Routes location={location}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -65,6 +67,7 @@ const AuthenticatedApp = () => {
           </Route>
           <Route path="*" element={<PageNotFound />} />
         </Routes>
+        </Suspense>
       </motion.div>
     </AnimatePresence>
   );

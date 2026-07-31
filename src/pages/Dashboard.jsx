@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { LayoutDashboard, ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw } from 'lucide-react';
 import AppHeader from '@/components/speaking/AppHeader';
 import StatCard from '@/components/speaking/StatCard';
 import useEngagements from '@/hooks/useEngagements';
@@ -162,11 +162,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="flex lg:hidden">
-          <Link to="/" className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 h-11 text-sm font-medium text-foreground active:bg-[#F0F2F6]">
-            <ArrowLeft className="h-4 w-4" /> Back to engagements
-          </Link>
-        </div>
         <div className="hidden justify-center lg:flex">
           <Link to="/" className="text-sm font-medium text-[#D9A404] hover:underline">← Back to engagements</Link>
         </div>
