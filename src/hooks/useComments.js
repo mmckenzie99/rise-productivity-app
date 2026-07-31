@@ -20,9 +20,9 @@ export default function useComments(engagementId) {
     return off;
   }, [load, engagementId]);
 
-  const add = async (body, author_name) => {
+  const add = async (body, author_name, notify_admin_id, notify_admin_name) => {
     if (!body?.trim() || !engagementId) return;
-    const payload = { engagement_id: engagementId, body: body.trim(), author_name: author_name || 'Anonymous' };
+    const payload = { engagement_id: engagementId, body: body.trim(), author_name: author_name || 'Anonymous', notify_admin_id: notify_admin_id || '', notify_admin_name: notify_admin_name || '' };
     const temp = { id: `temp_${Date.now()}`, ...payload, created_date: new Date().toISOString() };
     setItems((prev) => [...prev, temp]);
     try {

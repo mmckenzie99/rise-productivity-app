@@ -13,6 +13,14 @@
     "author_name": {
       "type": "string",
       "description": "Cached display name of the comment author"
+    },
+    "notify_admin_id": {
+      "type": "string",
+      "description": "ID of the administrator notified about this comment"
+    },
+    "notify_admin_name": {
+      "type": "string",
+      "description": "Cached display name of the notified admin"
     }
   },
   "required": [

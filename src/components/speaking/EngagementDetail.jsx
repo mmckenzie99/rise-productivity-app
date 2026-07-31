@@ -7,7 +7,7 @@ import RichTextDisplay from './RichTextDisplay';
 import CommentsSection from './CommentsSection';
 import useHistoryModal from '@/hooks/useHistoryModal';
 
-export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAdmin, trip, onViewTrip }) {
+export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAdmin, trip, onViewTrip, admins, currentUserId }) {
   const requestClose = useHistoryModal(!!item, onClose);
   if (!item) return null;
   const dateForDisplay = item.speaking_date || item.deploy_date;
@@ -64,7 +64,7 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
             <Paperclip className="h-4 w-4" />{a.name}
           </a>
         ))}
-        <CommentsSection engagementId={item.id} isAdmin={isAdmin} />
+        <CommentsSection engagementId={item.id} engagementTitle={item.place || item.title} engagementDate={item.speaking_date} admins={admins} currentUserId={currentUserId} />
         <div className="flex flex-wrap gap-2 border-t border-[#D6DAE3] pt-3">
           <button onClick={() => downloadICS(generateICS(item), `${item.title || item.place || 'engagement'}.ics`)} className="inline-flex items-center gap-1.5 rounded-md border border-[#D6DAE3] bg-white px-3 py-1.5 text-xs font-medium text-[#1B2A4B] transition hover:border-[#D9A404] hover:text-[#D9A404]">
             <Download className="h-3.5 w-3.5" />Download .ics
