@@ -1,0 +1,71 @@
+{
+  "name": "TripPlanNotification",
+  "type": "object",
+  "properties": {
+    "trip_id": {
+      "type": "string",
+      "description": "ID of the trip this notification relates to"
+    },
+    "plan_comment_id": {
+      "type": "string",
+      "description": "ID of the PlanComment that triggered this notification"
+    },
+    "comment_snippet": {
+      "type": "string",
+      "description": "Short snippet of the comment body for display"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Cached display name of the comment author"
+    },
+    "recipient_id": {
+      "type": "string",
+      "description": "User id of the notification recipient"
+    },
+    "recipient_name": {
+      "type": "string",
+      "description": "Cached display name of the recipient"
+    },
+    "is_urgent": {
+      "type": "boolean",
+      "default": false,
+      "description": "High-priority flag set when the triggering comment contains the word 'urgent'"
+    },
+    "read": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "trip_id",
+    "plan_comment_id",
+    "recipient_id"
+  ],
+  "rls": {
+    "read": {
+      "data.recipient_id": "{{user.id}}"
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "data.recipient_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "Trip Plan Comment Notification",
+  "description": "When a PlanComment is created on a calendar plan tied to a trip, notify the trip creator and the assignees of the trip's related calendar events. Comments containing 'urgent' are flagged high-priority. No email is sent.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "PlanComment",
+      "events": [
+        "create"
+      ]
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "trip_plan_comment_notification",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "notify": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "notifyTripPlanComment",
+            "args": {
+              "plan_comment_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end"
+        }
+      }
+    ]
+  }
+}
