@@ -57,6 +57,9 @@ export default function Trips() {
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={load}>
         <div className="flex items-center justify-between">
+          <Link to="/" className="inline-flex lg:hidden items-center gap-1.5 rounded-md border border-[#D6DAE3] bg-white px-3 h-11 text-sm font-medium text-[#1B2A4B] active:bg-[#F0F2F6]">
+            <ArrowLeft className="h-4 w-4" /> Back
+          </Link>
           <Link to="/" className="hidden lg:inline-flex items-center gap-1.5 text-sm text-[#5A6781] hover:text-[#1B2A4B]">
             <ArrowLeft className="h-4 w-4" /> Back to Home
           </Link>

@@ -10,7 +10,7 @@ export default function ProfileMenu() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Account" className="select-none">
+          <Button variant="ghost" size="icon" aria-label="Account" className="select-none h-11 w-11 lg:h-9 lg:w-9">
             <User className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
