@@ -1,0 +1,55 @@
+{
+  "name": "AppSettings",
+  "type": "object",
+  "properties": {
+    "features": {
+      "type": "object",
+      "description": "Role-based feature access defaults. Each feature key maps a role ('admin' or 'user') to a boolean. Admins always have full access regardless of these values.",
+      "properties": {
+        "can_comment": {
+          "type": "object",
+          "properties": {
+            "admin": {
+              "type": "boolean"
+            },
+            "user": {
+              "type": "boolean"
+            }
+          }
+        },
+        "can_be_assigned": {
+          "type": "object",
+          "properties": {
+            "admin": {
+              "type": "boolean"
+            },
+            "user": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "features"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

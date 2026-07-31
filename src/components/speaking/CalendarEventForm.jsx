@@ -12,7 +12,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import RecurrenceEditor from './RecurrenceEditor';
 import { generateOccurrences } from '@/lib/recurrence';
 import { useAuth } from '@/lib/AuthContext';
-import { canComment } from '@/lib/permissions';
+import useFeatureFlag from '@/hooks/useFeatureFlag';
 
 const EMPTY = {
   title: '',
@@ -126,7 +126,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
   };
 
   const { user } = useAuth();
-  const userCanComment = canComment(user);
+  const userCanComment = useFeatureFlag('can_comment');
   const isAdmin = user?.role === 'admin';
   const assignees = (assignableUsers || []).filter((u) => u.id !== currentUserId);
   const isSeriesOccurrence = !!item?.series_id;

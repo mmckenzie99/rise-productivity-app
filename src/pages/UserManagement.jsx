@@ -8,6 +8,7 @@ import { Loader2, MessageSquare, UserCheck, ShieldCheck, ArrowLeft } from 'lucid
 import Brand from '@/components/speaking/Brand';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
 import ResponsiveSelect from '@/components/speaking/ResponsiveSelect';
+import { useAppSettings, DEFAULT_FEATURES } from '@/hooks/useAppSettings';
 
 function PermissionToggle({ icon, label, description, checked, disabled, onCheckedChange }) {
   return (
@@ -24,12 +25,65 @@ function PermissionToggle({ icon, label, description, checked, disabled, onCheck
   );
 }
 
+const FEATURE_META = [
+  { key: 'can_comment', label: 'Comment in discussions', description: 'Engagement & plan comments' },
+  { key: 'can_be_assigned', label: 'Be assigned to plans', description: 'Work plan assignments' },
+];
+
+function RoleDefaultsCard({ settings, update }) {
+  const features = settings?.features || DEFAULT_FEATURES;
+  const [saving, setSaving] = useState(false);
+  const toggle = async (key, value) => {
+    setSaving(true);
+    try {
+      await update({ ...features, [key]: { ...features[key], user: value } });
+    } finally {
+      setSaving(false);
+    }
+  };
+  return (
+    <div className="rounded-lg border border-border bg-card p-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-display text-lg font-semibold">Default access by role</h2>
+          <p className="text-xs text-muted-foreground">Defaults applied to each role. Per-user toggles below add access for individuals.</p>
+        </div>
+        {saving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+      </div>
+      <div className="mt-3 divide-y divide-border">
+        {FEATURE_META.map((f) => {
+          const userOn = !!features?.[f.key]?.user;
+          return (
+            <div key={f.key} className="flex items-center justify-between py-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">{f.label}</p>
+                <p className="text-[11px] text-muted-foreground">{f.description}</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-muted-foreground">Admin</span>
+                  <Switch checked disabled />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-muted-foreground">Collaborator</span>
+                  <Switch checked={userOn} onCheckedChange={(v) => toggle(f.key, v)} />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function UserManagement() {
   const { user } = useAuth();
   const isAdminUser = user?.role === 'admin';
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
+  const { settings, update } = useAppSettings();
 
   const load = async () => {
     setLoading(true);
@@ -83,6 +137,7 @@ export default function UserManagement() {
           <h1 className="font-display text-3xl font-semibold">User permissions</h1>
           <p className="mt-1 text-sm text-muted-foreground">Turn features on or off for each person. Administrators always have full access.</p>
         </div>
+        <RoleDefaultsCard settings={settings} update={update} />
 
         {loading ? (
           <div className="flex justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>

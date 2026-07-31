@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { base44 } from '@/api/base44Client';
 import ResponsiveSelect from './ResponsiveSelect';
-import { canComment } from '@/lib/permissions';
+import useFeatureFlag from '@/hooks/useFeatureFlag';
 import useComments from '@/hooks/useComments';
 
 const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -13,10 +13,11 @@ const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').
 export default function CommentsSection({ engagementId, engagementTitle, engagementDate, admins, currentUserId }) {
   const { user } = useAuth();
   const { items, loading, add, remove } = useComments(engagementId);
+  const canComment = useFeatureFlag('can_comment');
   const [draft, setDraft] = useState('');
   const [notifyId, setNotifyId] = useState('none');
   const [saving, setSaving] = useState(false);
-  if (!canComment(user)) return null;
+  if (!canComment) return null;
 
   const notifyOptions = (admins || []).filter((u) => u.id !== currentUserId);
 

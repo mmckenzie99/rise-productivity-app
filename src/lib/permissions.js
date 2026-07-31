@@ -1,8 +1,12 @@
-// Centralized permission helpers. Administrators always have full access;
-// collaborator-level access is granted per user via the can_comment and
-// can_be_assigned flags on their User record.
+// Centralized permission helpers.
+// Administrators always have full access. For everyone else, a feature is
+// enabled when their per-user flag is explicitly on OR their role's default
+// (managed in AppSettings) is on.
 export const isAdmin = (user) => user?.role === 'admin';
 
-export const canComment = (user) => isAdmin(user) || !!user?.can_comment;
-
-export const canBeAssigned = (user) => isAdmin(user) || !!user?.can_be_assigned;
+export const resolveFeature = (user, settings, key) => {
+  if (isAdmin(user)) return true;
+  if (user?.[key] === true) return true;
+  const role = user?.role || 'user';
+  return settings?.features?.[key]?.[role] === true;
+};

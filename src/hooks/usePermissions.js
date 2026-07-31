@@ -1,12 +1,15 @@
 import { useAuth } from '@/lib/AuthContext';
-import { isAdmin, canComment, canBeAssigned } from '@/lib/permissions';
+import { useAppSettings } from '@/hooks/useAppSettings';
+import { isAdmin, resolveFeature } from '@/lib/permissions';
 
-// Reads the current user's permission profile from auth context.
+// Reads the current user's permission profile, combining per-user flags with
+// the role-based defaults managed in AppSettings.
 export default function usePermissions() {
   const { user } = useAuth();
+  const { settings } = useAppSettings();
   return {
     isAdmin: isAdmin(user),
-    canComment: canComment(user),
-    canBeAssigned: canBeAssigned(user),
+    canComment: resolveFeature(user, settings, 'can_comment'),
+    canBeAssigned: resolveFeature(user, settings, 'can_be_assigned'),
   };
 }
