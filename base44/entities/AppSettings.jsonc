@@ -4,7 +4,7 @@
   "properties": {
     "features": {
       "type": "object",
-      "description": "Role-based feature access defaults. Each feature key maps a role ('admin' or 'user') to a boolean. Admins always have full access regardless of these values.",
+      "description": "Role-based feature access defaults. Each feature key maps a role ('admin' or 'user') to a boolean. Most features auto-grant admins full access; the plan-creation flags (can_create_personal_plans, can_create_work_plans) are evaluated per role without an admin bypass, so an admin role default of false actually restricts that admin group.",
       "properties": {
         "can_comment": {
           "type": "object",
@@ -18,6 +18,28 @@
           }
         },
         "can_be_assigned": {
+          "type": "object",
+          "properties": {
+            "admin": {
+              "type": "boolean"
+            },
+            "user": {
+              "type": "boolean"
+            }
+          }
+        },
+        "can_create_personal_plans": {
+          "type": "object",
+          "properties": {
+            "admin": {
+              "type": "boolean"
+            },
+            "user": {
+              "type": "boolean"
+            }
+          }
+        },
+        "can_create_work_plans": {
           "type": "object",
           "properties": {
             "admin": {

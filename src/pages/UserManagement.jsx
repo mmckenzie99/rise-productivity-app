@@ -28,6 +28,8 @@ function PermissionToggle({ icon, label, description, checked, disabled, onCheck
 const FEATURE_META = [
   { key: 'can_comment', label: 'Comment in discussions', description: 'Engagement & plan comments' },
   { key: 'can_be_assigned', label: 'Be assigned to plans', description: 'Work plan assignments' },
+  { key: 'can_create_personal_plans', label: 'Create personal plans', description: 'Family / personal calendar entries' },
+  { key: 'can_create_work_plans', label: 'Create work plans', description: 'Coworker / work calendar entries' },
 ];
 
 function RoleDefaultsCard({ settings, update }) {

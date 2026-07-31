@@ -12,7 +12,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import RecurrenceEditor from './RecurrenceEditor';
 import { generateOccurrences } from '@/lib/recurrence';
 import { useAuth } from '@/lib/AuthContext';
-import useFeatureFlag from '@/hooks/useFeatureFlag';
+import useFeatureFlag, { usePlanFlag } from '@/hooks/useFeatureFlag';
 
 const EMPTY = {
   title: '',
@@ -78,11 +78,20 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
   const [saving, setSaving] = useState(false);
   const requestClose = useHistoryModal(open, onClose);
   const [editScope, setEditScope] = useState('single');
+  const { user } = useAuth();
+  const userCanComment = useFeatureFlag('can_comment');
+  const canCreatePersonal = usePlanFlag('can_create_personal_plans');
+  const canCreateWork = usePlanFlag('can_create_work_plans');
+  const isAdmin = user?.role === 'admin';
+  const assignees = (assignableUsers || []).filter((u) => u.id !== currentUserId);
 
   useEffect(() => {
-    setForm(prefillFromRule({ ...EMPTY, ...(item || {}) }, item?.recurrence_rule));
+    const base = { ...EMPTY, ...(item || {}) };
+    if (!item?.id && !canCreatePersonal && canCreateWork) base.category = 'Work';
+    if (!item?.id && !canCreateWork && canCreatePersonal) base.category = 'Personal';
+    setForm(prefillFromRule(base, item?.recurrence_rule));
     setEditScope('single');
-  }, [item, open]);
+  }, [item, open, canCreatePersonal, canCreateWork]);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -98,6 +107,8 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
   const submit = async (e) => {
     e.preventDefault();
     setSaving(true);
+    if (form.category === 'Personal' && !canCreatePersonal) { window.alert("You don't have permission to create personal plans."); setSaving(false); return; }
+    if (form.category === 'Work' && !canCreateWork) { window.alert("You don't have permission to create work plans."); setSaving(false); return; }
     const rule = buildRule(form);
     try {
       if (!item?.id) {
@@ -125,10 +136,6 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
     }
   };
 
-  const { user } = useAuth();
-  const userCanComment = useFeatureFlag('can_comment');
-  const isAdmin = user?.role === 'admin';
-  const assignees = (assignableUsers || []).filter((u) => u.id !== currentUserId);
   const isSeriesOccurrence = !!item?.series_id;
   const showRecurrence = !item?.id || (isSeriesOccurrence && editScope === 'future');
 
@@ -183,7 +190,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
             </div>
             <div className="space-y-1.5">
               <Label>Category</Label>
-              <ResponsiveSelect value={form.category} onValueChange={(v) => set('category', v)} options={[{ value: 'Personal', label: 'Personal' }, { value: 'Work', label: 'Work' }]} triggerClassName="border-border" />
+              <ResponsiveSelect value={form.category} onValueChange={(v) => set('category', v)} options={[{ value: 'Personal', label: 'Personal', disabled: !canCreatePersonal }, { value: 'Work', label: 'Work', disabled: !canCreateWork }]} triggerClassName="border-border" />
             </div>
             <div className="space-y-1.5">
               <Label>Location</Label>

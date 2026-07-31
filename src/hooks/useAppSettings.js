@@ -7,6 +7,8 @@ import { useAuth } from '@/lib/AuthContext';
 export const DEFAULT_FEATURES = {
   can_comment: { admin: true, user: false },
   can_be_assigned: { admin: true, user: false },
+  can_create_personal_plans: { admin: true, user: true },
+  can_create_work_plans: { admin: true, user: false },
 };
 
 let cache = { features: DEFAULT_FEATURES };
