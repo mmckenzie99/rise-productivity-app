@@ -119,7 +119,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
 
   return (
     <div className="overflow-x-auto">
-      <div className={mode === 'day' ? 'min-w-[320px]' : 'min-w-[640px]'}>
+      <div className={mode === 'day' ? 'min-w-[320px]' : 'w-full min-w-0'}>
         {dayKey && (
           <div className="mb-3">
             <DailyReflection dateKey={dayKey} engagements={items} />
