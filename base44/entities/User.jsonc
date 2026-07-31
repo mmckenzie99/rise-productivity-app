@@ -19,6 +19,16 @@
       "type": "boolean",
       "default": false,
       "description": "Allows this user to be assigned to work plans. Administrators always can."
+    },
+    "can_create_personal_plans": {
+      "type": "boolean",
+      "default": false,
+      "description": "Per-user grant letting this administrator create personal (family) calendar plans. Active when the role default is off and this flag is on."
+    },
+    "can_create_work_plans": {
+      "type": "boolean",
+      "default": false,
+      "description": "Per-user grant letting this administrator create work (coworker) calendar plans. Active when the role default is off and this flag is on."
     }
   },
   "required": [

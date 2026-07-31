@@ -4,11 +4,12 @@ import { useAuth } from '@/lib/AuthContext';
 import { base44 } from '@/api/base44Client';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Loader2, MessageSquare, UserCheck, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { Loader2, MessageSquare, UserCheck, ShieldCheck, ArrowLeft, CalendarDays, Briefcase } from 'lucide-react';
 import Brand from '@/components/speaking/Brand';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
 import ResponsiveSelect from '@/components/speaking/ResponsiveSelect';
 import { useAppSettings, DEFAULT_FEATURES } from '@/hooks/useAppSettings';
+import { resolvePlanFlag } from '@/lib/permissions';
 
 function PermissionToggle({ icon, label, description, checked, disabled, onCheckedChange }) {
   return (
@@ -28,17 +29,17 @@ function PermissionToggle({ icon, label, description, checked, disabled, onCheck
 const FEATURE_META = [
   { key: 'can_comment', label: 'Comment in discussions', description: 'Engagement & plan comments' },
   { key: 'can_be_assigned', label: 'Be assigned to plans', description: 'Work plan assignments' },
-  { key: 'can_create_personal_plans', label: 'Create personal plans', description: 'Family / personal calendar entries' },
-  { key: 'can_create_work_plans', label: 'Create work plans', description: 'Coworker / work calendar entries' },
+  { key: 'can_create_personal_plans', label: 'Create personal plans', description: 'Family / personal calendar entries', perAdmin: true },
+  { key: 'can_create_work_plans', label: 'Create work plans', description: 'Coworker / work calendar entries', perAdmin: true },
 ];
 
 function RoleDefaultsCard({ settings, update }) {
   const features = settings?.features || DEFAULT_FEATURES;
   const [saving, setSaving] = useState(false);
-  const toggle = async (key, value) => {
+  const toggle = async (key, role, value) => {
     setSaving(true);
     try {
-      await update({ ...features, [key]: { ...features[key], user: value } });
+      await update({ ...features, [key]: { ...features[key], [role]: value } });
     } finally {
       setSaving(false);
     }
@@ -48,13 +49,14 @@ function RoleDefaultsCard({ settings, update }) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-display text-lg font-semibold">Default access by role</h2>
-          <p className="text-xs text-muted-foreground">Defaults applied to each role. Per-user toggles below add access for individuals.</p>
+          <p className="text-xs text-muted-foreground">Defaults applied to each role. For plan creation, turn an admin default off to assign it to specific administrators individually.</p>
         </div>
         {saving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
       </div>
       <div className="mt-3 divide-y divide-border">
         {FEATURE_META.map((f) => {
           const userOn = !!features?.[f.key]?.user;
+          const adminOn = f.perAdmin ? !!features?.[f.key]?.admin : true;
           return (
             <div key={f.key} className="flex items-center justify-between py-3">
               <div>
@@ -64,11 +66,15 @@ function RoleDefaultsCard({ settings, update }) {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] text-muted-foreground">Admin</span>
-                  <Switch checked disabled />
+                  {f.perAdmin ? (
+                    <Switch checked={adminOn} onCheckedChange={(v) => toggle(f.key, 'admin', v)} />
+                  ) : (
+                    <Switch checked disabled />
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] text-muted-foreground">Collaborator</span>
-                  <Switch checked={userOn} onCheckedChange={(v) => toggle(f.key, v)} />
+                  <Switch checked={userOn} onCheckedChange={(v) => toggle(f.key, 'user', v)} />
                 </div>
               </div>
             </div>
@@ -179,6 +185,22 @@ export default function UserManagement() {
                       checked={!!u.can_be_assigned || adminLocked}
                       disabled={adminLocked}
                       onCheckedChange={(v) => updateField(u.id, 'can_be_assigned', v)}
+                    />
+                    <PermissionToggle
+                      icon={<CalendarDays className="h-4 w-4" />}
+                      label="Create personal plans"
+                      description={settings?.features?.can_create_personal_plans?.[u.role] ? 'Turn off the role default to assign individually' : 'Family / personal calendar entries'}
+                      checked={resolvePlanFlag(u, settings, 'can_create_personal_plans')}
+                      disabled={!!settings?.features?.can_create_personal_plans?.[u.role]}
+                      onCheckedChange={(v) => updateField(u.id, 'can_create_personal_plans', v)}
+                    />
+                    <PermissionToggle
+                      icon={<Briefcase className="h-4 w-4" />}
+                      label="Create work plans"
+                      description={settings?.features?.can_create_work_plans?.[u.role] ? 'Turn off the role default to assign individually' : 'Coworker / work calendar entries'}
+                      checked={resolvePlanFlag(u, settings, 'can_create_work_plans')}
+                      disabled={!!settings?.features?.can_create_work_plans?.[u.role]}
+                      onCheckedChange={(v) => updateField(u.id, 'can_create_work_plans', v)}
                     />
                   </div>
                   {!isSelf && (
