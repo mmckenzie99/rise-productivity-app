@@ -4,7 +4,8 @@ import { useAuth } from '@/lib/AuthContext';
 import { base44 } from '@/api/base44Client';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Loader2, MessageSquare, UserCheck, ShieldCheck, ArrowLeft, CalendarDays, Briefcase } from 'lucide-react';
+import { Loader2, MessageSquare, UserCheck, ShieldCheck, ArrowLeft, CalendarDays, Briefcase, Search, Users as UsersIcon } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import Brand from '@/components/speaking/Brand';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
 import ResponsiveSelect from '@/components/speaking/ResponsiveSelect';
@@ -87,7 +88,25 @@ export default function UserManagement() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
+  const [query, setQuery] = useState('');
   const { settings, update } = useAppSettings();
+
+  const matches = (u) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    return (u.full_name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q);
+  };
+  const filtered = users.filter(matches);
+  const counts = {
+    total: users.length,
+    owners: users.filter((u) => u.is_owner).length,
+    admins: users.filter((u) => u.role === 'admin' && !u.is_owner).length,
+    collaborators: users.filter((u) => u.role === 'user').length,
+    canComment: users.filter((u) => resolveFeature(u, settings, 'can_comment')).length,
+    canBeAssigned: users.filter((u) => resolveFeature(u, settings, 'can_be_assigned')).length,
+    personalPlans: users.filter((u) => resolvePlanFlag(u, settings, 'can_create_personal_plans')).length,
+    workPlans: users.filter((u) => resolvePlanFlag(u, settings, 'can_create_work_plans')).length,
+  };
 
   const load = async () => {
     setLoading(true);
@@ -139,17 +158,48 @@ export default function UserManagement() {
         </div>
         <div>
           <h1 className="font-display text-3xl font-semibold">User permissions</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Turn features on or off for each person. Turn a role default off to restrict or assign access per administrator.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Manage everyone's access in one place — see current permissions and toggle commenting or planning for each person.</p>
         </div>
+
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="rounded-lg border border-border bg-card p-3">
+            <div className="flex items-center gap-2 text-muted-foreground"><UsersIcon className="h-4 w-4" /><span className="text-[11px] font-medium">People</span></div>
+            <p className="mt-1 font-display text-2xl font-semibold">{counts.total}</p>
+            <p className="text-[11px] text-muted-foreground">{counts.owners} owner · {counts.admins} admin · {counts.collaborators} collaborator{counts.collaborators === 1 ? '' : 's'}</p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-3">
+            <div className="flex items-center gap-2 text-muted-foreground"><MessageSquare className="h-4 w-4" /><span className="text-[11px] font-medium">Can comment</span></div>
+            <p className="mt-1 font-display text-2xl font-semibold">{counts.canComment}</p>
+            <p className="text-[11px] text-muted-foreground">of {counts.total} people</p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-3">
+            <div className="flex items-center gap-2 text-muted-foreground"><UserCheck className="h-4 w-4" /><span className="text-[11px] font-medium">Assignable</span></div>
+            <p className="mt-1 font-display text-2xl font-semibold">{counts.canBeAssigned}</p>
+            <p className="text-[11px] text-muted-foreground">of {counts.total} people</p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-3">
+            <div className="flex items-center gap-2 text-muted-foreground"><CalendarDays className="h-4 w-4" /><span className="text-[11px] font-medium">Plan creators</span></div>
+            <p className="mt-1 font-display text-2xl font-semibold">{counts.personalPlans + counts.workPlans}</p>
+            <p className="text-[11px] text-muted-foreground">{counts.personalPlans} personal · {counts.workPlans} work</p>
+          </div>
+        </div>
+
         <RoleDefaultsCard settings={settings} update={update} />
+
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name or email" className="pl-9" />
+        </div>
 
         {loading ? (
           <div className="flex justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
         ) : users.length === 0 ? (
           <p className="py-12 text-center text-sm text-muted-foreground">No users found.</p>
+        ) : filtered.length === 0 ? (
+          <p className="py-12 text-center text-sm text-muted-foreground">No people match “{query}”.</p>
         ) : (
           <div className="space-y-3">
-            {users.map((u) => {
+            {filtered.map((u) => {
               const isSelf = u.id === user?.id;
               const saving = savingId === u.id;
               const adminLocked = u.role === 'admin';
