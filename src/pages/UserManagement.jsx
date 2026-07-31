@@ -9,7 +9,7 @@ import Brand from '@/components/speaking/Brand';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
 import ResponsiveSelect from '@/components/speaking/ResponsiveSelect';
 import { useAppSettings, DEFAULT_FEATURES } from '@/hooks/useAppSettings';
-import { resolvePlanFlag } from '@/lib/permissions';
+import { resolveFeature, resolvePlanFlag } from '@/lib/permissions';
 
 function PermissionToggle({ icon, label, description, checked, disabled, onCheckedChange }) {
   return (
@@ -49,14 +49,14 @@ function RoleDefaultsCard({ settings, update }) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-display text-lg font-semibold">Default access by role</h2>
-          <p className="text-xs text-muted-foreground">Defaults applied to each role. For plan creation, turn an admin default off to assign it to specific administrators individually.</p>
+          <p className="text-xs text-muted-foreground">Defaults applied to each role. Turn an admin default off to assign that feature to specific administrators individually.</p>
         </div>
         {saving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
       </div>
       <div className="mt-3 divide-y divide-border">
         {FEATURE_META.map((f) => {
           const userOn = !!features?.[f.key]?.user;
-          const adminOn = f.perAdmin ? !!features?.[f.key]?.admin : true;
+          const adminOn = !!features?.[f.key]?.admin;
           return (
             <div key={f.key} className="flex items-center justify-between py-3">
               <div>
@@ -66,11 +66,7 @@ function RoleDefaultsCard({ settings, update }) {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] text-muted-foreground">Admin</span>
-                  {f.perAdmin ? (
-                    <Switch checked={adminOn} onCheckedChange={(v) => toggle(f.key, 'admin', v)} />
-                  ) : (
-                    <Switch checked disabled />
-                  )}
+                  <Switch checked={adminOn} onCheckedChange={(v) => toggle(f.key, 'admin', v)} />
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] text-muted-foreground">Collaborator</span>
@@ -143,7 +139,7 @@ export default function UserManagement() {
         </div>
         <div>
           <h1 className="font-display text-3xl font-semibold">User permissions</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Turn features on or off for each person. Administrators always have full access.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Turn features on or off for each person. Turn a role default off to restrict or assign access per administrator.</p>
         </div>
         <RoleDefaultsCard settings={settings} update={update} />
 
@@ -173,17 +169,17 @@ export default function UserManagement() {
                     <PermissionToggle
                       icon={<MessageSquare className="h-4 w-4" />}
                       label="Can comment"
-                      description="Engagement & plan discussions"
-                      checked={!!u.can_comment || adminLocked}
-                      disabled={adminLocked}
+                      description={settings?.features?.can_comment?.[u.role] ? 'Turn off the role default to assign individually' : 'Engagement & plan discussions'}
+                      checked={resolveFeature(u, settings, 'can_comment')}
+                      disabled={!!settings?.features?.can_comment?.[u.role]}
                       onCheckedChange={(v) => updateField(u.id, 'can_comment', v)}
                     />
                     <PermissionToggle
                       icon={<UserCheck className="h-4 w-4" />}
                       label="Can be assigned"
-                      description="Assignable to work plans"
-                      checked={!!u.can_be_assigned || adminLocked}
-                      disabled={adminLocked}
+                      description={settings?.features?.can_be_assigned?.[u.role] ? 'Turn off the role default to assign individually' : 'Assignable to work plans'}
+                      checked={resolveFeature(u, settings, 'can_be_assigned')}
+                      disabled={!!settings?.features?.can_be_assigned?.[u.role]}
                       onCheckedChange={(v) => updateField(u.id, 'can_be_assigned', v)}
                     />
                     <PermissionToggle
