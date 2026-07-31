@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, useNavigationType } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -21,6 +21,8 @@ import useSystemDarkMode from '@/hooks/useSystemDarkMode';
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
   const location = useLocation();
+  const navType = useNavigationType();
+  const isBack = navType === 'POP';
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -47,9 +49,9 @@ const AuthenticatedApp = () => {
     <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
-        initial={{ x: '100%' }}
+        initial={{ x: isBack ? '-30%' : '100%' }}
         animate={{ x: 0 }}
-        exit={{ x: '-30%' }}
+        exit={{ x: isBack ? '100%' : '-30%' }}
         transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
       >
       <Routes location={location}>

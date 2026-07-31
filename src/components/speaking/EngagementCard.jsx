@@ -45,7 +45,7 @@ export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, ha
           <p className="flex gap-2"><Paperclip className="h-4 w-4" />{item.attachments.length} attachment{item.attachments.length === 1 ? '' : 's'}</p>
         )}
       </div>
-      <div className="mt-4 flex flex-wrap gap-2 font-mono text-[10px]">
+      <div className="mt-4 flex flex-wrap gap-2 font-mono text-[11px] md:text-[10px]">
         <span className="rounded-full border border-[#D6DAE3] px-2 py-1">{item.progress}</span>
         {asArray(item.presentation_type).map(t => <span key={t} className="rounded-full border border-[#D6DAE3] px-2 py-1">{t}</span>)}
         {hasTrip && <span className="rounded-full border border-[#D9A404] bg-[#D9A404]/10 px-2 py-1 text-[#1B2A4B]">Trip</span>}

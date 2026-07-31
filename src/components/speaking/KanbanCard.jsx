@@ -15,7 +15,7 @@ export default function KanbanCard({ item, onClick }) {
         )}
         <p className="flex gap-1.5"><CalendarDays className="h-3.5 w-3.5 shrink-0" />{formatDate(item.speaking_date)}{item.start_time && ` · ${formatTime(item.start_time)}`}</p>
       </div>
-      <span className={`mt-3 inline-block rounded-full px-2 py-0.5 font-mono text-[10px] uppercase ${statusTone[item.progress] || 'bg-[#E8EAF0] text-[#5A6781]'}`}>
+      <span className={`mt-3 inline-block rounded-full px-2 py-0.5 font-mono text-[11px] md:text-[10px] uppercase ${statusTone[item.progress] || 'bg-[#E8EAF0] text-[#5A6781]'}`}>
         {item.progress}
       </span>
     </button>

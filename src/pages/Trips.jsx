@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo, useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import { ArrowLeft, Plus, Building2, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ const FILTERS = ['all', 'upcoming', 'completed'];
 export default function Trips() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
+  const [searchParams, setSearchParams] = useSearchParams();
   const { items: trips, loading, save, remove, load } = useTrips();
   const { items: engagements } = useEngagements();
   const [filter, setFilter] = useState('all');
@@ -35,6 +36,14 @@ export default function Trips() {
   }, [trips, filter]);
 
   const edit = (trip) => { setSelected(null); setFormOpen(trip); };
+
+  useEffect(() => {
+    const id = searchParams.get('tripId');
+    if (id && trips.length) {
+      const found = trips.find(t => t.id === id);
+      if (found) setSelected(found);
+    }
+  }, [searchParams, trips]);
   const del = async (trip) => {
     if (window.confirm('Delete this trip?')) {
       await remove(trip.id);
@@ -122,7 +131,7 @@ export default function Trips() {
       </div>
 
       <TripForm open={!!formOpen} item={formOpen === true ? null : formOpen} engagements={engagements} onClose={() => setFormOpen(false)} onSave={async t => { await save(t); setFormOpen(false); }} />
-      <TripDetail trip={selected} onClose={() => setSelected(null)} onEdit={() => edit(selected)} onDelete={() => del(selected)} isAdmin={isAdmin} />
+      <TripDetail trip={selected} onClose={() => { setSelected(null); setSearchParams(prev => { prev.delete('tripId'); return prev; }, { replace: true }); }} onEdit={() => edit(selected)} onDelete={() => del(selected)} isAdmin={isAdmin} />
       <div className="h-16 lg:hidden" />
       <BottomTabBar />
     </main>
