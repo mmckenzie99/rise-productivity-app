@@ -119,7 +119,9 @@ Deno.serve(async (req) => {
     // Load engagements (sorted by most recent deploy date)
     const engagements = await base44.asServiceRole.entities.Engagement.list('-deploy_date', 500);
 
-    // Load existing notifications to deduplicate
+    // Load existing notifications to deduplicate. Dismissed records are kept
+    // (not deleted) so they remain in this set and block the same window from
+    // re-firing; other windows still fire when their time comes.
     const existing = await base44.asServiceRole.entities.Notification.list('-created_date', 500);
     const sentKeys = new Set(existing.map(n => `${n.engagement_id}:${n.window_label}`));
 

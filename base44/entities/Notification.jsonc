@@ -31,6 +31,11 @@
     "read": {
       "type": "boolean",
       "default": false
+    },
+    "dismissed": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when the user dismissed the notification. Dismissed records are kept (not deleted) so the reminder engine still sees the window as already fired and won't recreate it; the bell hides them from the list."
     }
   },
   "required": [

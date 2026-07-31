@@ -8,7 +8,7 @@ export default function useNotifications() {
   const load = useCallback(async () => {
     try {
       const items = await base44.entities.Notification.list('-created_date', 50);
-      setNotifications(items);
+      setNotifications(items.filter(n => !n.dismissed));
     } catch (e) {
       console.error('Failed to load notifications', e);
     } finally {
@@ -27,9 +27,9 @@ export default function useNotifications() {
     await base44.entities.Notification.update(id, { read: true });
   }, []);
 
-  const deleteNotification = useCallback(async (id) => {
+  const dismissNotification = useCallback(async (id) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
-    await base44.entities.Notification.delete(id);
+    await base44.entities.Notification.update(id, { dismissed: true });
   }, []);
 
   const markAllAsRead = useCallback(async () => {
@@ -41,5 +41,5 @@ export default function useNotifications() {
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  return { notifications, loading, keepForReview, deleteNotification, markAllAsRead, unreadCount };
+  return { notifications, loading, keepForReview, dismissNotification, markAllAsRead, unreadCount };
 }

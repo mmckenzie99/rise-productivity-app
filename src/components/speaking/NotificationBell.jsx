@@ -5,7 +5,7 @@ import { formatDate, formatTime, TIMEZONES } from '@/lib/speaking';
 import useNotifications from '@/hooks/useNotifications';
 
 export default function NotificationBell() {
-  const { notifications, loading, keepForReview, deleteNotification, markAllAsRead, unreadCount } = useNotifications();
+  const { notifications, loading, keepForReview, dismissNotification, markAllAsRead, unreadCount } = useNotifications();
 
   return (
     <Popover>
@@ -62,10 +62,10 @@ export default function NotificationBell() {
                     </button>
                   )}
                   <button
-                    onClick={() => deleteNotification(n.id)}
+                    onClick={() => dismissNotification(n.id)}
                     className="shrink-0 rounded p-1 text-[#B43A2E] hover:bg-[#B43A2E]/10"
-                    aria-label="Delete"
-                    title="Delete"
+                    aria-label="Dismiss"
+                    title="Dismiss"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
