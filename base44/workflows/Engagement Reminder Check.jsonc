@@ -1,4 +1,23 @@
 {
+  "name": "Rise Reminder Check",
+  "description": "Every 5 minutes, checks engagements for due reminders anchored to the deploy date (14, 7, 3, and 1 day windows) and sends in-app + email notifications. Invokes checkEngagementReminders with the cron secret so anonymous direct HTTP calls are rejected.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "*/5 * * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
   "definition": {
     "document": {
       "dsl": "1.0.0",
@@ -20,24 +39,5 @@
         }
       }
     ]
-  },
-  "trigger": {
-    "condition": null,
-    "config": {
-      "trigger_type": "scheduled",
-      "events": [],
-      "schedule_mode": "recurring",
-      "cron_expression": "*/5 * * * *",
-      "one_time_date": null,
-      "timezone": "UTC",
-      "interval_value": null,
-      "interval_unit": null,
-      "interval_anchor": null,
-      "ends_type": "never",
-      "ends_on_date": null,
-      "ends_after_count": null
-    }
-  },
-  "description": "Every 5 minutes, checks engagements for due reminders anchored to the deploy date (14, 7, 3, and 1 day windows) and sends in-app + email notifications. Invokes checkEngagementReminders with the cron secret so anonymous direct HTTP calls are rejected.",
-  "name": "Engagement Reminder Check"
+  }
 }
