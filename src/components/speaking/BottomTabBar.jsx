@@ -22,7 +22,7 @@ export default function BottomTabBar() {
   };
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#D6DAE3] bg-white/95 pb-safe backdrop-blur lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 pb-safe backdrop-blur lg:hidden">
       <div className="mx-auto flex max-w-md">
         {TABS.map((t) => (
           <NavLink
@@ -32,7 +32,7 @@ export default function BottomTabBar() {
             onClick={(e) => handleTap(e, t.to)}
             className={({ isActive }) =>
               `flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium select-none transition-colors ${
-                isActive ? 'text-[#D9A404]' : 'text-[#5A6781]'
+                isActive ? 'text-[#D9A404]' : 'text-muted-foreground'
               }`
             }
           >

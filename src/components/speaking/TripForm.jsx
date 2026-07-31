@@ -61,29 +61,29 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
 
           {/* Department */}
           <div>
-            <Label className="text-xs text-[#5A6781]">Department</Label>
-            <ResponsiveSelect value={form.department || ''} onValueChange={(v) => set('department', v)} options={DEPARTMENTS.map((d) => ({ value: d, label: d }))} placeholder="Select department" triggerClassName="mt-1 border-[#D6DAE3] bg-white" />
+            <Label className="text-xs text-muted-foreground">Department</Label>
+            <ResponsiveSelect value={form.department || ''} onValueChange={(v) => set('department', v)} options={DEPARTMENTS.map((d) => ({ value: d, label: d }))} placeholder="Select department" triggerClassName="mt-1 border-border bg-card" />
           </div>
 
           {/* Travel Schedule */}
-          <div className="space-y-3 rounded-lg border border-[#D6DAE3] bg-white p-4">
-            <h3 className="font-display text-sm font-semibold text-[#1B2A4B]">Travel Schedule</h3>
+          <div className="space-y-3 rounded-lg border border-border bg-card p-4">
+            <h3 className="font-display text-sm font-semibold text-foreground">Travel Schedule</h3>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs text-[#5A6781]">Leave Date</Label>
-                <Input type="date" className="mt-1 border-[#D6DAE3] bg-white" value={form.leave_date || ''} onChange={(e) => set('leave_date', e.target.value)} />
+                <Label className="text-xs text-muted-foreground">Leave Date</Label>
+                <Input type="date" className="mt-1 border-border bg-card" value={form.leave_date || ''} onChange={(e) => set('leave_date', e.target.value)} />
               </div>
               <div>
-                <Label className="text-xs text-[#5A6781]">Leave Time</Label>
-                <Input type="time" className="mt-1 border-[#D6DAE3] bg-white" value={form.leave_time || ''} onChange={(e) => set('leave_time', e.target.value)} />
+                <Label className="text-xs text-muted-foreground">Leave Time</Label>
+                <Input type="time" className="mt-1 border-border bg-card" value={form.leave_time || ''} onChange={(e) => set('leave_time', e.target.value)} />
               </div>
               <div>
-                <Label className="text-xs text-[#5A6781]">Return Date</Label>
-                <Input type="date" className="mt-1 border-[#D6DAE3] bg-white" value={form.return_date || ''} onChange={(e) => set('return_date', e.target.value)} />
+                <Label className="text-xs text-muted-foreground">Return Date</Label>
+                <Input type="date" className="mt-1 border-border bg-card" value={form.return_date || ''} onChange={(e) => set('return_date', e.target.value)} />
               </div>
               <div>
-                <Label className="text-xs text-[#5A6781]">Return Time</Label>
-                <Input type="time" className="mt-1 border-[#D6DAE3] bg-white" value={form.return_time || ''} onChange={(e) => set('return_time', e.target.value)} />
+                <Label className="text-xs text-muted-foreground">Return Time</Label>
+                <Input type="time" className="mt-1 border-border bg-card" value={form.return_time || ''} onChange={(e) => set('return_time', e.target.value)} />
               </div>
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={requestClose} className="border-[#D6DAE3] bg-white">Cancel</Button>
+          <Button variant="outline" onClick={requestClose} className="border-border bg-card">Cancel</Button>
           <Button onClick={handleSubmit} disabled={saving || !form.place.length || !form.department} className="bg-[#D9A404] hover:bg-[#B89003]">
             {saving ? 'Saving…' : 'Save Trip'}
           </Button>

@@ -53,14 +53,14 @@ export default function Trips() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F7F8FA] text-[#1B2A4B] pt-safe pb-safe">
+    <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={load}>
         <div className="flex items-center justify-between">
-          <Link to="/" className="inline-flex lg:hidden items-center gap-1.5 rounded-md border border-[#D6DAE3] bg-white px-3 h-11 text-sm font-medium text-[#1B2A4B] active:bg-[#F0F2F6]">
+          <Link to="/" className="inline-flex lg:hidden items-center gap-1.5 rounded-md border border-border bg-card px-3 h-11 text-sm font-medium text-foreground active:bg-[#F0F2F6]">
             <ArrowLeft className="h-4 w-4" /> Back
           </Link>
-          <Link to="/" className="hidden lg:inline-flex items-center gap-1.5 text-sm text-[#5A6781] hover:text-[#1B2A4B]">
+          <Link to="/" className="hidden lg:inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4" /> Back to Home
           </Link>
           {isAdmin && (
@@ -78,7 +78,7 @@ export default function Trips() {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`rounded-md px-4 py-1.5 text-sm font-medium capitalize transition ${filter === f ? 'bg-[#1B2A4B] text-white' : 'bg-white text-[#1B2A4B] border border-[#D6DAE3]'}`}
+              className={`rounded-md px-4 py-1.5 text-sm font-medium capitalize transition ${filter === f ? 'bg-[#1B2A4B] text-white' : 'bg-card text-foreground border border-border'}`}
             >
               {f} ({counts[f]})
             </button>
@@ -87,7 +87,7 @@ export default function Trips() {
 
         {/* Trip list */}
         {loading ? (
-          <div className="py-14 text-center text-sm text-[#5A6781]">Loading trips…</div>
+          <div className="py-14 text-center text-sm text-muted-foreground">Loading trips…</div>
         ) : visible.length ? (
           <div className="space-y-3">
             {visible.map(t => {
@@ -96,14 +96,14 @@ export default function Trips() {
                 <button
                   key={t.id}
                   onClick={() => setSelected(t)}
-                  className="flex w-full items-center gap-4 rounded-lg border border-[#D6DAE3] bg-white p-4 text-left transition hover:border-[#D9A404]"
+                  className="flex w-full items-center gap-4 rounded-lg border border-border bg-card p-4 text-left transition hover:border-[#D9A404]"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[#F7F8FA]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-background">
                     <img src="https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/4323b7e34_ChatGPTImageJul22202605_46_19PM.png" alt="Trip logo" className="h-7 w-7 object-contain" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-[#1B2A4B]">{formatPlaces(t)}</p>
-                    <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-[#5A6781]">
+                    <p className="truncate text-sm font-semibold text-foreground">{formatPlaces(t)}</p>
+                    <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-muted-foreground">
                       <span className="inline-flex items-center gap-1"><Building2 className="h-3 w-3" />{t.department}</span>
                       {t.leave_date && (
                         <span className="inline-flex items-center gap-1">
@@ -116,16 +116,16 @@ export default function Trips() {
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${status === 'upcoming' ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'}`}>
                       {status === 'upcoming' ? 'Upcoming' : 'Completed'}
                     </span>
-                    <span className="text-sm font-semibold text-[#1B2A4B]">{formatCurrency(t.total_cost)}</span>
+                    <span className="text-sm font-semibold text-foreground">{formatCurrency(t.total_cost)}</span>
                   </div>
                 </button>
               );
             })}
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-[#D9A404] bg-white/60 py-14 text-center">
+          <div className="rounded-lg border border-dashed border-[#D9A404] bg-card/60 py-14 text-center">
             <h2 className="font-display text-xl font-semibold">{trips.length ? 'Nothing matches' : 'No trips yet'}</h2>
-            <p className="mt-2 text-sm text-[#5A6781]">
+            <p className="mt-2 text-sm text-muted-foreground">
               {trips.length ? 'Try a different filter.' : isAdmin ? 'Create a trip and link it to a place.' : 'No trip details have been added.'}
             </p>
           </div>

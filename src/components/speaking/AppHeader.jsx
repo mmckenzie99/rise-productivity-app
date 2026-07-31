@@ -8,13 +8,13 @@ import NotificationBell from './NotificationBell';
 import ProfileMenu from './ProfileMenu';
 
 const ACTIVE = 'bg-[#D9A404] text-white border-[#D9A404] hover:bg-[#B89003] hover:text-white';
-const IDLE = 'border-[#D6DAE3] bg-white';
+const IDLE = 'border-border bg-card';
 const ITEM_HOVER = 'hover:bg-[#D9A404] hover:text-white focus:bg-[#D9A404] focus:text-white data-[highlighted]:bg-[#D9A404] data-[highlighted]:text-white';
 
 export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, newOpen, calendarOpen, inviteOpen }) {
   const { pathname } = useLocation();
   return (
-    <header className="flex flex-col gap-5 border-b border-[#D6DAE3] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <header className="flex flex-col gap-5 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
       <Brand />
       <div className="flex flex-wrap items-center gap-2">
         {/* Desktop nav buttons */}

@@ -41,16 +41,16 @@ export default function EngagementForm({ open, item, onClose, onSave }) {
           <FormPresentation form={form} set={set} />
           <FormLocation form={form} set={set} />
 
-          <div className="space-y-2 rounded-lg border border-[#D6DAE3] bg-white p-4">
-            <h3 className="font-display text-sm font-semibold text-[#1B2A4B]">Notes</h3>
-            <Label className="text-xs text-[#5A6781]">Preparation notes, ideas, and reminders</Label>
+          <div className="space-y-2 rounded-lg border border-border bg-card p-4">
+            <h3 className="font-display text-sm font-semibold text-foreground">Notes</h3>
+            <Label className="text-xs text-muted-foreground">Preparation notes, ideas, and reminders</Label>
             <RichTextEditor value={form.notes || ''} onChange={v => set('notes', v)} placeholder="Preparation notes, ideas, and reminders…" />
           </div>
 
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={requestClose} className="border-[#D6DAE3] bg-white">Cancel</Button>
+          <Button type="button" variant="outline" onClick={requestClose} className="border-border bg-card">Cancel</Button>
           <Button type="button" onClick={submit} disabled={saving} className="bg-[#D9A404] hover:bg-[#B89003]">
             {saving ? 'Saving…' : 'Save Engagement'}
           </Button>

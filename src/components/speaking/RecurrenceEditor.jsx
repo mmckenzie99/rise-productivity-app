@@ -20,11 +20,11 @@ export default function RecurrenceEditor({ form, set }) {
   const isWeekdayActive = (day) => (form.recurrence_weekdays || []).includes(day);
 
   return (
-    <div className="space-y-3 rounded-md border border-[#D6DAE3] bg-[#F7F8FA] p-3">
+    <div className="space-y-3 rounded-md border border-border bg-background p-3">
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label>Repeat</Label>
-          <ResponsiveSelect value={freq} onValueChange={(v) => set('recurrence_freq', v)} options={[{ value: 'none', label: 'Does not repeat' }, { value: 'daily', label: 'Daily' }, { value: 'weekly', label: 'Weekly' }, { value: 'monthly', label: 'Monthly' }]} triggerClassName="border-[#D6DAE3]" />
+          <ResponsiveSelect value={freq} onValueChange={(v) => set('recurrence_freq', v)} options={[{ value: 'none', label: 'Does not repeat' }, { value: 'daily', label: 'Daily' }, { value: 'weekly', label: 'Weekly' }, { value: 'monthly', label: 'Monthly' }]} triggerClassName="border-border" />
         </div>
         {freq !== 'none' && (
           <div className="space-y-1.5">
@@ -36,9 +36,9 @@ export default function RecurrenceEditor({ form, set }) {
                 max={365}
                 value={form.recurrence_interval}
                 onChange={(e) => set('recurrence_interval', e.target.value)}
-                className="w-20 border-[#D6DAE3]"
+                className="w-20 border-border"
               />
-              <span className="text-sm text-[#5A6781]">{interval === 1 ? unit : `${unit}s`}</span>
+              <span className="text-sm text-muted-foreground">{interval === 1 ? unit : `${unit}s`}</span>
             </div>
           </div>
         )}
@@ -54,7 +54,7 @@ export default function RecurrenceEditor({ form, set }) {
                 type="button"
                 onClick={() => toggleWeekday(i)}
                 className={`h-8 w-9 rounded-md border text-xs font-medium transition ${
-                  isWeekdayActive(i) ? 'border-[#D9A404] bg-[#D9A404] text-white' : 'border-[#D6DAE3] bg-white text-[#1B2A4B]'
+                  isWeekdayActive(i) ? 'border-[#D9A404] bg-[#D9A404] text-white' : 'border-border bg-card text-foreground'
                 }`}
               >
                 {d[0]}
@@ -62,7 +62,7 @@ export default function RecurrenceEditor({ form, set }) {
             ))}
           </div>
           {(form.recurrence_weekdays || []).length === 0 && (
-            <p className="text-[11px] text-[#5A6781]">Defaults to the start date's weekday.</p>
+            <p className="text-[11px] text-muted-foreground">Defaults to the start date's weekday.</p>
           )}
         </div>
       )}
@@ -108,10 +108,10 @@ export default function RecurrenceEditor({ form, set }) {
                 max={366}
                 value={form.recurrence_end_count}
                 onChange={(e) => set('recurrence_end_count', e.target.value)}
-                className="w-20 border-[#D6DAE3]"
+                className="w-20 border-border"
                 disabled={form.recurrence_end_mode !== 'count'}
               />
-              <span className="text-sm text-[#5A6781]">occurrences</span>
+              <span className="text-sm text-muted-foreground">occurrences</span>
             </div>
             <div className="flex items-center gap-2">
               <RadioGroupItem value="until" id="re-until" />
@@ -121,7 +121,7 @@ export default function RecurrenceEditor({ form, set }) {
                 min={form.date || undefined}
                 value={form.recurrence_end_until || ''}
                 onChange={(e) => set('recurrence_end_until', e.target.value)}
-                className="w-40 border-[#D6DAE3]"
+                className="w-40 border-border"
                 disabled={form.recurrence_end_mode !== 'until'}
               />
             </div>
@@ -130,7 +130,7 @@ export default function RecurrenceEditor({ form, set }) {
       )}
 
       {freq !== 'none' && (
-        <p className="text-xs font-medium text-[#1B2A4B]">{recurrenceSummary(form)}</p>
+        <p className="text-xs font-medium text-foreground">{recurrenceSummary(form)}</p>
       )}
     </div>
   );

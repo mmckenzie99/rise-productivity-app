@@ -71,14 +71,14 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#F7F8FA] pt-safe pb-safe">
+      <main className="flex min-h-screen items-center justify-center bg-background pt-safe pb-safe">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-800" />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F8FA] text-[#1B2A4B] pt-safe pb-safe">
+    <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
       <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); }}>
         <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
           <AppHeader isAdmin={isAdmin} onAdd={() => goHome('new')} onInvite={() => goHome('invite')} onCalendar={() => goHome('calendar')} />
@@ -97,12 +97,12 @@ export default function Dashboard() {
         <div className="grid gap-4 sm:grid-cols-2">
           <PlanListSection title="Upcoming Plans" icon={CalendarClock} tone="bg-[#FBF0D0] text-[#D9A404]" items={planSections.upcoming} emptyText="No upcoming plans" />
           <PlanListSection title="Completed Plans" icon={CheckCircle2} tone="bg-[#E6F4EA] text-[#2E7D32]" items={planSections.completed} emptyText="No completed plans" />
-          <PlanListSection title="Edited Plans" icon={Edit} tone="bg-[#E7EEF6] text-[#1B2A4B]" items={planSections.edited} emptyText="No edited plans" />
+          <PlanListSection title="Edited Plans" icon={Edit} tone="bg-[#E7EEF6] text-foreground" items={planSections.edited} emptyText="No edited plans" />
           <PlanListSection title="Rescheduled Plans" icon={RefreshCw} tone="bg-[#EDE3F8] text-[#5B2DA0]" items={planSections.rescheduled} emptyText="No rescheduled plans" />
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="rounded-xl border border-[#D6DAE3] bg-white p-5 shadow-sm">
+          <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
             <h2 className="mb-4 font-display text-lg font-semibold">Engagements by status</h2>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -116,7 +116,7 @@ export default function Dashboard() {
             </div>
             <div className="mt-3 flex flex-wrap justify-center gap-3">
               {statusData.map((e) => (
-                <span key={e.name} className="flex items-center gap-1.5 text-xs text-[#5A6781]">
+                <span key={e.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ background: STATUS_COLORS[e.name] }} />
                   {e.name} ({e.value})
                 </span>
@@ -124,7 +124,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#D6DAE3] bg-white p-5 shadow-sm">
+          <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
             <h2 className="mb-4 font-display text-lg font-semibold">Upcoming plans by category</h2>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -138,7 +138,7 @@ export default function Dashboard() {
             </div>
             <div className="mt-3 flex flex-wrap justify-center gap-3">
               {categoryData.map((e) => (
-                <span key={e.name} className="flex items-center gap-1.5 text-xs text-[#5A6781]">
+                <span key={e.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ background: CAT_COLORS[e.name] }} />
                   {e.name} ({e.value})
                 </span>
@@ -147,7 +147,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-[#D6DAE3] bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
           <h2 className="mb-4 font-display text-lg font-semibold">Upcoming engagements by month</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -163,7 +163,7 @@ export default function Dashboard() {
         </div>
 
         <div className="flex lg:hidden">
-          <Link to="/" className="inline-flex items-center gap-1.5 rounded-md border border-[#D6DAE3] bg-white px-3 h-11 text-sm font-medium text-[#1B2A4B] active:bg-[#F0F2F6]">
+          <Link to="/" className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 h-11 text-sm font-medium text-foreground active:bg-[#F0F2F6]">
             <ArrowLeft className="h-4 w-4" /> Back to engagements
           </Link>
         </div>

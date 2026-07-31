@@ -15,15 +15,15 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
   const isPresentation = asArray(item.presentation_type).includes('Presentation(s)');
   return (
     <Dialog open={!!item} onOpenChange={v => !v && requestClose()}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto bg-white sm:max-w-xl">
+      <DialogContent className="max-h-[92vh] overflow-y-auto bg-card sm:max-w-xl">
         <DialogHeader className="text-center items-center">
           <DialogTitle className="font-display text-2xl">{item.place || 'Place not set'}</DialogTitle>
-          {item.title && <p className="text-sm font-medium text-[#5A6781]">{item.title}</p>}
+          {item.title && <p className="text-sm font-medium text-muted-foreground">{item.title}</p>}
         </DialogHeader>
         <div className="flex flex-wrap gap-2">
           <span className={`rounded-full px-3 py-1 text-xs ${statusTone[item.status]}`}>{item.status}</span>
-          <span className="rounded-full border border-[#D6DAE3] px-3 py-1 text-xs">{item.progress}</span>
-          {asArray(item.presentation_type).map(t => <span key={t} className="rounded-full border border-[#D6DAE3] px-3 py-1 text-xs">{t}</span>)}
+          <span className="rounded-full border border-border px-3 py-1 text-xs">{item.progress}</span>
+          {asArray(item.presentation_type).map(t => <span key={t} className="rounded-full border border-border px-3 py-1 text-xs">{t}</span>)}
         </div>
         {item.description && <p>{item.description}</p>}
         <div className="space-y-2 text-sm">
@@ -42,13 +42,13 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
           </section>
         )}
         {isPresentation && (item.start_date || item.deploy_date) && (
-          <div className="grid grid-cols-2 gap-3 rounded-lg border border-[#D6DAE3] bg-white p-4 text-sm">
+          <div className="grid grid-cols-2 gap-3 rounded-lg border border-border bg-card p-4 text-sm">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider text-[#5A6781]">Creation start</p>
+              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Creation start</p>
               <p className="mt-1">{formatDate(item.start_date)}</p>
             </div>
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider text-[#5A6781]">Deploy date</p>
+              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Deploy date</p>
               <p className="mt-1">{formatDate(item.deploy_date)}</p>
             </div>
           </div>
@@ -65,8 +65,8 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
           </a>
         ))}
         <CommentsSection engagementId={item.id} engagementTitle={item.place || item.title} engagementDate={item.speaking_date} admins={admins} currentUserId={currentUserId} />
-        <div className="flex flex-wrap gap-2 border-t border-[#D6DAE3] pt-3">
-          <button onClick={() => downloadICS(generateICS(item), `${item.title || item.place || 'engagement'}.ics`)} className="inline-flex items-center gap-1.5 rounded-md border border-[#D6DAE3] bg-white px-3 py-1.5 text-xs font-medium text-[#1B2A4B] transition hover:border-[#D9A404] hover:text-[#D9A404]">
+        <div className="flex flex-wrap gap-2 border-t border-border pt-3">
+          <button onClick={() => downloadICS(generateICS(item), `${item.title || item.place || 'engagement'}.ics`)} className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-[#D9A404] hover:text-[#D9A404]">
             <Download className="h-3.5 w-3.5" />Download .ics
           </button>
           {trip && (

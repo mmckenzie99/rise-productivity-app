@@ -130,7 +130,7 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && requestClose()}>
-      <DialogContent className="max-h-[90vh] w-[calc(100vw-1.5rem)] overflow-y-auto bg-white sm:max-w-md">
+      <DialogContent className="max-h-[90vh] w-[calc(100vw-1.5rem)] overflow-y-auto bg-card sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-display text-xl">{item?.id ? 'Edit' : 'New'} plan</DialogTitle>
         </DialogHeader>
@@ -141,7 +141,7 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
           </div>
         )}
         {isSeriesOccurrence && (
-          <div className="space-y-1.5 rounded-md border border-[#D6DAE3] bg-[#F7F8FA] p-3">
+          <div className="space-y-1.5 rounded-md border border-border bg-background p-3">
             <Label>Apply changes to</Label>
             <RadioGroup value={editScope} onValueChange={setEditScope} className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
@@ -163,7 +163,7 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
               value={form.title}
               onChange={(e) => set('title', e.target.value)}
               placeholder="What do you need to do?"
-              className="border-[#D6DAE3]"
+              className="border-border"
             />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -174,19 +174,19 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
                 required
                 value={form.date}
                 onChange={(e) => set('date', e.target.value)}
-                className="border-[#D6DAE3]"
+                className="border-border"
               />
             </div>
             <div className="space-y-1.5">
               <Label>Category</Label>
-              <ResponsiveSelect value={form.category} onValueChange={(v) => set('category', v)} options={[{ value: 'Personal', label: 'Personal' }, { value: 'Work', label: 'Work' }]} triggerClassName="border-[#D6DAE3]" />
+              <ResponsiveSelect value={form.category} onValueChange={(v) => set('category', v)} options={[{ value: 'Personal', label: 'Personal' }, { value: 'Work', label: 'Work' }]} triggerClassName="border-border" />
             </div>
             <div className="space-y-1.5">
               <Label>Location</Label>
-              <ResponsiveSelect value={form.location_type} onValueChange={(v) => set('location_type', v)} options={[{ value: 'In-person', label: 'In-person' }, { value: 'Online', label: 'Online' }]} triggerClassName="border-[#D6DAE3]" />
+              <ResponsiveSelect value={form.location_type} onValueChange={(v) => set('location_type', v)} options={[{ value: 'In-person', label: 'In-person' }, { value: 'Online', label: 'Online' }]} triggerClassName="border-border" />
             </div>
           </div>
-          <div className="flex items-center justify-between rounded-md border border-[#D6DAE3] bg-[#F7F8FA] px-3 py-2">
+          <div className="flex items-center justify-between rounded-md border border-border bg-background px-3 py-2">
             <Label className="text-sm">All day</Label>
             <Switch checked={!!form.all_day} onCheckedChange={(v) => setForm((f) => ({ ...f, all_day: v, start_time: v ? '' : f.start_time, end_time: v ? '' : f.end_time, end_date: v ? f.end_date : '' }))} />
           </div>
@@ -198,9 +198,9 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
                 value={form.end_date || ''}
                 min={form.date || undefined}
                 onChange={(e) => set('end_date', e.target.value)}
-                className="border-[#D6DAE3]"
+                className="border-border"
               />
-              <p className="text-[11px] text-[#5A6781]">Leave blank for a single day. Set a later date to span multiple days.</p>
+              <p className="text-[11px] text-muted-foreground">Leave blank for a single day. Set a later date to span multiple days.</p>
             </div>
           )}
           {!form.all_day && (
@@ -211,7 +211,7 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
                   type="time"
                   value={form.start_time || ''}
                   onChange={(e) => set('start_time', e.target.value)}
-                  className="border-[#D6DAE3]"
+                  className="border-border"
                 />
               </div>
               <div className="space-y-1.5">
@@ -220,7 +220,7 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
                   type="time"
                   value={form.end_time || ''}
                   onChange={(e) => set('end_time', e.target.value)}
-                  className="border-[#D6DAE3]"
+                  className="border-border"
                 />
               </div>
             </div>
@@ -235,15 +235,15 @@ export default function CalendarEventForm({ open, item, admins, currentUserId, o
                 value={form.assignee_id || 'none'}
                 onValueChange={onAssigneeChange}
                 options={[{ value: 'none', label: 'No one' }, ...assignees.map((u) => ({ value: u.id, label: u.full_name || u.email }))]}
-                triggerClassName="border-[#D6DAE3]"
+                triggerClassName="border-border"
               />
             </div>
           )}
 
-          <div className="flex items-center justify-between rounded-md border border-[#D6DAE3] bg-[#F7F8FA] px-3 py-2">
+          <div className="flex items-center justify-between rounded-md border border-border bg-background px-3 py-2">
             <div>
               <Label className="text-sm">Mark complete</Label>
-              <p className="text-xs text-[#5A6781]">{form.assignee_id ? 'Notifies whoever assigned this plan.' : 'Mark this plan as finished.'}</p>
+              <p className="text-xs text-muted-foreground">{form.assignee_id ? 'Notifies whoever assigned this plan.' : 'Mark this plan as finished.'}</p>
             </div>
             <Switch checked={!!form.completed} onCheckedChange={toggleComplete} />
           </div>

@@ -56,25 +56,25 @@ export default function PlanCommentsSection({ planId, planTitle, planDate, admin
   };
 
   return (
-    <section className="border-t border-[#D6DAE3] pt-4">
-      <h3 className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-[#5A6781]">
+    <section className="border-t border-border pt-4">
+      <h3 className="mb-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         <MessageSquare className="h-4 w-4" />Internal discussion ({items.length})
       </h3>
       <div className="space-y-3">
         {loading ? (
-          <p className="text-xs text-[#5A6781]">Loading comments…</p>
+          <p className="text-xs text-muted-foreground">Loading comments…</p>
         ) : items.length === 0 ? (
-          <p className="text-xs text-[#5A6781]">No comments yet. Start the discussion.</p>
+          <p className="text-xs text-muted-foreground">No comments yet. Start the discussion.</p>
         ) : (
           items.map((c) => (
-            <div key={c.id} className="rounded-md border border-[#D6DAE3] bg-[#F7F8FA] p-3">
+            <div key={c.id} className="rounded-md border border-border bg-background p-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-semibold text-[#1B2A4B]">{c.author_name || 'Admin'}</span>
-                <button type="button" onClick={() => remove(c.id)} className="text-[#5A6781] transition hover:text-[#B43A2E]">
+                <span className="text-xs font-semibold text-foreground">{c.author_name || 'Admin'}</span>
+                <button type="button" onClick={() => remove(c.id)} className="text-muted-foreground transition hover:text-[#B43A2E]">
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
-              <p className="mt-1 whitespace-pre-wrap text-sm text-[#1B2A4B]">{c.body}</p>
+              <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{c.body}</p>
               {c.notify_admin_name && (
                 <p className="mt-1.5 flex items-center gap-1 text-[11px] text-[#D9A404]">
                   <Bell className="h-3 w-3" />Notified {c.notify_admin_name}
@@ -89,7 +89,7 @@ export default function PlanCommentsSection({ planId, planTitle, planDate, admin
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Add an internal note for admins…"
-          className="min-h-[72px] bg-white text-sm"
+          className="min-h-[72px] bg-card text-sm"
         />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="w-full sm:max-w-[220px]">
@@ -97,7 +97,7 @@ export default function PlanCommentsSection({ planId, planTitle, planDate, admin
               value={notifyId}
               onValueChange={setNotifyId}
               options={[{ value: 'none', label: 'No notification' }, ...notifyOptions.map((u) => ({ value: u.id, label: u.full_name || u.email }))]}
-              triggerClassName="border-[#D6DAE3] text-xs"
+              triggerClassName="border-border text-xs"
             />
           </div>
           <Button type="button" onClick={submit} disabled={saving || !draft.trim()} className="bg-[#D9A404] hover:bg-[#B89003]">
