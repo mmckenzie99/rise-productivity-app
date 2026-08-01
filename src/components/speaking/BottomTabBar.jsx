@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { Home, LayoutDashboard, Plane } from 'lucide-react';
+import QuickActionBar from './QuickActionBar';
 
 const TABS = [
   { to: '/', label: 'Home', icon: Home, end: true },
@@ -23,6 +24,7 @@ export default function BottomTabBar() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 pb-safe backdrop-blur lg:hidden">
+      <QuickActionBar />
       <div className="mx-auto flex max-w-md">
         {TABS.map((t) => (
           <NavLink

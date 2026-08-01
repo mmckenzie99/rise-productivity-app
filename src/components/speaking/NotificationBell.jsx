@@ -4,22 +4,24 @@ import { Button } from '@/components/ui/button';
 import { formatDate, formatTime, TIMEZONES } from '@/lib/speaking';
 import useNotifications from '@/hooks/useNotifications';
 
-export default function NotificationBell() {
+export default function NotificationBell({ trigger, side }) {
   const { notifications, loading, keepForReview, dismissNotification, markAllAsRead, unreadCount } = useNotifications();
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-11 w-11 lg:h-9 lg:w-9 text-[#1B2A4B] hover:bg-[#F0F2F6]" aria-label="Notifications">
-          <Bell className="h-5 w-5" />
-          {unreadCount > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#D9A404] px-1 text-[10px] font-bold text-white">
-              {unreadCount > 9 ? '9+' : unreadCount}
-            </span>
-          )}
-        </Button>
+        {trigger ? trigger({ unreadCount }) : (
+          <Button variant="ghost" size="icon" className="relative h-11 w-11 lg:h-9 lg:w-9 text-[#1B2A4B] hover:bg-[#F0F2F6]" aria-label="Notifications">
+            <Bell className="h-5 w-5" />
+            {unreadCount > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#D9A404] px-1 text-[10px] font-bold text-white">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </Button>
+        )}
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-80 p-0 bg-white">
+      <PopoverContent align="end" side={side} className="w-80 p-0 bg-white">
         <div className="flex items-center justify-between border-b border-[#D6DAE3] p-3">
           <span className="font-display text-sm font-semibold">Notifications</span>
           {unreadCount > 0 && (

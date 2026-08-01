@@ -167,7 +167,7 @@ export default function Dashboard() {
         </div>
         </div>
       </PullToRefresh>
-      <div className="h-16 lg:hidden" />
+      <div className="h-28 lg:hidden" />
       <BottomTabBar />
     </main>
   );
