@@ -102,6 +102,12 @@ export default function Dashboard() {
           </div>
         )}
 
+        {canSee('weekly_goals') && (
+        <CollapsibleSection title="Weekly Goals" icon={Target} iconTone="text-[#D9A404]" defaultOpen>
+          <WeeklyGoalsOverview />
+        </CollapsibleSection>
+        )}
+
         {canSee('plans') && (
         <CollapsibleSection title="Plans" icon={CalendarClock}>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -172,12 +178,6 @@ export default function Dashboard() {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </CollapsibleSection>
-        )}
-
-        {canSee('weekly_goals') && (
-        <CollapsibleSection title="Weekly Goals" icon={Target} iconTone="text-[#D9A404]" defaultOpen>
-          <WeeklyGoalsOverview />
         </CollapsibleSection>
         )}
 
