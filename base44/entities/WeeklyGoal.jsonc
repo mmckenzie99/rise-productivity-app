@@ -31,6 +31,14 @@
           }
         }
       }
+    },
+    "goal_reminder_time": {
+      "type": "string",
+      "description": "Time of day (HH:MM) to send a weekly goal review reminder on the week's start date, or blank for none"
+    },
+    "reminder_timezone": {
+      "type": "string",
+      "description": "IANA timezone the reminder time is interpreted in (e.g. America/Detroit)"
     }
   },
   "required": [

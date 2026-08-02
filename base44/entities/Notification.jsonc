@@ -4,11 +4,11 @@
   "properties": {
     "engagement_id": {
       "type": "string",
-      "description": "ID of the linked engagement"
+      "description": "ID of the linked engagement (omitted for reflection/goal reminders)"
     },
     "engagement_title": {
       "type": "string",
-      "description": "Cached engagement title for display"
+      "description": "Cached title for display (engagement title or reminder label)"
     },
     "speaking_date": {
       "type": "string",
@@ -22,7 +22,7 @@
     },
     "window_label": {
       "type": "string",
-      "description": "Which reminder window triggered this (e.g. 14 Days, 15 Minutes)"
+      "description": "Which reminder window triggered this (e.g. 14 Days, 15 Minutes, Meditation, Goal)"
     },
     "email_sent": {
       "type": "boolean",
@@ -39,8 +39,6 @@
     }
   },
   "required": [
-    "engagement_id",
-    "engagement_title",
     "window_label"
   ],
   "rls": {

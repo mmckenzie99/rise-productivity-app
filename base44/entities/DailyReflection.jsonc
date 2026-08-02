@@ -26,6 +26,14 @@
     "linked_engagement_id": {
       "type": "string",
       "description": "ID of the engagement this reflection note is linked to for syncing"
+    },
+    "meditation_reminder_time": {
+      "type": "string",
+      "description": "Time of day (HH:MM) to send a meditation reminder, or blank for none"
+    },
+    "reminder_timezone": {
+      "type": "string",
+      "description": "IANA timezone the reminder time is interpreted in (e.g. America/Detroit)"
     }
   },
   "required": [

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Target, Plus, Trash2, Check } from 'lucide-react';
+import { Target, Plus, Trash2, Check, Bell } from 'lucide-react';
 import ResponsiveSelect from './ResponsiveSelect';
 
 const FOCUSES = ['Spiritual', 'Professional', 'Physical', 'Mental', 'Relational', 'Personal'];
@@ -30,6 +30,8 @@ export default function WeeklyGoals({ cursor }) {
   const [goals, setGoals] = useState([]);
   const [draftText, setDraftText] = useState('');
   const [draftFocus, setDraftFocus] = FOCUSES[0];
+  const [reminderTime, setReminderTime] = useState('');
+  const [userTz] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Detroit');
   const timer = useRef(null);
   const [loading, setLoading] = useState(true);
 
@@ -42,16 +44,18 @@ export default function WeeklyGoals({ cursor }) {
         const rec = res && res[0];
         setRecord(rec || null);
         setGoals(Array.isArray(rec?.goals) ? rec.goals : []);
+        setReminderTime(rec?.goal_reminder_time || '');
       })
       .finally(() => active && setLoading(false));
     return () => { active = false; };
   }, [startKey]);
 
   const persist = (next) => {
+    const payload = { goals: next, goal_reminder_time: reminderTime || null, reminder_timezone: userTz };
     if (record?.id) {
-      base44.entities.WeeklyGoal.update(record.id, { goals: next }).then(setRecord);
+      base44.entities.WeeklyGoal.update(record.id, payload).then(setRecord);
     } else {
-      base44.entities.WeeklyGoal.create({ start_date: startKey, goals: next }).then(setRecord);
+      base44.entities.WeeklyGoal.create({ start_date: startKey, ...payload }).then(setRecord);
     }
   };
 
@@ -63,7 +67,7 @@ export default function WeeklyGoals({ cursor }) {
     }, 500);
     return () => { if (timer.current) clearTimeout(timer.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [goals, loading]);
+  }, [goals, reminderTime, loading]);
 
   const addGoal = () => {
     if (!draftText.trim()) return;
@@ -77,6 +81,11 @@ export default function WeeklyGoals({ cursor }) {
 
   const removeGoal = (id) => {
     setGoals((g) => g.filter((x) => x.id !== id));
+  };
+
+  const saveReminder = (val) => {
+    setReminderTime(val);
+    // Trigger the debounced autosave effect (which now persists reminder + goals together).
   };
 
   if (loading) {
@@ -93,6 +102,16 @@ export default function WeeklyGoals({ cursor }) {
       <div className="mb-3 flex items-center gap-1.5 text-[#1B2A4B]">
         <Target className="h-3.5 w-3.5 text-[#D9A404]" />
         <span className="text-xs font-semibold uppercase tracking-wider">Goals for the Week</span>
+        <div className="ml-auto flex items-center gap-1.5">
+          <Bell className="h-3.5 w-3.5 text-[#D9A404]" />
+          <span className="text-[11px] text-[#5A6781]">Reminder</span>
+          <Input
+            type="time"
+            value={reminderTime}
+            onChange={(e) => saveReminder(e.target.value)}
+            className="h-8 w-[110px] border-[#D6DAE3] text-xs"
+          />
+        </div>
       </div>
 
       {/* Add a goal */}

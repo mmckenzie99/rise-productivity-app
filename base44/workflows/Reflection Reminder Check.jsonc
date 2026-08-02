@@ -1,0 +1,43 @@
+{
+  "name": "Reflection Reminder Check",
+  "description": "Every 5 minutes, checks daily reflections for due meditation reminders and weekly goals for due goal-review reminders, sending in-app + email notifications. Invokes checkReflectionReminders with the cron secret so anonymous direct HTTP calls are rejected.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "*/5 * * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "reflection_reminder_check",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "reminders": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "checkReflectionReminders",
+            "args": {
+              "secret": "9f3a2b7e8c1d4a6f0b5e3c2d1a9f8e7b"
+            }
+          },
+          "then": "end"
+        }
+      }
+    ]
+  }
+}

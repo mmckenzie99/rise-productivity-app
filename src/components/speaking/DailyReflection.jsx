@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { BookOpen, StickyNote, Send } from 'lucide-react';
+import { BookOpen, StickyNote, Send, Bell } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 import { Button } from '@/components/ui/button';
 import ResponsiveSelect from './ResponsiveSelect';
@@ -16,6 +16,8 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
   const [note, setNote] = useState('');
   const noteTimer = useRef(null);
   const [linkedId, setLinkedId] = useState('');
+  const [reminderTime, setReminderTime] = useState('');
+  const [userTz] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Detroit');
   const [syncing, setSyncing] = useState(false);
   const [synced, setSynced] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -33,6 +35,7 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
         setReference(rec?.meditation_reference || '');
         setNote(rec?.note || '');
         setLinkedId(rec?.linked_engagement_id || '');
+        setReminderTime(rec?.meditation_reminder_time || '');
         setSynced(false);
       })
       .finally(() => active && setLoading(false));
@@ -68,6 +71,11 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
   };
   const onBlurReference = () => {
     if (reference !== (record?.meditation_reference || '')) persist({ meditation_reference: reference });
+  };
+
+  const saveReminder = (val) => {
+    setReminderTime(val);
+    persist({ meditation_reminder_time: val || null, reminder_timezone: userTz });
   };
 
   const linkable = (engagements || [])
@@ -121,6 +129,16 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
           onBlur={onBlurReference}
           placeholder="e.g. John 3:16, Desire of Ages p. 123"
           className="border-[#D6DAE3]"
+        />
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <Bell className="h-3.5 w-3.5 text-[#D9A404]" />
+        <Label className="text-[11px] text-[#5A6781]">Meditation reminder</Label>
+        <Input
+          type="time"
+          value={reminderTime}
+          onChange={(e) => saveReminder(e.target.value)}
+          className="ml-auto h-8 w-[120px] border-[#D6DAE3] text-xs"
         />
       </div>
       <div className="mt-2 space-y-1">
