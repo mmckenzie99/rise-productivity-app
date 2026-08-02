@@ -29,7 +29,7 @@ export default function WeeklyGoalsOverview() {
     const weeks = [];
     for (let i = 0; i < 4; i++) {
       const d = new Date(now);
-      d.setDate(d.getDate() - i * 7);
+      d.setDate(d.getDate() + i * 7);
       weeks.push(weekStartKey(d));
     }
     base44.entities.WeeklyGoal.filter({ start_date: { $in: weeks } })
@@ -64,7 +64,7 @@ export default function WeeklyGoalsOverview() {
           const pct = r.total > 0 ? Math.round((r.done / r.total) * 100) : 0;
           const isCurrent = r.key === weekStartKey(new Date());
           return (
-            <div key={r.key} className="rounded-lg border border-border bg-background/50 p-3">
+            <div key={r.key} className={`rounded-lg border p-3 ${isCurrent ? 'border-[#D9A404] bg-[#FBF0D0]/30 ring-1 ring-[#D9A404]/30' : 'border-border bg-background/50'}`}>
               <div className="flex items-center gap-2">
                 <span className={`text-sm font-medium ${isCurrent ? 'text-[#D9A404]' : 'text-foreground'}`}>
                   {r.label}{isCurrent && ' · This week'}
