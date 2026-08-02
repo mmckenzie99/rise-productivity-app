@@ -30,10 +30,10 @@ export default function useModalHistory(modals) {
 
     if (net === 0 && opened.length > 0) {
       // A modal swapped in for another: reuse the current history entry.
-      window.history.replaceState({ b44_modal: cur }, '');
+      window.history.replaceState({ ...(window.history.state || {}), b44_modal: cur }, '');
     } else if (net > 0) {
       for (let i = 0; i < net; i++) {
-        window.history.pushState({ b44_modal: cur }, '');
+        window.history.pushState({ ...(window.history.state || {}), b44_modal: cur }, '');
       }
     } else if (net < 0) {
       window.history.go(net);
@@ -53,7 +53,22 @@ export default function useModalHistory(modals) {
       stackRef.current = reduced;
       top.onClose();
     };
+    const onDismiss = () => {
+      const stack = stackRef.current;
+      const count = stack.length;
+      if (!count) return;
+      // Close every open modal and pop their history entries in one go so the
+      // back stack returns to the tab root with no phantom/duplicate steps.
+      prevKeysRef.current = '';
+      stackRef.current = [];
+      stack.forEach((m) => m.onClose());
+      window.history.go(-count);
+    };
     window.addEventListener('popstate', onPop);
-    return () => window.removeEventListener('popstate', onPop);
+    window.addEventListener('b44:dismiss-modals', onDismiss);
+    return () => {
+      window.removeEventListener('popstate', onPop);
+      window.removeEventListener('b44:dismiss-modals', onDismiss);
+    };
   }, []);
 }

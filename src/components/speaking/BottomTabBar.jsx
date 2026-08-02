@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Home, LayoutDashboard, Plane } from 'lucide-react';
 import QuickActionBar from './QuickActionBar';
 
@@ -10,15 +10,40 @@ const TABS = [
 
 export default function BottomTabBar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const modalCount = () => {
+    const s = window.history.state?.b44_modal;
+    return s ? s.split('|').length : 0;
+  };
 
   const handleTap = (e, to) => {
     const match = to === '/' ? pathname === '/' : pathname === to;
+    const open = modalCount();
     if (match) {
-      // Already on this tab: don't push a duplicate history entry (keeps the
-      // back stack clean). Just scroll up and reset filters.
+      // Already on this tab: pop any open modals/sheets back to the tab root
+      // (native iOS "tap selected tab to go home"), then scroll up and reset.
       e.preventDefault();
+      if (open > 0) {
+        window.dispatchEvent(new CustomEvent('b44:dismiss-modals'));
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
       window.dispatchEvent(new CustomEvent('b44:reset-filters'));
+    } else if (open > 0) {
+      // Switching tabs while modals are open: dismiss them first so the back
+      // stack stays clean (no duplicate/phantom entries left behind), then
+      // navigate once the history pops settle.
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent('b44:dismiss-modals'));
+      let done = false;
+      const go = () => {
+        if (done) return;
+        done = true;
+        window.removeEventListener('popstate', go);
+        navigate(to);
+      };
+      window.addEventListener('popstate', go);
+      setTimeout(go, 160);
     }
   };
 
