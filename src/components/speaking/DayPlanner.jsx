@@ -2,6 +2,7 @@ import { Check } from 'lucide-react';
 import { formatTime, calEngagementTone, planCalTone, planMultiTone, planDateKeys, isMultiDayPlan } from '@/lib/speaking';
 import { layoutColumns } from '@/lib/eventLayout';
 import DailyReflection from './DailyReflection';
+import WeeklyGoals from './WeeklyGoals';
 
 const START_HOUR = 6;
 const END_HOUR = 23; // grid spans 6:00 → 23:00
@@ -123,6 +124,11 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
         {dayKey && (
           <div className="mb-3">
             <DailyReflection dateKey={dayKey} engagements={items} />
+          </div>
+        )}
+        {mode === 'week' && (
+          <div className="mb-3">
+            <WeeklyGoals cursor={cursor} />
           </div>
         )}
         {/* Day headers */}

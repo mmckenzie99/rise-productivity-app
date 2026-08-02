@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Target, BookOpen, StickyNote, Send } from 'lucide-react';
+import { BookOpen, StickyNote, Send } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 import { Button } from '@/components/ui/button';
 import ResponsiveSelect from './ResponsiveSelect';
@@ -11,7 +11,6 @@ import { formatDate } from '@/lib/speaking';
 
 export default function DailyReflection({ dateKey, engagements = [] }) {
   const [record, setRecord] = useState(null);
-  const [goals, setGoals] = useState('');
   const [meditation, setMeditation] = useState('');
   const [reference, setReference] = useState('');
   const [note, setNote] = useState('');
@@ -30,7 +29,6 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
         if (!active) return;
         const rec = res && res[0];
         setRecord(rec || null);
-        setGoals(rec?.goals || '');
         setMeditation(rec?.meditation || '');
         setReference(rec?.meditation_reference || '');
         setNote(rec?.note || '');
@@ -65,9 +63,6 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note]);
 
-  const onBlurGoals = () => {
-    if (goals !== (record?.goals || '')) persist({ goals });
-  };
   const onBlurMeditation = () => {
     if (meditation !== (record?.meditation || '')) persist({ meditation });
   };
@@ -105,76 +100,60 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
   }
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      <div className="rounded-md border border-[#D6DAE3] bg-white p-3">
-        <div className="mb-2 flex items-center gap-1.5 text-[#1B2A4B]">
-          <Target className="h-3.5 w-3.5 text-[#D9A404]" />
-          <span className="text-xs font-semibold uppercase tracking-wider">Goals for the day</span>
-        </div>
-        <Textarea
-          value={goals}
-          onChange={(e) => setGoals(e.target.value)}
-          onBlur={onBlurGoals}
-          rows={4}
-          placeholder="What do you want to accomplish today?"
+    <div className="rounded-md border border-[#D6DAE3] bg-white p-3">
+      <div className="mb-2 flex items-center gap-1.5 text-[#1B2A4B]">
+        <BookOpen className="h-3.5 w-3.5 text-[#D9A404]" />
+        <span className="text-xs font-semibold uppercase tracking-wider">Meditation</span>
+      </div>
+      <Textarea
+        value={meditation}
+        onChange={(e) => setMeditation(e.target.value)}
+        onBlur={onBlurMeditation}
+        rows={3}
+        placeholder="Bible verse or Spirit of Prophecy statement to meditate on…"
+        className="border-[#D6DAE3]"
+      />
+      <div className="mt-2 space-y-1">
+        <Label className="text-[11px] text-[#5A6781]">Reference / source</Label>
+        <Input
+          value={reference}
+          onChange={(e) => setReference(e.target.value)}
+          onBlur={onBlurReference}
+          placeholder="e.g. John 3:16, Desire of Ages p. 123"
           className="border-[#D6DAE3]"
         />
       </div>
-      <div className="rounded-md border border-[#D6DAE3] bg-white p-3">
-        <div className="mb-2 flex items-center gap-1.5 text-[#1B2A4B]">
-          <BookOpen className="h-3.5 w-3.5 text-[#D9A404]" />
-          <span className="text-xs font-semibold uppercase tracking-wider">Meditation</span>
+      <div className="mt-2 space-y-1">
+        <div className="flex items-center gap-1.5 text-[#1B2A4B]">
+          <StickyNote className="h-3.5 w-3.5 text-[#D9A404]" />
+          <span className="text-xs font-semibold uppercase tracking-wider">Note</span>
         </div>
-        <Textarea
-          value={meditation}
-          onChange={(e) => setMeditation(e.target.value)}
-          onBlur={onBlurMeditation}
-          rows={3}
-          placeholder="Bible verse or Spirit of Prophecy statement to meditate on…"
-          className="border-[#D6DAE3]"
+        <RichTextEditor
+          value={note}
+          onChange={setNote}
+          placeholder="Add a note — bold, italics, underline, highlight, or link…"
         />
-        <div className="mt-2 space-y-1">
-          <Label className="text-[11px] text-[#5A6781]">Reference / source</Label>
-          <Input
-            value={reference}
-            onChange={(e) => setReference(e.target.value)}
-            onBlur={onBlurReference}
-            placeholder="e.g. John 3:16, Desire of Ages p. 123"
-            className="border-[#D6DAE3]"
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <ResponsiveSelect
+            value={linkedId}
+            onValueChange={onLinkChange}
+            options={linkable.map((e) => ({ value: e.id, label: `${e.place || 'No place'} — ${e.title || e.speaker_name || 'Engagement'}` }))}
+            placeholder="Link an engagement…"
+            triggerClassName="h-8 w-full min-w-[180px] border-[#D6DAE3] text-xs"
           />
-        </div>
-        <div className="mt-2 space-y-1">
-          <div className="flex items-center gap-1.5 text-[#1B2A4B]">
-            <StickyNote className="h-3.5 w-3.5 text-[#D9A404]" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Note</span>
-          </div>
-          <RichTextEditor
-            value={note}
-            onChange={setNote}
-            placeholder="Add a note — bold, italics, underline, highlight, or link…"
-          />
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <ResponsiveSelect
-              value={linkedId}
-              onValueChange={onLinkChange}
-              options={linkable.map((e) => ({ value: e.id, label: `${e.place || 'No place'} — ${e.title || e.speaker_name || 'Engagement'}` }))}
-              placeholder="Link an engagement…"
-              triggerClassName="h-8 w-full min-w-[180px] border-[#D6DAE3] text-xs"
-            />
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={!linkedId || !note || syncing}
-              onClick={syncToEngagement}
-              className="h-8 border-[#D6DAE3] bg-white"
-            >
-              <Send className="mr-1 h-3.5 w-3.5" />
-              {syncing ? 'Syncing…' : synced ? 'Synced ✓' : 'Sync to Engagement'}
-            </Button>
-          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={!linkedId || !note || syncing}
+            onClick={syncToEngagement}
+            className="h-8 border-[#D6DAE3] bg-white"
+          >
+            <Send className="mr-1 h-3.5 w-3.5" />
+            {syncing ? 'Syncing…' : synced ? 'Synced ✓' : 'Sync to Engagement'}
+          </Button>
         </div>
       </div>
-      {saving && <p className="text-[10px] text-[#5A6781] sm:col-span-2">Saving…</p>}
+      {saving && <p className="mt-2 text-[10px] text-[#5A6781]">Saving…</p>}
     </div>
   );
 }
