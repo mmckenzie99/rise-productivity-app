@@ -12,6 +12,8 @@ import CollapsibleSection from '@/components/speaking/CollapsibleSection';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
 import { useAuth } from '@/lib/AuthContext';
+import { useAppSettings } from '@/hooks/useAppSettings';
+import { resolveDashboardSection } from '@/lib/permissions';
 
 const todayStr = () => {
   const d = new Date();
@@ -29,6 +31,8 @@ export default function Dashboard() {
   const goHome = (action) => navigate(`/?action=${action}`);
   const { items: engagements, loading, load: loadEngagements } = useEngagements();
   const { items: events, load: loadCalEvents } = useCalendarEvents();
+  const { settings } = useAppSettings();
+  const canSee = (id) => resolveDashboardSection(user, settings, id);
 
   const today = todayStr();
 
@@ -89,13 +93,16 @@ export default function Dashboard() {
           <h1 className="font-display text-2xl font-semibold">Dashboard</h1>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          <StatCard label="Upcoming Engagements" value={stats.upcomingEng.length} icon={ClipboardList} tone="gold" />
-          <StatCard label="Upcoming Plans" value={stats.upcomingPlans.length} icon={CalendarClock} tone="navy" />
-          <StatCard label="Plans This Month" value={stats.plansThisMonth.length} icon={CalendarDays} tone="green" />
-          <StatCard label="Completed Engagements" value={stats.completedEng.length} icon={CheckCircle2} tone="slate" />
-        </div>
+        {canSee('stat_cards') && (
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            <StatCard label="Upcoming Engagements" value={stats.upcomingEng.length} icon={ClipboardList} tone="gold" />
+            <StatCard label="Upcoming Plans" value={stats.upcomingPlans.length} icon={CalendarClock} tone="navy" />
+            <StatCard label="Plans This Month" value={stats.plansThisMonth.length} icon={CalendarDays} tone="green" />
+            <StatCard label="Completed Engagements" value={stats.completedEng.length} icon={CheckCircle2} tone="slate" />
+          </div>
+        )}
 
+        {canSee('plans') && (
         <CollapsibleSection title="Plans" icon={CalendarClock}>
           <div className="grid gap-4 sm:grid-cols-2">
             <PlanListSection title="Upcoming Plans" icon={CalendarClock} tone="bg-[#FBF0D0] text-[#D9A404]" items={planSections.upcoming} emptyText="No upcoming plans" />
@@ -104,7 +111,9 @@ export default function Dashboard() {
             <PlanListSection title="Rescheduled Plans" icon={RefreshCw} tone="bg-[#EDE3F8] text-[#5B2DA0]" items={planSections.rescheduled} emptyText="No rescheduled plans" />
           </div>
         </CollapsibleSection>
+        )}
 
+        {canSee('status_chart') && (
         <CollapsibleSection title="Engagements by status" icon={PieChartIcon} iconTone="text-[#D9A404]">
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -125,7 +134,9 @@ export default function Dashboard() {
             ))}
           </div>
         </CollapsibleSection>
+        )}
 
+        {canSee('category_chart') && (
         <CollapsibleSection title="Upcoming plans by category" icon={PieChartIcon} iconTone="text-[#1B4A6B]">
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -146,7 +157,9 @@ export default function Dashboard() {
             ))}
           </div>
         </CollapsibleSection>
+        )}
 
+        {canSee('monthly_chart') && (
         <CollapsibleSection title="Upcoming engagements by month" icon={BarChartIcon} iconTone="text-[#D9A404]">
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -160,10 +173,13 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
         </CollapsibleSection>
+        )}
 
+        {canSee('weekly_goals') && (
         <CollapsibleSection title="Weekly Goals" icon={Target} iconTone="text-[#D9A404]" defaultOpen>
           <WeeklyGoalsOverview />
         </CollapsibleSection>
+        )}
 
         <div className="hidden justify-center lg:flex">
           <Link to="/" className="text-sm font-medium text-[#D9A404] hover:underline">← Back to engagements</Link>

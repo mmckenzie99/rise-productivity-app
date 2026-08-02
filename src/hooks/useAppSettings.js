@@ -4,11 +4,21 @@ import { useAuth } from '@/lib/AuthContext';
 
 // Role-based defaults for every feature flag. Admins are always granted
 // full access, so only the collaborator ('user') default is meaningful.
+export const DASHBOARD_SECTION_DEFAULTS = {
+  stat_cards: { admin: true, user: true },
+  plans: { admin: true, user: true },
+  status_chart: { admin: true, user: true },
+  category_chart: { admin: true, user: true },
+  monthly_chart: { admin: true, user: true },
+  weekly_goals: { admin: true, user: true },
+};
+
 export const DEFAULT_FEATURES = {
   can_comment: { admin: true, user: false },
   can_be_assigned: { admin: true, user: false },
   can_create_personal_plans: { admin: true, user: true },
   can_create_work_plans: { admin: true, user: false },
+  dashboard_sections: { ...DASHBOARD_SECTION_DEFAULTS },
 };
 
 let cache = { features: DEFAULT_FEATURES };
@@ -21,10 +31,12 @@ async function loadSettings(isAdmin) {
     try {
       const list = await base44.entities.AppSettings.list();
       if (list.length > 0) {
-        cache = { ...list[0], features: { ...DEFAULT_FEATURES, ...(list[0].features || {}) } };
+        const stored = list[0].features || {};
+        cache = { ...list[0], features: { ...DEFAULT_FEATURES, ...stored, dashboard_sections: { ...DASHBOARD_SECTION_DEFAULTS, ...(stored.dashboard_sections || {}) } } };
       } else if (isAdmin) {
         const created = await base44.entities.AppSettings.create({ features: DEFAULT_FEATURES });
-        cache = { ...created, features: { ...DEFAULT_FEATURES, ...(created.features || {}) } };
+        const stored = created.features || {};
+        cache = { ...created, features: { ...DEFAULT_FEATURES, ...stored, dashboard_sections: { ...DASHBOARD_SECTION_DEFAULTS, ...(stored.dashboard_sections || {}) } } };
       } else {
         cache = { features: DEFAULT_FEATURES };
       }
@@ -58,7 +70,8 @@ export function useAppSettings() {
 
   const update = async (features) => {
     const updated = await base44.entities.AppSettings.update(cache.id, { features });
-    cache = { ...cache, features: { ...DEFAULT_FEATURES, ...(updated.features || {}) } };
+    const stored = updated.features || {};
+    cache = { ...cache, features: { ...DEFAULT_FEATURES, ...stored, dashboard_sections: { ...DASHBOARD_SECTION_DEFAULTS, ...(stored.dashboard_sections || {}) } } };
     setSettings(cache);
     listeners.forEach((l) => l(cache));
     return cache;

@@ -4,7 +4,7 @@
   "properties": {
     "features": {
       "type": "object",
-      "description": "Role-based feature access defaults. Each feature key maps a role ('admin' or 'user') to a boolean. Most features auto-grant admins full access; the plan-creation flags (can_create_personal_plans, can_create_work_plans) are evaluated per role without an admin bypass, so an admin role default of false actually restricts that admin group.",
+      "description": "Role-based feature access defaults. Each feature key maps a role ('admin' or 'user') to a boolean. Most features auto-grant admins full access; the plan-creation flags (can_create_personal_plans, can_create_work_plans) are evaluated per role without an admin bypass, so an admin role default of false actually restricts that admin group. The dashboard_sections key maps each Dashboard section id to a per-role visibility boolean (Owner always sees every section).",
       "properties": {
         "can_comment": {
           "type": "object",
@@ -47,6 +47,78 @@
             },
             "user": {
               "type": "boolean"
+            }
+          }
+        },
+        "dashboard_sections": {
+          "type": "object",
+          "description": "Per-role visibility for each Dashboard section. Missing keys default to visible (true).",
+          "properties": {
+            "stat_cards": {
+              "type": "object",
+              "properties": {
+                "admin": {
+                  "type": "boolean"
+                },
+                "user": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "plans": {
+              "type": "object",
+              "properties": {
+                "admin": {
+                  "type": "boolean"
+                },
+                "user": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "status_chart": {
+              "type": "object",
+              "properties": {
+                "admin": {
+                  "type": "boolean"
+                },
+                "user": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "category_chart": {
+              "type": "object",
+              "properties": {
+                "admin": {
+                  "type": "boolean"
+                },
+                "user": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "monthly_chart": {
+              "type": "object",
+              "properties": {
+                "admin": {
+                  "type": "boolean"
+                },
+                "user": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "weekly_goals": {
+              "type": "object",
+              "properties": {
+                "admin": {
+                  "type": "boolean"
+                },
+                "user": {
+                  "type": "boolean"
+                }
+              }
             }
           }
         }

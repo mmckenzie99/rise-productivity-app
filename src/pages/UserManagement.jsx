@@ -10,7 +10,7 @@ import Brand from '@/components/speaking/Brand';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
 import ResponsiveSelect from '@/components/speaking/ResponsiveSelect';
 import { useAppSettings, DEFAULT_FEATURES } from '@/hooks/useAppSettings';
-import { resolveFeature, resolvePlanFlag } from '@/lib/permissions';
+import { resolveFeature, resolvePlanFlag, DASHBOARD_SECTIONS } from '@/lib/permissions';
 
 function PermissionToggle({ icon, label, description, checked, disabled, onCheckedChange }) {
   return (
@@ -45,38 +45,84 @@ function RoleDefaultsCard({ settings, update }) {
       setSaving(false);
     }
   };
+  const toggleSection = async (id, role, value) => {
+    setSaving(true);
+    try {
+      const cur = features.dashboard_sections || {};
+      await update({ ...features, dashboard_sections: { ...cur, [id]: { ...cur[id], [role]: value } } });
+    } finally {
+      setSaving(false);
+    }
+  };
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-display text-lg font-semibold">Default access by role</h2>
-          <p className="text-xs text-muted-foreground">Defaults apply to anyone you haven't individually toggled. Individual on/off toggles override these for that person.</p>
+    <div className="space-y-4">
+      <div className="rounded-lg border border-border bg-card p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display text-lg font-semibold">Default access by role</h2>
+            <p className="text-xs text-muted-foreground">Defaults apply to anyone you haven't individually toggled. Individual on/off toggles override these for that person.</p>
+          </div>
+          {saving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        {saving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+        <div className="mt-3 divide-y divide-border">
+          {FEATURE_META.map((f) => {
+            const userOn = !!features?.[f.key]?.user;
+            const adminOn = !!features?.[f.key]?.admin;
+            return (
+              <div key={f.key} className="flex items-center justify-between py-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{f.label}</p>
+                  <p className="text-[11px] text-muted-foreground">{f.description}</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-muted-foreground">Admin</span>
+                    <Switch checked={adminOn} onCheckedChange={(v) => toggle(f.key, 'admin', v)} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-muted-foreground">Collaborator</span>
+                    <Switch checked={userOn} onCheckedChange={(v) => toggle(f.key, 'user', v)} />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
-      <div className="mt-3 divide-y divide-border">
-        {FEATURE_META.map((f) => {
-          const userOn = !!features?.[f.key]?.user;
-          const adminOn = !!features?.[f.key]?.admin;
-          return (
-            <div key={f.key} className="flex items-center justify-between py-3">
-              <div>
-                <p className="text-sm font-medium text-foreground">{f.label}</p>
-                <p className="text-[11px] text-muted-foreground">{f.description}</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-muted-foreground">Admin</span>
-                  <Switch checked={adminOn} onCheckedChange={(v) => toggle(f.key, 'admin', v)} />
+
+      <div className="rounded-lg border border-border bg-card p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display text-lg font-semibold">Dashboard visibility by role</h2>
+            <p className="text-xs text-muted-foreground">Choose which Dashboard sections administrators and collaborators can see. You (the Owner) always see everything.</p>
+          </div>
+          {saving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+        </div>
+        <div className="mt-3 divide-y divide-border">
+          {DASHBOARD_SECTIONS.map((s) => {
+            const secs = features.dashboard_sections || {};
+            const userOn = secs[s.id]?.user !== false;
+            const adminOn = secs[s.id]?.admin !== false;
+            return (
+              <div key={s.id} className="flex items-center justify-between py-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{s.label}</p>
+                  <p className="text-[11px] text-muted-foreground">{s.description}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-muted-foreground">Collaborator</span>
-                  <Switch checked={userOn} onCheckedChange={(v) => toggle(f.key, 'user', v)} />
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-muted-foreground">Admin</span>
+                    <Switch checked={adminOn} onCheckedChange={(v) => toggleSection(s.id, 'admin', v)} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-muted-foreground">Collaborator</span>
+                    <Switch checked={userOn} onCheckedChange={(v) => toggleSection(s.id, 'user', v)} />
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

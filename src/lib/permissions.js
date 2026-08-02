@@ -16,5 +16,22 @@ export const resolveFeature = (user, settings, key) => {
   return settings?.features?.[key]?.[role] === true;
 };
 
+// Dashboard sections the Owner can show/hide per role. Owner always sees all.
+export const DASHBOARD_SECTIONS = [
+  { id: 'stat_cards', label: 'Summary stats', description: 'Top engagement & plan count cards' },
+  { id: 'plans', label: 'Plans', description: 'Upcoming, completed, edited & rescheduled plan lists' },
+  { id: 'status_chart', label: 'Engagements by status', description: 'Status breakdown pie chart' },
+  { id: 'category_chart', label: 'Plans by category', description: 'Personal vs. work pie chart' },
+  { id: 'monthly_chart', label: 'Engagements by month', description: 'Monthly bar chart' },
+  { id: 'weekly_goals', label: 'Weekly Goals', description: 'Weekly goals overview' },
+];
+
+// Resolves whether a given Dashboard section is visible to the user.
+export const resolveDashboardSection = (user, settings, id) => {
+  if (isOwner(user)) return true;
+  const role = user?.role || 'user';
+  return settings?.features?.dashboard_sections?.[id]?.[role] !== false;
+};
+
 // Resolves a plan-creation category flag using the same model as resolveFeature.
 export const resolvePlanFlag = resolveFeature;
