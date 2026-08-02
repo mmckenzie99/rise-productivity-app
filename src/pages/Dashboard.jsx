@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { LayoutDashboard, ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw, PieChart as PieChartIcon, BarChart as BarChartIcon, Target } from 'lucide-react';
 import AppHeader from '@/components/speaking/AppHeader';
 import StatCard from '@/components/speaking/StatCard';
 import useEngagements from '@/hooks/useEngagements';
 import useCalendarEvents from '@/hooks/useCalendarEvents';
 import PlanListSection from '@/components/speaking/PlanListSection';
 import WeeklyGoalsOverview from '@/components/speaking/WeeklyGoalsOverview';
+import CollapsibleSection from '@/components/speaking/CollapsibleSection';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
 import { useAuth } from '@/lib/AuthContext';
@@ -95,61 +96,58 @@ export default function Dashboard() {
           <StatCard label="Completed Engagements" value={stats.completedEng.length} icon={CheckCircle2} tone="slate" />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <PlanListSection title="Upcoming Plans" icon={CalendarClock} tone="bg-[#FBF0D0] text-[#D9A404]" items={planSections.upcoming} emptyText="No upcoming plans" />
-          <PlanListSection title="Completed Plans" icon={CheckCircle2} tone="bg-[#E6F4EA] text-[#2E7D32]" items={planSections.completed} emptyText="No completed plans" />
-          <PlanListSection title="Edited Plans" icon={Edit} tone="bg-[#E7EEF6] text-foreground" items={planSections.edited} emptyText="No edited plans" />
-          <PlanListSection title="Rescheduled Plans" icon={RefreshCw} tone="bg-[#EDE3F8] text-[#5B2DA0]" items={planSections.rescheduled} emptyText="No rescheduled plans" />
-        </div>
-
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-            <h2 className="mb-4 font-display text-lg font-semibold">Engagements by status</h2>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={statusData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={85} paddingAngle={2}>
-                    {statusData.map((e) => <Cell key={e.name} fill={STATUS_COLORS[e.name]} />)}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-3 flex flex-wrap justify-center gap-3">
-              {statusData.map((e) => (
-                <span key={e.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ background: STATUS_COLORS[e.name] }} />
-                  {e.name} ({e.value})
-                </span>
-              ))}
-            </div>
+        <CollapsibleSection title="Plans" icon={CalendarClock}>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <PlanListSection title="Upcoming Plans" icon={CalendarClock} tone="bg-[#FBF0D0] text-[#D9A404]" items={planSections.upcoming} emptyText="No upcoming plans" />
+            <PlanListSection title="Completed Plans" icon={CheckCircle2} tone="bg-[#E6F4EA] text-[#2E7D32]" items={planSections.completed} emptyText="No completed plans" />
+            <PlanListSection title="Edited Plans" icon={Edit} tone="bg-[#E7EEF6] text-foreground" items={planSections.edited} emptyText="No edited plans" />
+            <PlanListSection title="Rescheduled Plans" icon={RefreshCw} tone="bg-[#EDE3F8] text-[#5B2DA0]" items={planSections.rescheduled} emptyText="No rescheduled plans" />
           </div>
+        </CollapsibleSection>
 
-          <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-            <h2 className="mb-4 font-display text-lg font-semibold">Upcoming plans by category</h2>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={85} paddingAngle={2}>
-                    {categoryData.map((e) => <Cell key={e.name} fill={CAT_COLORS[e.name]} />)}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-3 flex flex-wrap justify-center gap-3">
-              {categoryData.map((e) => (
-                <span key={e.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ background: CAT_COLORS[e.name] }} />
-                  {e.name} ({e.value})
-                </span>
-              ))}
-            </div>
+        <CollapsibleSection title="Engagements by status" icon={PieChartIcon} iconTone="text-[#D9A404]">
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={statusData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={85} paddingAngle={2}>
+                  {statusData.map((e) => <Cell key={e.name} fill={STATUS_COLORS[e.name]} />)}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
-        </div>
+          <div className="mt-3 flex flex-wrap justify-center gap-3">
+            {statusData.map((e) => (
+              <span key={e.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: STATUS_COLORS[e.name] }} />
+                {e.name} ({e.value})
+              </span>
+            ))}
+          </div>
+        </CollapsibleSection>
 
-        <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
-          <h2 className="mb-4 font-display text-lg font-semibold">Upcoming engagements by month</h2>
+        <CollapsibleSection title="Upcoming plans by category" icon={PieChartIcon} iconTone="text-[#1B4A6B]">
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={85} paddingAngle={2}>
+                  {categoryData.map((e) => <Cell key={e.name} fill={CAT_COLORS[e.name]} />)}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-3 flex flex-wrap justify-center gap-3">
+            {categoryData.map((e) => (
+              <span key={e.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: CAT_COLORS[e.name] }} />
+                {e.name} ({e.value})
+              </span>
+            ))}
+          </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection title="Upcoming engagements by month" icon={BarChartIcon} iconTone="text-[#D9A404]">
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyData}>
@@ -161,9 +159,11 @@ export default function Dashboard() {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </CollapsibleSection>
 
-        <WeeklyGoalsOverview />
+        <CollapsibleSection title="Weekly Goals" icon={Target} iconTone="text-[#D9A404]" defaultOpen>
+          <WeeklyGoalsOverview />
+        </CollapsibleSection>
 
         <div className="hidden justify-center lg:flex">
           <Link to="/" className="text-sm font-medium text-[#D9A404] hover:underline">← Back to engagements</Link>
