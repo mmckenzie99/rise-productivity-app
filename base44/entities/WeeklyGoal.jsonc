@@ -9,7 +9,7 @@
     },
     "goals": {
       "type": "array",
-      "description": "Structured list of weekly goals, each with its own focus category",
+      "description": "Structured list of weekly goals, each with one or more focus categories",
       "items": {
         "type": "object",
         "properties": {
@@ -22,8 +22,11 @@
             "description": "The goal text"
           },
           "focus": {
-            "type": "string",
-            "description": "Focus category (e.g. Spiritual, Professional, Physical)"
+            "type": "array",
+            "description": "Focus categories this goal belongs to (e.g. Spiritual, Professional, Physical)",
+            "items": {
+              "type": "string"
+            }
           },
           "completed": {
             "type": "boolean",
