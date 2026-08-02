@@ -1,0 +1,98 @@
+import { useEffect, useState } from 'react';
+import { base44 } from '@/api/base44Client';
+import { Target, Check } from 'lucide-react';
+import { weekStartKey, focusOf } from './WeeklyGoals';
+
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const FOCUSES = ['Spiritual', 'Professional', 'Physical', 'Mental', 'Relational', 'Personal'];
+const FOCUS_DOT = {
+  Spiritual: '#D9A404',
+  Professional: '#1B2A4B',
+  Physical: '#166534',
+  Mental: '#6B21A8',
+  Relational: '#9F1239',
+  Personal: '#5A6781',
+};
+
+const fmtWeek = (key) => {
+  const d = new Date(key + 'T00:00:00');
+  return `${WEEKDAYS[d.getDay()]} ${d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`;
+};
+
+export default function WeeklyGoalsOverview() {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const now = new Date();
+    const weeks = [];
+    for (let i = 0; i < 4; i++) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i * 7);
+      weeks.push(weekStartKey(d));
+    }
+    base44.entities.WeeklyGoal.filter({ start_date: { $in: weeks } })
+      .then((res) => {
+        if (!active) return;
+        const map = {};
+        (res || []).forEach((r) => { if (r.start_date) map[r.start_date] = r; });
+        setRows(weeks.map((k) => {
+          const goals = Array.isArray(map[k]?.goals) ? map[k].goals : [];
+          const done = goals.filter((g) => g.completed).length;
+          const focusCounts = {};
+          goals.forEach((g) => focusOf(g).forEach((f) => { focusCounts[f] = (focusCounts[f] || 0) + 1; }));
+          return { key: k, label: fmtWeek(k), total: goals.length, done, focusCounts };
+        }));
+      })
+      .finally(() => active && setLoading(false));
+    return () => { active = false; };
+  }, []);
+
+  if (loading) {
+    return <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">Loading weekly goals…</div>;
+  }
+
+  return (
+    <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+      <div className="mb-4 flex items-center gap-2">
+        <Target className="h-4 w-4 text-[#D9A404]" />
+        <h2 className="font-display text-lg font-semibold">Weekly Goals</h2>
+      </div>
+      <div className="space-y-3">
+        {rows.map((r) => {
+          const pct = r.total > 0 ? Math.round((r.done / r.total) * 100) : 0;
+          const isCurrent = r.key === weekStartKey(new Date());
+          return (
+            <div key={r.key} className="rounded-lg border border-border bg-background/50 p-3">
+              <div className="flex items-center gap-2">
+                <span className={`text-sm font-medium ${isCurrent ? 'text-[#D9A404]' : 'text-foreground'}`}>
+                  {r.label}{isCurrent && ' · This week'}
+                </span>
+                <span className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
+                  <Check className="h-3 w-3 text-[#D9A404]" />
+                  {r.done}/{r.total}
+                </span>
+              </div>
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-full rounded-full bg-[#D9A404] transition-all" style={{ width: `${pct}%` }} />
+              </div>
+              {r.total === 0 ? (
+                <p className="mt-2 text-[11px] text-muted-foreground">No goals set.</p>
+              ) : (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {FOCUSES.filter((f) => r.focusCounts[f]).map((f) => (
+                    <span key={f} className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                      <span className="h-2 w-2 rounded-full" style={{ background: FOCUS_DOT[f] }} />
+                      {f} ({r.focusCounts[f]})
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

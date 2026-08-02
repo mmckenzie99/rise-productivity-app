@@ -7,6 +7,7 @@ import StatCard from '@/components/speaking/StatCard';
 import useEngagements from '@/hooks/useEngagements';
 import useCalendarEvents from '@/hooks/useCalendarEvents';
 import PlanListSection from '@/components/speaking/PlanListSection';
+import WeeklyGoalsOverview from '@/components/speaking/WeeklyGoalsOverview';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
 import { useAuth } from '@/lib/AuthContext';
@@ -161,6 +162,8 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
         </div>
+
+        <WeeklyGoalsOverview />
 
         <div className="hidden justify-center lg:flex">
           <Link to="/" className="text-sm font-medium text-[#D9A404] hover:underline">← Back to engagements</Link>
