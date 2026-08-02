@@ -34,7 +34,7 @@ export default function QuickActionBar() {
       <div className="mx-auto flex max-w-md items-stretch px-1">
         {actions.map(a => (
           <button key={a.key} type="button" onClick={a.onClick} className={BTN}>
-            <a.icon className="h-5 w-5 text-[#D9A404]" />
+            <a.icon className="h-5 w-5 text-primary" />
             {a.label}
           </button>
         ))}
@@ -44,9 +44,9 @@ export default function QuickActionBar() {
             trigger={({ unreadCount }) => (
               <button type="button" className={BTN} aria-label="Alerts">
                 <span className="relative">
-                  <Bell className="h-5 w-5 text-[#D9A404]" />
+                  <Bell className="h-5 w-5 text-primary" />
                   {unreadCount > 0 && (
-                    <span className="absolute -right-2 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[#D9A404] px-1 text-[9px] font-bold text-white">
+                    <span className="absolute -right-2 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}

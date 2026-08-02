@@ -89,7 +89,7 @@ export default function Dashboard() {
         <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
           <AppHeader isAdmin={isAdmin} onAdd={() => goHome('new')} onInvite={() => goHome('invite')} onCalendar={() => goHome('calendar')} />
         <div className="flex items-center gap-2">
-          <LayoutDashboard className="h-5 w-5 text-[#D9A404]" />
+          <LayoutDashboard className="h-5 w-5 text-primary" />
           <h1 className="font-display text-2xl font-semibold">Dashboard</h1>
         </div>
 
@@ -103,7 +103,7 @@ export default function Dashboard() {
         )}
 
         {canSee('weekly_goals') && (
-        <CollapsibleSection title="Weekly Goals" icon={Target} iconTone="text-[#D9A404]" defaultOpen>
+        <CollapsibleSection title="Weekly Goals" icon={Target} iconTone="text-primary" defaultOpen>
           <WeeklyGoalsOverview />
         </CollapsibleSection>
         )}
@@ -111,7 +111,7 @@ export default function Dashboard() {
         {canSee('plans') && (
         <CollapsibleSection title="Plans" icon={CalendarClock}>
           <div className="grid gap-4 sm:grid-cols-2">
-            <PlanListSection title="Upcoming Plans" icon={CalendarClock} tone="bg-[#FBF0D0] text-[#D9A404]" items={planSections.upcoming} emptyText="No upcoming plans" />
+            <PlanListSection title="Upcoming Plans" icon={CalendarClock} tone="bg-[#FBF0D0] text-primary" items={planSections.upcoming} emptyText="No upcoming plans" />
             <PlanListSection title="Completed Plans" icon={CheckCircle2} tone="bg-[#E6F4EA] text-[#2E7D32]" items={planSections.completed} emptyText="No completed plans" />
             <PlanListSection title="Edited Plans" icon={Edit} tone="bg-[#E7EEF6] text-foreground" items={planSections.edited} emptyText="No edited plans" />
             <PlanListSection title="Rescheduled Plans" icon={RefreshCw} tone="bg-[#EDE3F8] text-[#5B2DA0]" items={planSections.rescheduled} emptyText="No rescheduled plans" />
@@ -120,7 +120,7 @@ export default function Dashboard() {
         )}
 
         {canSee('status_chart') && (
-        <CollapsibleSection title="Engagements by status" icon={PieChartIcon} iconTone="text-[#D9A404]">
+        <CollapsibleSection title="Engagements by status" icon={PieChartIcon} iconTone="text-primary">
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -166,7 +166,7 @@ export default function Dashboard() {
         )}
 
         {canSee('monthly_chart') && (
-        <CollapsibleSection title="Upcoming engagements by month" icon={BarChartIcon} iconTone="text-[#D9A404]">
+        <CollapsibleSection title="Upcoming engagements by month" icon={BarChartIcon} iconTone="text-primary">
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyData}>
@@ -182,7 +182,7 @@ export default function Dashboard() {
         )}
 
         <div className="hidden justify-center lg:flex">
-          <Link to="/" className="text-sm font-medium text-[#D9A404] hover:underline">← Back to engagements</Link>
+          <Link to="/" className="text-sm font-medium text-primary hover:underline">← Back to engagements</Link>
         </div>
         </div>
       </PullToRefresh>

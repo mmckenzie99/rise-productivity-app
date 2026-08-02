@@ -13,7 +13,7 @@ const FOCUS_TONES = {
   Physical: 'bg-[#DCFCE7] text-[#166534]',
   Mental: 'bg-[#E9D5FF] text-[#6B21A8]',
   Relational: 'bg-[#FFE4E6] text-[#9F1239]',
-  Personal: 'bg-[#F0F2F6] text-[#5A6781]',
+  Personal: 'bg-muted text-muted-foreground',
 };
 
 export const weekStartKey = (d) => {
@@ -97,22 +97,22 @@ export default function WeeklyGoals({ cursor }) {
   };
 
   if (loading) {
-    return <div className="rounded-md border border-[#D6DAE3] bg-white p-3 text-sm text-[#5A6781]">Loading weekly goals…</div>;
+    return <div className="rounded-md border border-border bg-card p-3 text-sm text-muted-foreground">Loading weekly goals…</div>;
   }
 
   return (
-    <div className="rounded-md border border-[#D6DAE3] bg-white p-3">
-      <div className="mb-2 flex items-center gap-1.5 text-[#1B2A4B]">
-        <Target className="h-3.5 w-3.5 text-[#D9A404]" />
+    <div className="rounded-md border border-border bg-card p-3">
+      <div className="mb-2 flex items-center gap-1.5 text-foreground">
+        <Target className="h-3.5 w-3.5 text-primary" />
         <span className="text-xs font-semibold uppercase tracking-wider">Goals for the Week</span>
-        <span className="text-[11px] text-[#9CA3AF]">{goals.length}/{MAX_GOALS}</span>
+        <span className="text-[11px] text-muted-foreground">{goals.length}/{MAX_GOALS}</span>
         <div className="ml-auto flex items-center gap-1.5">
-          <Bell className="h-3.5 w-3.5 text-[#D9A404]" />
+          <Bell className="h-3.5 w-3.5 text-primary" />
           <Input
             type="time"
             value={reminderTime}
             onChange={(e) => setReminderTime(e.target.value)}
-            className="h-8 w-[110px] border-[#D6DAE3] text-xs"
+            className="h-8 w-[110px] border-border text-xs"
           />
         </div>
       </div>
@@ -126,7 +126,7 @@ export default function WeeklyGoals({ cursor }) {
               onChange={(e) => setDraftText(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') addGoal(); }}
               placeholder="Add a goal…"
-              className="h-8 flex-1 min-w-[120px] border-[#D6DAE3] text-sm"
+              className="h-8 flex-1 min-w-[120px] border-border text-sm"
             />
             <Button size="sm" onClick={addGoal} disabled={!draftText.trim()} className="h-8 shrink-0 px-2.5">
               <Plus className="h-3.5 w-3.5" />
@@ -138,22 +138,22 @@ export default function WeeklyGoals({ cursor }) {
               onClick={selectAllFocuses}
               className={`rounded-full border px-2 py-0.5 text-[10px] font-medium transition ${
                 draftFocuses.length === FOCUSES.length
-                  ? 'bg-[#1B2A4B] text-white border-transparent'
-                  : 'border-[#D6DAE3] bg-white text-[#5A6781] hover:bg-[#F0F2F6]'
+                  ? 'bg-foreground text-primary-foreground border-transparent'
+                  : 'border-border bg-card text-muted-foreground hover:bg-muted'
               }`}
             >
               All
             </button>
             {FOCUSES.map((f) => {
               const on = draftFocuses.includes(f);
-              const tone = FOCUS_TONES[f] || 'bg-[#F0F2F6] text-[#5A6781]';
+              const tone = FOCUS_TONES[f] || 'bg-muted text-muted-foreground';
               return (
                 <button
                   key={f}
                   type="button"
                   onClick={() => toggleDraftFocus(f)}
                   className={`rounded-full border px-2 py-0.5 text-[10px] font-medium transition ${
-                    on ? `${tone} border-transparent` : 'border-[#D6DAE3] bg-white text-[#5A6781] hover:bg-[#F0F2F6]'
+                    on ? `${tone} border-transparent` : 'border-border bg-card text-muted-foreground hover:bg-muted'
                   }`}
                 >
                   {f}
@@ -166,40 +166,40 @@ export default function WeeklyGoals({ cursor }) {
 
       {/* Flat goal list */}
       {goals.length === 0 ? (
-        <p className="py-2 text-center text-xs text-[#5A6781]">No goals yet — add up to {MAX_GOALS} above.</p>
+        <p className="py-2 text-center text-xs text-muted-foreground">No goals yet — add up to {MAX_GOALS} above.</p>
       ) : (
         <div className="space-y-1.5">
           {goals.map((g) => {
             const tags = focusOf(g);
             return (
-              <div key={g.id} className="flex items-center gap-2 rounded-md border border-[#EDEFF4] bg-white px-2 py-1.5">
+              <div key={g.id} className="flex items-center gap-2 rounded-md border border-border bg-card px-2 py-1.5">
                 <button
                   onClick={() => toggleComplete(g.id)}
-                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${g.completed ? 'border-[#D9A404] bg-[#D9A404] text-white' : 'border-[#D6DAE3] text-transparent'}`}
+                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${g.completed ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-transparent'}`}
                 >
                   <Check className="h-2.5 w-2.5" strokeWidth={3} />
                 </button>
-                <span className={`flex-1 truncate text-sm ${g.completed ? 'text-[#9CA3AF] line-through' : 'text-[#1B2A4B]'}`}>
+                <span className={`flex-1 truncate text-sm ${g.completed ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
                   {g.text}
                 </span>
                 <div className="flex shrink-0 flex-wrap justify-end gap-1">
                   {tags.map((t) => (
-                    <span key={t} className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${FOCUS_TONES[t] || 'bg-[#F0F2F6] text-[#5A6781]'}`}>{t}</span>
+                    <span key={t} className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${FOCUS_TONES[t] || 'bg-muted text-muted-foreground'}`}>{t}</span>
                   ))}
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
-                  <Bell className={`h-3.5 w-3.5 ${g.reminder_time ? 'text-[#D9A404]' : 'text-[#D6DAE3]'}`} />
+                  <Bell className={`h-3.5 w-3.5 ${g.reminder_time ? 'text-primary' : 'text-muted'}`} />
                   <Input
                     type="time"
                     value={g.reminder_time || ''}
                     onChange={(e) => setGoals((cur) => cur.map((x) => (x.id === g.id ? { ...x, reminder_time: e.target.value || '' } : x)))}
-                    className="h-7 w-[100px] border-[#D6DAE3] text-xs"
+                    className="h-7 w-[100px] border-border text-xs"
                     title="Daily reminder time for this goal"
                   />
                 </div>
                 <button
                   onClick={() => removeGoal(g.id)}
-                  className="shrink-0 text-[#9CA3AF] transition hover:text-[#B91C1C]"
+                  className="shrink-0 text-muted-foreground transition hover:text-destructive"
                   title="Remove goal"
                 >
                   <Trash2 className="h-3.5 w-3.5" />

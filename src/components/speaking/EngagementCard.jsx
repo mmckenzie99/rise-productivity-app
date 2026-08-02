@@ -3,7 +3,7 @@ import { formatDate, formatTime, statusTone, TIMEZONES, asArray } from '@/lib/sp
 import CardWrapper from './CardWrapper';
 import CountdownBadge from './CountdownBadge';
 
-const ACCENT = { Planning: 'border-l-[#D9A404]', Confirmed: 'border-l-[#1B2A4B]', Completed: 'border-l-[#5A6781]' };
+const ACCENT = { Planning: 'border-l-primary', Confirmed: 'border-l-foreground', Completed: 'border-l-muted-foreground' };
 
 export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, hasTrip, onLocate }) {
   const dateForDisplay = item.speaking_date || item.deploy_date;
@@ -11,7 +11,7 @@ export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, ha
   return (
     <CardWrapper onClick={() => onClick(item)} className={`group relative cursor-pointer border-l-4 ${ACCENT[item.status]} p-5 text-left transition hover:-translate-y-1 hover:shadow-lg`}>
       {isAdmin && onDuplicate && (
-        <button type="button" onClick={e => { e.stopPropagation(); onDuplicate(item); }} className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-md border border-[#D6DAE3] bg-white px-2 py-1 text-xs font-medium text-[#5A6781] opacity-0 transition group-hover:opacity-100 hover:border-[#D9A404] hover:text-[#D9A404]">
+        <button type="button" onClick={e => { e.stopPropagation(); onDuplicate(item); }} className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-xs font-medium text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:border-primary hover:text-primary">
           <Copy className="h-3.5 w-3.5" />Duplicate
         </button>
       )}
@@ -24,16 +24,16 @@ export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, ha
       {/* Place front and center */}
       <div className="flex flex-col text-left">
         <p className="font-display text-lg font-semibold leading-tight w-full">{item.place || 'Place not set'}</p>
-        {item.description && <p className="mt-2 text-xs text-[#5A6781] line-clamp-2">{item.description}</p>}
+        {item.description && <p className="mt-2 text-xs text-muted-foreground line-clamp-2">{item.description}</p>}
       </div>
-      <div className="my-4 h-px bg-[#D6DAE3]" />
-      <div className="space-y-2 text-xs text-[#5A6781]">
+      <div className="my-4 h-px bg-border" />
+      <div className="space-y-2 text-xs text-muted-foreground">
         {item.address && (Number.isFinite(Number(item.latitude)) ? (
-          <button type="button" onClick={e => { e.stopPropagation(); onLocate(item); }} className="flex gap-2 text-left transition hover:text-[#D9A404]">
-            <MapPin className="h-4 w-4 shrink-0 text-[#D9A404]" />{item.address}
+          <button type="button" onClick={e => { e.stopPropagation(); onLocate(item); }} className="flex gap-2 text-left transition hover:text-primary">
+            <MapPin className="h-4 w-4 shrink-0 text-primary" />{item.address}
           </button>
         ) : (
-          <p className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 text-[#D9A404]" />{item.address}</p>
+          <p className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 text-primary" />{item.address}</p>
         ))}
         <p className="flex gap-2">
           <CalendarDays className="h-4 w-4" />
@@ -46,9 +46,9 @@ export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, ha
         )}
       </div>
       <div className="mt-4 flex flex-wrap gap-2 font-mono text-[11px] md:text-[10px]">
-        <span className="rounded-full border border-[#D6DAE3] px-2 py-1">{item.progress}</span>
-        {asArray(item.presentation_type).map(t => <span key={t} className="rounded-full border border-[#D6DAE3] px-2 py-1">{t}</span>)}
-        {hasTrip && <span className="rounded-full border border-[#D9A404] bg-[#D9A404]/10 px-2 py-1 text-[#1B2A4B]">Trip</span>}
+        <span className="rounded-full border border-border px-2 py-1">{item.progress}</span>
+        {asArray(item.presentation_type).map(t => <span key={t} className="rounded-full border border-border px-2 py-1">{t}</span>)}
+        {hasTrip && <span className="rounded-full border border-primary bg-primary/10 px-2 py-1 text-foreground">Trip</span>}
       </div>
     </CardWrapper>
   );

@@ -26,21 +26,21 @@ export default function PlaceBreakdown({ items, onSelect }) {
   return (
     <section>
       <h2 className="mb-3 font-display text-lg font-semibold">Engagements by Place</h2>
-      <div className="rounded-lg border border-[#D6DAE3] bg-white shadow-sm">
+      <div className="rounded-lg border border-border bg-card shadow-sm">
         <button
           onClick={() => setCardOpen(!cardOpen)}
           className="flex w-full items-center justify-between gap-2 p-5 text-left"
         >
           <div className="flex items-center gap-2">
             <Image src={COMPASS_ICON} alt="Place" fittingType="fit" className="h-4 w-4 shrink-0" />
-            <span className="text-sm font-medium text-[#1B2A4B]">{sorted.length} place{sorted.length === 1 ? '' : 's'}</span>
+            <span className="text-sm font-medium text-foreground">{sorted.length} place{sorted.length === 1 ? '' : 's'}</span>
           </div>
-          <ChevronDown className={`h-4 w-4 text-[#5A6781] transition-transform ${cardOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${cardOpen ? 'rotate-180' : ''}`} />
         </button>
         {cardOpen && (
-          <div className="border-t border-[#D6DAE3] px-5 pb-5 pt-3">
+          <div className="border-t border-border px-5 pb-5 pt-3">
             {sorted.length === 0 ? (
-              <p className="text-sm text-[#5A6781]">No engagements yet.</p>
+              <p className="text-sm text-muted-foreground">No engagements yet.</p>
             ) : (
               <ul className="space-y-2">
                 {sorted.map(([place, placeItems]) => {
@@ -55,9 +55,9 @@ export default function PlaceBreakdown({ items, onSelect }) {
                         >
                           <div className="flex items-center gap-2">
                             <Image src={COMPASS_ICON} alt="Place" fittingType="fit" className="h-4 w-4 shrink-0" />
-                            <span className="text-sm font-medium text-[#1B2A4B]">{place}</span>
+                            <span className="text-sm font-medium text-foreground">{place}</span>
                           </div>
-                          <ChevronDown className={`h-3.5 w-3.5 text-[#5A6781] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                          <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                         </button>
                       ) : (
                         <button
@@ -66,9 +66,9 @@ export default function PlaceBreakdown({ items, onSelect }) {
                         >
                           <div className="flex items-center gap-2">
                             <Image src={COMPASS_ICON} alt="Place" fittingType="fit" className="h-4 w-4 shrink-0" />
-                            <span className="text-sm font-medium text-[#1B2A4B]">{place}</span>
+                            <span className="text-sm font-medium text-foreground">{place}</span>
                           </div>
-                          <ArrowRight className="h-3.5 w-3.5 text-[#D9A404]" />
+                          <ArrowRight className="h-3.5 w-3.5 text-primary" />
                         </button>
                       )}
                       {multiple && isOpen && (
@@ -79,8 +79,8 @@ export default function PlaceBreakdown({ items, onSelect }) {
                                 onClick={() => onSelect?.(x)}
                                 className="flex w-full items-center justify-between gap-2 text-left py-0.5"
                               >
-                                <span className="text-sm text-[#5A6781]">{x.title || x.place}</span>
-                                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[#D9A404]" />
+                                <span className="text-sm text-muted-foreground">{x.title || x.place}</span>
+                                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-primary" />
                               </button>
                             </li>
                           ))}

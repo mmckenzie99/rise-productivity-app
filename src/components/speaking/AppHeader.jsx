@@ -7,9 +7,9 @@ import Brand from './Brand';
 import NotificationBell from './NotificationBell';
 import ProfileMenu from './ProfileMenu';
 
-const ACTIVE = 'bg-[#D9A404] text-white border-[#D9A404] hover:bg-[#B89003] hover:text-white';
+const ACTIVE = 'bg-primary text-primary-foreground border-primary hover:bg-primary/90 hover:text-primary-foreground';
 const IDLE = 'border-border bg-card';
-const ITEM_HOVER = 'hover:bg-[#D9A404] hover:text-white focus:bg-[#D9A404] focus:text-white data-[highlighted]:bg-[#D9A404] data-[highlighted]:text-white';
+const ITEM_HOVER = 'hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground';
 
 export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, isOwner, newOpen, calendarOpen, inviteOpen }) {
   const { pathname } = useLocation();

@@ -59,7 +59,7 @@ export default function BottomTabBar() {
             onClick={(e) => handleTap(e, t.to)}
             className={({ isActive }) =>
               `flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium select-none transition-colors ${
-                isActive ? 'text-[#D9A404]' : 'text-muted-foreground'
+                isActive ? 'text-primary' : 'text-muted-foreground'
               }`
             }
           >
