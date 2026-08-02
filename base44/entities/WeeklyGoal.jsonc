@@ -8,8 +8,29 @@
       "description": "The Sunday (week start) date this goal belongs to"
     },
     "goals": {
-      "type": "string",
-      "description": "Goals for the week"
+      "type": "array",
+      "description": "Structured list of weekly goals, each with its own focus category",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for this goal item"
+          },
+          "text": {
+            "type": "string",
+            "description": "The goal text"
+          },
+          "focus": {
+            "type": "string",
+            "description": "Focus category (e.g. Spiritual, Professional, Physical)"
+          },
+          "completed": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
     }
   },
   "required": [
