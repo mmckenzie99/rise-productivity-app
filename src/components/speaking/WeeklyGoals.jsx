@@ -29,7 +29,7 @@ export default function WeeklyGoals({ cursor }) {
   const [record, setRecord] = useState(null);
   const [goals, setGoals] = useState([]);
   const [draftText, setDraftText] = useState('');
-  const [draftFocus, setDraftFocus] = FOCUSES[0];
+  const [draftFocus, setDraftFocus] = useState(FOCUSES[0]);
   const [reminderTime, setReminderTime] = useState('');
   const [userTz] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Detroit');
   const timer = useRef(null);
