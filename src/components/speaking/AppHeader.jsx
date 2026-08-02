@@ -57,7 +57,7 @@ export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, isOwne
         </div>
 
         <ProfileMenu />
-        <NotificationBell />
+        <div className="hidden lg:block"><NotificationBell /></div>
         <Button size="icon" variant="ghost" aria-label="Sign out" className="h-11 w-11 lg:h-9 lg:w-9" onClick={() => base44.auth.logout('/login')}><LogOut className="h-4 w-4" /></Button>
       </div>
     </header>
