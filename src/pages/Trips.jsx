@@ -56,18 +56,19 @@ export default function Trips() {
     <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={load}>
-        <div className="flex items-center justify-between">
-          <Link to="/" className="hidden lg:inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" /> Back to Home
-          </Link>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground">
+              <ArrowLeft className="h-4 w-4" /> Back to Home
+            </Link>
+            <h1 className="font-display text-3xl font-bold">Trips</h1>
+          </div>
           {isAdmin && (
             <Button onClick={() => setFormOpen(true)} className="bg-[#D9A404] hover:bg-[#B89003]">
               <Plus className="mr-2 h-4 w-4" />New Trip
             </Button>
           )}
         </div>
-
-        <h1 className="font-display text-3xl font-bold">Trips</h1>
 
         {/* Filters */}
         <div className="flex gap-2">

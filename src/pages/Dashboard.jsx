@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { LayoutDashboard, ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw, PieChart as PieChartIcon, BarChart as BarChartIcon, Target } from 'lucide-react';
+import { ArrowLeft, LayoutDashboard, ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw, PieChart as PieChartIcon, BarChart as BarChartIcon, Target } from 'lucide-react';
 import AppHeader from '@/components/speaking/AppHeader';
 import StatCard from '@/components/speaking/StatCard';
 import useEngagements from '@/hooks/useEngagements';
@@ -88,9 +88,14 @@ export default function Dashboard() {
       <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); }}>
         <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
           <AppHeader isAdmin={isAdmin} onAdd={() => goHome('new')} onInvite={() => goHome('invite')} onCalendar={() => goHome('calendar')} />
-        <div className="flex items-center gap-2">
-          <LayoutDashboard className="h-5 w-5 text-primary" />
-          <h1 className="font-display text-2xl font-semibold">Dashboard</h1>
+        <div className="flex items-center gap-3">
+          <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground">
+            <ArrowLeft className="h-4 w-4" /> Back to Home
+          </Link>
+          <div className="flex items-center gap-2">
+            <LayoutDashboard className="h-5 w-5 text-primary" />
+            <h1 className="font-display text-2xl font-semibold">Dashboard</h1>
+          </div>
         </div>
 
         {canSee('stat_cards') && (
@@ -181,9 +186,6 @@ export default function Dashboard() {
         </CollapsibleSection>
         )}
 
-        <div className="hidden justify-center lg:flex">
-          <Link to="/" className="text-sm font-medium text-primary hover:underline">← Back to engagements</Link>
-        </div>
         </div>
       </PullToRefresh>
       <div className="h-28 lg:hidden" />
