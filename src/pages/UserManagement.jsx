@@ -4,10 +4,11 @@ import { useAuth } from '@/lib/AuthContext';
 import { base44 } from '@/api/base44Client';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Loader2, MessageSquare, UserCheck, ShieldCheck, ArrowLeft, CalendarDays, Briefcase, Search, Users as UsersIcon } from 'lucide-react';
+import { Loader2, MessageSquare, UserCheck, ShieldCheck, ArrowLeft, CalendarDays, Briefcase, Search, Users as UsersIcon, LayoutDashboard } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Brand from '@/components/speaking/Brand';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
+import CollapsibleSection from '@/components/speaking/CollapsibleSection';
 import ResponsiveSelect from '@/components/speaking/ResponsiveSelect';
 import { useAppSettings, DEFAULT_FEATURES } from '@/hooks/useAppSettings';
 import { resolveFeature, resolvePlanFlag, DASHBOARD_SECTIONS } from '@/lib/permissions';
@@ -56,12 +57,9 @@ function RoleDefaultsCard({ settings, update }) {
   };
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-border bg-card p-4">
+      <CollapsibleSection title="Default access by role" icon={ShieldCheck} iconTone="text-primary" defaultOpen>
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="font-display text-lg font-semibold">Default access by role</h2>
-            <p className="text-xs text-muted-foreground">Defaults apply to anyone you haven't individually toggled. Individual on/off toggles override these for that person.</p>
-          </div>
+          <p className="text-xs text-muted-foreground">Defaults apply to anyone you haven't individually toggled. Individual on/off toggles override these for that person.</p>
           {saving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
         <div className="mt-3 divide-y divide-border">
@@ -88,14 +86,11 @@ function RoleDefaultsCard({ settings, update }) {
             );
           })}
         </div>
-      </div>
+      </CollapsibleSection>
 
-      <div className="rounded-lg border border-border bg-card p-4">
+      <CollapsibleSection title="Dashboard visibility by role" icon={LayoutDashboard} iconTone="text-primary">
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="font-display text-lg font-semibold">Dashboard visibility by role</h2>
-            <p className="text-xs text-muted-foreground">Choose which Dashboard sections administrators and collaborators can see. You (the Owner) always see everything.</p>
-          </div>
+          <p className="text-xs text-muted-foreground">Choose which Dashboard sections administrators and collaborators can see. You (the Owner) always see everything.</p>
           {saving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
         <div className="mt-3 divide-y divide-border">
@@ -123,7 +118,7 @@ function RoleDefaultsCard({ settings, update }) {
             );
           })}
         </div>
-      </div>
+      </CollapsibleSection>
     </div>
   );
 }
