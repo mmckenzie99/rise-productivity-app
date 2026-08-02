@@ -35,6 +35,8 @@ export default function WeeklyGoals({ cursor }) {
   const [userTz] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Detroit');
   const timer = useRef(null);
   const [loading, setLoading] = useState(true);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selected, setSelected] = useState(() => new Set());
 
   useEffect(() => {
     let active = true;
@@ -96,6 +98,25 @@ export default function WeeklyGoals({ cursor }) {
     setGoals((g) => g.filter((x) => x.id !== id));
   };
 
+  const allSelected = goals.length > 0 && selected.size === goals.length;
+  const toggleSelect = (id) => {
+    setSelected((cur) => {
+      const next = new Set(cur);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+  const selectAllGoals = () => setSelected(allSelected ? new Set() : new Set(goals.map((g) => g.id)));
+  const exitSelect = () => { setSelectMode(false); setSelected(new Set()); };
+  const bulkComplete = () => {
+    setGoals((g) => g.map((x) => (selected.has(x.id) ? { ...x, completed: true } : x)));
+    setSelected(new Set());
+  };
+  const bulkDelete = () => {
+    setGoals((g) => g.filter((x) => !selected.has(x.id)));
+    setSelected(new Set());
+  };
+
   if (loading) {
     return <div className="rounded-md border border-border bg-card p-3 text-sm text-muted-foreground">Loading weekly goals…</div>;
   }
@@ -107,6 +128,26 @@ export default function WeeklyGoals({ cursor }) {
         <span className="text-xs font-semibold uppercase tracking-wider">Goals for the Week</span>
         <span className="text-[11px] text-muted-foreground">{goals.length}/{MAX_GOALS}</span>
         <div className="ml-auto flex items-center gap-1.5">
+          {goals.length > 0 && (
+            <button
+              type="button"
+              onClick={() => (selectMode ? exitSelect() : setSelectMode(true))}
+              className={`rounded-full border px-2 py-0.5 text-[10px] font-medium transition ${
+                selectMode ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card text-muted-foreground hover:bg-muted'
+              }`}
+            >
+              {selectMode ? 'Done' : 'Select'}
+            </button>
+          )}
+          {selectMode && goals.length > 0 && (
+            <button
+              type="button"
+              onClick={selectAllGoals}
+              className="rounded-full border border-border bg-card px-2 py-0.5 text-[10px] font-medium text-muted-foreground transition hover:bg-muted"
+            >
+              {allSelected ? 'Clear' : 'All'}
+            </button>
+          )}
           <Bell className="h-3.5 w-3.5 text-primary" />
           <Input
             type="time"
@@ -172,13 +213,23 @@ export default function WeeklyGoals({ cursor }) {
           {goals.map((g) => {
             const tags = focusOf(g);
             return (
-              <div key={g.id} className="flex items-center gap-2 rounded-md border border-border bg-card px-2 py-1.5">
-                <button
-                  onClick={() => toggleComplete(g.id)}
-                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${g.completed ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-transparent'}`}
-                >
-                  <Check className="h-2.5 w-2.5" strokeWidth={3} />
-                </button>
+              <div key={g.id} className={`flex items-center gap-2 rounded-md border bg-card px-2 py-1.5 ${selectMode && selected.has(g.id) ? 'border-primary ring-1 ring-primary' : 'border-border'}`}>
+                {selectMode && (
+                  <button
+                    onClick={() => toggleSelect(g.id)}
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${selected.has(g.id) ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card'}`}
+                  >
+                    {selected.has(g.id) && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
+                  </button>
+                )}
+                {!selectMode && (
+                  <button
+                    onClick={() => toggleComplete(g.id)}
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${g.completed ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-transparent'}`}
+                  >
+                    <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                  </button>
+                )}
                 <span className={`flex-1 truncate text-sm ${g.completed ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
                   {g.text}
                 </span>
@@ -187,26 +238,44 @@ export default function WeeklyGoals({ cursor }) {
                     <span key={t} className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${FOCUS_TONES[t] || 'bg-muted text-muted-foreground'}`}>{t}</span>
                   ))}
                 </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  <Bell className={`h-3.5 w-3.5 ${g.reminder_time ? 'text-primary' : 'text-muted'}`} />
-                  <Input
-                    type="time"
-                    value={g.reminder_time || ''}
-                    onChange={(e) => setGoals((cur) => cur.map((x) => (x.id === g.id ? { ...x, reminder_time: e.target.value || '' } : x)))}
-                    className="h-7 w-[100px] border-border text-xs"
-                    title="Daily reminder time for this goal"
-                  />
-                </div>
-                <button
-                  onClick={() => removeGoal(g.id)}
-                  className="shrink-0 text-muted-foreground transition hover:text-destructive"
-                  title="Remove goal"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                {!selectMode && (
+                  <>
+                    <div className="flex shrink-0 items-center gap-1">
+                      <Bell className={`h-3.5 w-3.5 ${g.reminder_time ? 'text-primary' : 'text-muted'}`} />
+                      <Input
+                        type="time"
+                        value={g.reminder_time || ''}
+                        onChange={(e) => setGoals((cur) => cur.map((x) => (x.id === g.id ? { ...x, reminder_time: e.target.value || '' } : x)))}
+                        className="h-7 w-[100px] border-border text-xs"
+                        title="Daily reminder time for this goal"
+                      />
+                    </div>
+                    <button
+                      onClick={() => removeGoal(g.id)}
+                      className="shrink-0 text-muted-foreground transition hover:text-destructive"
+                      title="Remove goal"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </>
+                )}
               </div>
             );
           })}
+        </div>
+      )}
+
+      {selectMode && selected.size > 0 && (
+        <div className="mt-2 flex items-center gap-2 rounded-md border border-border bg-card p-2 shadow-sm">
+          <span className="text-xs text-muted-foreground">{selected.size} selected</span>
+          <div className="ml-auto flex items-center gap-1.5">
+            <Button size="sm" variant="outline" onClick={bulkComplete} className="h-8 gap-1.5">
+              <Check className="h-3.5 w-3.5" />Mark complete
+            </Button>
+            <Button size="sm" variant="outline" onClick={bulkDelete} className="h-8 gap-1.5 text-destructive hover:text-destructive">
+              <Trash2 className="h-3.5 w-3.5" />Delete
+            </Button>
+          </div>
         </div>
       )}
     </div>
