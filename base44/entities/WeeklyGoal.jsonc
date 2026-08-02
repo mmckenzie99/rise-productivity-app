@@ -9,7 +9,7 @@
     },
     "goals": {
       "type": "array",
-      "description": "Structured list of weekly goals, each with one or more focus categories",
+      "description": "Structured list of weekly goals, each with one or more focus categories and an optional daily reminder time",
       "items": {
         "type": "object",
         "properties": {
@@ -31,6 +31,10 @@
           "completed": {
             "type": "boolean",
             "default": false
+          },
+          "reminder_time": {
+            "type": "string",
+            "description": "Time of day (HH:MM) to send a daily reminder for this specific goal during its week, or blank for none"
           }
         }
       }

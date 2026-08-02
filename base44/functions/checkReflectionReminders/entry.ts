@@ -126,48 +126,100 @@ Deno.serve(async (req) => {
     // --- Weekly goal review reminders (fire on the week's start date) ---
     const goals = await base44.asServiceRole.entities.WeeklyGoal.list('-created_date', 500);
     for (const g of goals) {
-      if (!g.goal_reminder_time || !g.start_date) continue;
       const tz = g.reminder_timezone || 'UTC';
-      const due = dueUTC(g.start_date, g.goal_reminder_time, tz);
-      if (due === null) continue;
-      const diffMin = (now.getTime() - due) / 60000;
-      const key = `Goal:${g.start_date}`;
-      if (sentKeys.has(key)) continue;
-      if (diffMin >= 0 && diffMin < 60) {
-        const total = Array.isArray(g.goals) ? g.goals.length : 0;
-        const pending = Array.isArray(g.goals) ? g.goals.filter((x) => !x.completed).length : 0;
-        const notif = await base44.asServiceRole.entities.Notification.create({
-          engagement_title: 'Review weekly goals',
-          speaking_date: g.start_date,
-          speaking_time: g.goal_reminder_time,
-          timezone: tz,
-          window_label: 'Goal',
-          email_sent: false,
-          read: false,
-        });
-        sentKeys.add(key);
+      const goalList = Array.isArray(g.goals) ? g.goals : [];
 
-        const subject = `Reminder: Review your weekly goals — ${g.start_date}`;
-        const progressLine = total
-          ? `<p style="font-size:14px;color:#5A6781">${pending} of ${total} goals still to complete this week.</p>`
-          : `<p style="font-size:14px;color:#5A6781">You haven't set any goals yet this week.</p>`;
-        const body = `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B">
-          <h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B;margin-bottom:16px">Weekly Goals Reminder</h2>
-          <p style="font-size:16px">Time to review your goals for the week.</p>
-          ${progressLine}
-          <p style="font-size:13px;color:#5A6781;margin-top:20px">Open RISE to stay on track.</p>
-        </div>`;
+      // General weekly review reminder (fires once on the week's start date).
+      if (g.goal_reminder_time && g.start_date) {
+        const due = dueUTC(g.start_date, g.goal_reminder_time, tz);
+        if (due !== null) {
+          const diffMin = (now.getTime() - due) / 60000;
+          const key = `Goal:${g.start_date}`;
+          if (!sentKeys.has(key) && diffMin >= 0 && diffMin < 60) {
+            const total = goalList.length;
+            const pending = goalList.filter((x) => !x.completed).length;
+            const notif = await base44.asServiceRole.entities.Notification.create({
+              engagement_title: 'Review weekly goals',
+              speaking_date: g.start_date,
+              speaking_time: g.goal_reminder_time,
+              timezone: tz,
+              window_label: 'Goal',
+              email_sent: false,
+              read: false,
+            });
+            sentKeys.add(key);
 
-        let emailSent = false;
-        for (const u of users) {
-          if (!u.email) continue;
-          try {
-            await base44.asServiceRole.integrations.Core.SendEmail({ to: u.email, subject, body });
-            emailSent = true;
-          } catch (_e) { /* continue */ }
+            const subject = `Reminder: Review your weekly goals — ${g.start_date}`;
+            const progressLine = total
+              ? `<p style="font-size:14px;color:#5A6781">${pending} of ${total} goals still to complete this week.</p>`
+              : `<p style="font-size:14px;color:#5A6781">You haven't set any goals yet this week.</p>`;
+            const body = `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B">
+              <h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B;margin-bottom:16px">Weekly Goals Reminder</h2>
+              <p style="font-size:16px">Time to review your goals for the week.</p>
+              ${progressLine}
+              <p style="font-size:13px;color:#5A6781;margin-top:20px">Open RISE to stay on track.</p>
+            </div>`;
+
+            let emailSent = false;
+            for (const u of users) {
+              if (!u.email) continue;
+              try {
+                await base44.asServiceRole.integrations.Core.SendEmail({ to: u.email, subject, body });
+                emailSent = true;
+              } catch (_e) { /* continue */ }
+            }
+            await base44.asServiceRole.entities.Notification.update(notif.id, { email_sent: emailSent });
+            results.push({ type: 'goal', date: g.start_date, emailSent });
+          }
         }
-        await base44.asServiceRole.entities.Notification.update(notif.id, { email_sent: emailSent });
-        results.push({ type: 'goal', date: g.start_date, emailSent });
+      }
+
+      // Per-goal daily reminders: each goal with a reminder_time fires once per
+      // day during its week (start_date + 0..6 days). Dedup per goal+day.
+      if (!g.start_date) continue;
+      const [sy, sm, sd] = g.start_date.split('-').map(Number);
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(Date.UTC(sy, sm - 1, sd + i));
+        const dayStr = `${day.getUTCFullYear()}-${String(day.getUTCMonth() + 1).padStart(2, '0')}-${String(day.getUTCDate()).padStart(2, '0')}`;
+        for (const goal of goalList) {
+          if (!goal.reminder_time || !goal.id) continue;
+          const due = dueUTC(dayStr, goal.reminder_time, tz);
+          if (due === null) continue;
+          const diffMin = (now.getTime() - due) / 60000;
+          const key = `GoalDaily:${goal.id}:${dayStr}`;
+          if (sentKeys.has(key)) continue;
+          if (diffMin >= 0 && diffMin < 60) {
+            const notif = await base44.asServiceRole.entities.Notification.create({
+              engagement_title: `Goal: ${goal.text || 'Daily goal reminder'}`,
+              speaking_date: dayStr,
+              speaking_time: goal.reminder_time,
+              timezone: tz,
+              window_label: 'Goal',
+              email_sent: false,
+              read: false,
+            });
+            sentKeys.add(key);
+
+            const subject = `Reminder: ${goal.text || 'Daily goal'} — ${dayStr}`;
+            const body = `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B">
+              <h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B;margin-bottom:16px">Daily Goal Reminder</h2>
+              <p style="font-size:16px">It's time to work on your goal.</p>
+              <blockquote style="border-left:3px solid #D9A404;padding-left:12px;margin:12px 0;color:#1B2A4B;font-size:15px">${escapeHtml(goal.text || '')}</blockquote>
+              <p style="font-size:13px;color:#5A6781;margin-top:20px">Open RISE to stay on track.</p>
+            </div>`;
+
+            let emailSent = false;
+            for (const u of users) {
+              if (!u.email) continue;
+              try {
+                await base44.asServiceRole.integrations.Core.SendEmail({ to: u.email, subject, body });
+                emailSent = true;
+              } catch (_e) { /* continue */ }
+            }
+            await base44.asServiceRole.entities.Notification.update(notif.id, { email_sent: emailSent });
+            results.push({ type: 'goal_daily', goalId: goal.id, date: dayStr, emailSent });
+          }
+        }
       }
     }
 

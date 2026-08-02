@@ -187,6 +187,16 @@ export default function WeeklyGoals({ cursor }) {
                     <span key={t} className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${FOCUS_TONES[t] || 'bg-[#F0F2F6] text-[#5A6781]'}`}>{t}</span>
                   ))}
                 </div>
+                <div className="flex shrink-0 items-center gap-1">
+                  <Bell className={`h-3.5 w-3.5 ${g.reminder_time ? 'text-[#D9A404]' : 'text-[#D6DAE3]'}`} />
+                  <Input
+                    type="time"
+                    value={g.reminder_time || ''}
+                    onChange={(e) => setGoals((cur) => cur.map((x) => (x.id === g.id ? { ...x, reminder_time: e.target.value || '' } : x)))}
+                    className="h-7 w-[100px] border-[#D6DAE3] text-xs"
+                    title="Daily reminder time for this goal"
+                  />
+                </div>
                 <button
                   onClick={() => removeGoal(g.id)}
                   className="shrink-0 text-[#9CA3AF] transition hover:text-[#B91C1C]"
