@@ -14,13 +14,15 @@ import { Checkbox } from '@/components/ui/checkbox';
 import ResponsiveSelect from '@/components/speaking/ResponsiveSelect';
 import useEngagements from '@/hooks/useEngagements';
 import useTrips from '@/hooks/useTrips';
+import useCalendarEvents from '@/hooks/useCalendarEvents';
 import { formatPlaces } from '@/lib/trips';
 
-export default function NewChatDialog({ open, onClose, onCreated, currentUser, existingRooms }) {
+export default function NewChatDialog({ open, onClose, onCreated, currentUser, existingRooms, initialLinkType, initialLinkedId }) {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const { items: engagements } = useEngagements();
   const { items: trips } = useTrips();
+  const { items: plans } = useCalendarEvents();
   const [selectedUsers, setSelectedUsers] = useState(new Set());
   const [linkType, setLinkType] = useState('none');
   const [linkedId, setLinkedId] = useState('');
@@ -39,14 +41,17 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
   }, [open, currentUser.id]);
 
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      setLinkType(initialLinkType || 'none');
+      setLinkedId(initialLinkedId || '');
+    } else {
       setSelectedUsers(new Set());
       setLinkType('none');
       setLinkedId('');
       setTitle('');
       setTopic('');
     }
-  }, [open]);
+  }, [open, initialLinkType, initialLinkedId]);
 
   const nameMap = useMemo(() => {
     const m = { [currentUser.id]: currentUser.full_name || currentUser.email };
@@ -99,6 +104,12 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
       const t = trips.find((x) => x.id === linkedId);
       linked_id = linkedId;
       linked_title = t ? formatPlaces(t) : 'Trip';
+      resolvedTitle = linked_title;
+    } else if (linkType === 'plan') {
+      type = 'plan';
+      const p = plans.find((x) => x.id === linkedId);
+      linked_id = linkedId;
+      linked_title = p?.title || 'Plan';
       resolvedTitle = linked_title;
     } else {
       resolvedTitle =
@@ -172,6 +183,7 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
                 { value: 'none', label: 'No link' },
                 { value: 'engagement', label: 'Engagement' },
                 { value: 'trip', label: 'Trip' },
+                { value: 'plan', label: 'Plan' },
               ]}
               placeholder="No link"
               label="Link to (optional)"
@@ -201,6 +213,19 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
               }))}
               placeholder="Select trip"
               label="Select trip"
+            />
+          )}
+
+          {linkType === 'plan' && (
+            <ResponsiveSelect
+              value={linkedId}
+              onValueChange={setLinkedId}
+              options={plans.map((p) => ({
+                value: p.id,
+                label: `${p.title}${p.date ? ` · ${p.date}` : ''}`,
+              }))}
+              placeholder="Select plan"
+              label="Select plan"
             />
           )}
 

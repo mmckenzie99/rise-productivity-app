@@ -15,10 +15,11 @@
       "enum": [
         "direct",
         "engagement",
-        "trip"
+        "trip",
+        "plan"
       ],
       "default": "direct",
-      "description": "Whether this is a direct message or a thread linked to an engagement or trip"
+      "description": "Whether this is a direct message or a thread linked to an engagement, trip, or plan"
     },
     "participant_ids": {
       "type": "array",
@@ -36,11 +37,11 @@
     },
     "linked_id": {
       "type": "string",
-      "description": "ID of the linked engagement or trip (when type is engagement or trip)"
+      "description": "ID of the linked engagement, trip, or plan (when type is engagement, trip, or plan)"
     },
     "linked_title": {
       "type": "string",
-      "description": "Cached title of the linked engagement or trip for display"
+      "description": "Cached title of the linked engagement, trip, or plan for display"
     },
     "last_message": {
       "type": "string",

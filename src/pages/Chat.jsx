@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, MessageCircle, Search, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
@@ -18,11 +18,31 @@ export default function Chat() {
   const [selected, setSelected] = useState(null);
   const [newOpen, setNewOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [pendingLink, setPendingLink] = useState(null);
   const requestClose = useHistoryModal(!!selected, () => setSelected(null));
 
   useEffect(() => {
     setOpenChatRoom(selected?.id || null);
   }, [selected?.id]);
+
+  useEffect(() => {
+    const lt = searchParams.get('linkType');
+    const lid = searchParams.get('linkedId');
+    if (lt && lid) setPendingLink({ type: lt, id: lid });
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!pendingLink || loading || !user?.id) return;
+    const existing = rooms.find((r) => r.linked_id === pendingLink.id && (r.participant_ids || []).includes(user.id));
+    if (existing) {
+      setSelected(existing);
+      setPendingLink(null);
+    } else {
+      setNewOpen(true);
+    }
+    setSearchParams((prev) => { prev.delete('linkType'); prev.delete('linkedId'); return prev; }, { replace: true });
+  }, [pendingLink, loading, rooms, user?.id]);
 
   const loadRooms = async () => {
     const list = await base44.entities.ChatRoom.list('-last_message_at', 100);
@@ -61,6 +81,7 @@ export default function Chat() {
 
   const handleCreated = (room) => {
     setNewOpen(false);
+    setPendingLink(null);
     if (!rooms.some((r) => r.id === room.id)) setRooms((prev) => [room, ...prev]);
     setSelected(room);
   };
@@ -142,10 +163,12 @@ export default function Chat() {
       <BottomTabBar />
       <NewChatDialog
         open={newOpen}
-        onClose={() => setNewOpen(false)}
+        onClose={() => { setNewOpen(false); setPendingLink(null); }}
         onCreated={handleCreated}
         currentUser={user}
         existingRooms={rooms}
+        initialLinkType={pendingLink?.type}
+        initialLinkedId={pendingLink?.id}
       />
     </main>
   );

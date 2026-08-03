@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import ResponsiveSelect from './ResponsiveSelect';
 import RichTextEditor from './RichTextEditor';
-import PlanCommentsSection from './PlanCommentsSection';
+import { MessageCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import RecurrenceEditor from './RecurrenceEditor';
 import { generateOccurrences } from '@/lib/recurrence';
@@ -77,6 +78,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const requestClose = useHistoryModal(open, onClose);
+  const navigate = useNavigate();
   const [editScope, setEditScope] = useState('single');
   const { user } = useAuth();
   const userCanComment = useFeatureFlag('can_comment');
@@ -268,14 +270,14 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
             />
           </div>
 
-          {item?.id && (isAdmin || userCanComment) && (
-            <PlanCommentsSection
-              planId={item.id}
-              planTitle={form.title}
-              planDate={form.date}
-              admins={admins}
-              currentUserId={currentUserId}
-            />
+          {item?.id && (
+            <button
+              type="button"
+              onClick={() => { requestClose(); navigate(`/chat?linkType=plan&linkedId=${item.id}`); }}
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-[#1B2A4B] bg-[#1B2A4B] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#2A3D6B]"
+            >
+              <MessageCircle className="h-4 w-4" />Chat about this plan
+            </button>
           )}
           <DialogFooter>
             {item?.id && onDelete && (

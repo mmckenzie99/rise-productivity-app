@@ -1,10 +1,11 @@
-import { MessageCircle, Plus, MapPin, Plane } from 'lucide-react';
+import { MessageCircle, Plus, MapPin, Plane, CalendarDays } from 'lucide-react';
 import Highlight from '@/components/chat/Highlight';
 import { format, parseISO } from 'date-fns';
 
 const roomIcon = (room) => {
   if (room.type === 'engagement') return <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />;
   if (room.type === 'trip') return <Plane className="mt-0.5 h-4 w-4 shrink-0 text-primary" />;
+  if (room.type === 'plan') return <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-primary" />;
   return <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />;
 };
 
