@@ -130,6 +130,21 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
         linked_id,
         linked_title,
       });
+      // Notify the selected participants by email (all are registered app users)
+      // so they know a conversation was started with them. Fire-and-forget so
+      // the chat opens immediately.
+      const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      const starter = esc(currentUser.full_name || currentUser.email);
+      const about = linked_title ? ` about “${esc(linked_title)}”` : (topic.trim() ? ` about “${esc(topic.trim())}”` : '');
+      Array.from(selectedUsers).forEach((uid) => {
+        const u = users.find((x) => x.id === uid);
+        if (!u?.email) return;
+        base44.integrations.Core.SendEmail({
+          to: u.email,
+          subject: `${currentUser.full_name || currentUser.email} started a conversation with you`,
+          body: `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B"><h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B">New conversation</h2><p style="font-size:16px"><strong>${starter}</strong> started a conversation with you${about}.</p><p style="font-size:13px;color:#5A6781">Open RISE and tap Chat to view and reply.</p></div>`,
+        }).catch(() => {});
+      });
       onCreated(room);
     } finally {
       setCreating(false);

@@ -40,7 +40,12 @@ export default function Trips() {
     const id = searchParams.get('tripId');
     if (id && trips.length) {
       const found = trips.find(t => t.id === id);
-      if (found) setSelected(found);
+      if (found) {
+        setSelected(found);
+        const p = new URLSearchParams(searchParams);
+        p.delete('tripId');
+        setSearchParams(p, { replace: true });
+      }
     }
   }, [searchParams, trips]);
   const del = async (trip) => {
