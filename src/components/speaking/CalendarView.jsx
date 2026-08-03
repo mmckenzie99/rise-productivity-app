@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDate, calEngagementTone, isMultiDayPlan, planCalTone, planMultiTone } from '@/lib/speaking';
@@ -11,10 +11,17 @@ const keyOf = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, 
 
 const MODES = ['month', 'week', 'day'];
 
-export default function CalendarView({ items, events, onSelect, onEventSelect, onAddSlot }) {
+export default function CalendarView({ items, events, onSelect, onEventSelect, onAddSlot, focusDate }) {
   const today = new Date();
   const [mode, setMode] = useState('month');
   const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+
+  // Jump to the day view for a specific date (e.g. after creating a plan there).
+  useEffect(() => {
+    if (!focusDate?.date) return;
+    setMode('day');
+    setCursor(new Date(focusDate.date + 'T00:00:00'));
+  }, [focusDate]);
 
   const step = (dir) => {
     if (mode === 'month') {

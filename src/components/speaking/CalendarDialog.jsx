@@ -4,7 +4,7 @@ import CalendarView from './CalendarView';
 import { Download } from 'lucide-react';
 import useHistoryModal from '@/hooks/useHistoryModal';
 
-export default function CalendarDialog({ open, onClose, items, events, onSelect, onEventSelect, onAddSlot }) {
+export default function CalendarDialog({ open, onClose, items, events, onSelect, onEventSelect, onAddSlot, focusDate }) {
   const requestClose = useHistoryModal(open, onClose);
   return (
     <Dialog open={open} onOpenChange={v => !v && requestClose()}>
@@ -22,7 +22,7 @@ export default function CalendarDialog({ open, onClose, items, events, onSelect,
               <Download className="h-3.5 w-3.5" />Export all (.ics)
             </button>
           </div>
-          <CalendarView items={items} events={events} onSelect={onSelect} onEventSelect={onEventSelect} onAddSlot={onAddSlot} />
+          <CalendarView items={items} events={events} onSelect={onSelect} onEventSelect={onEventSelect} onAddSlot={onAddSlot} focusDate={focusDate} />
         </div>
       </DialogContent>
     </Dialog>

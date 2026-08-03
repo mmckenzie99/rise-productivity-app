@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Send, Paperclip, FileText, Download, X, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Highlight from '@/components/chat/Highlight';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { format, parseISO } from 'date-fns';
 
 export default function ConversationView({ room, user, onBack, query }) {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [input, setInput] = useState('');
@@ -17,6 +19,16 @@ export default function ConversationView({ room, user, onBack, query }) {
   const [topicDraft, setTopicDraft] = useState('');
   const scrollRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  // "Way back": for a room linked to an engagement/trip/plan, jump back to it.
+  const itemLabel = room.type === 'engagement' ? 'Engagement'
+    : room.type === 'trip' ? 'Trip'
+    : room.type === 'plan' ? 'Plan' : '';
+  const backToItem = room.linked_id && itemLabel
+    ? room.type === 'engagement' ? `/?engagementId=${room.linked_id}`
+      : room.type === 'trip' ? `/trips?tripId=${room.linked_id}`
+      : `/?planId=${room.linked_id}`
+    : null;
 
   useEffect(() => {
     let mounted = true;
@@ -145,6 +157,17 @@ export default function ConversationView({ room, user, onBack, query }) {
 
   return (
     <div className="flex h-full flex-col">
+      {backToItem && (
+        <div className="flex items-center border-b border-border px-3 py-1.5">
+          <button
+            onClick={() => navigate(backToItem)}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-primary transition hover:underline"
+            title={`Back to ${itemLabel}`}
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> Back to {itemLabel}
+          </button>
+        </div>
+      )}
       <div className="flex items-center gap-2 border-b border-border px-3 py-2.5">
         <button
           onClick={onBack}
