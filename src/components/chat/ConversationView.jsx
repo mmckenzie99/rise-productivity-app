@@ -88,9 +88,25 @@ export default function ConversationView({ room, user, onBack }) {
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-foreground">{room.title}</p>
           <p className="truncate text-xs text-muted-foreground">
-            {(room.participant_names || []).join(', ')}
+            {(room.participant_names || []).length} participant{(room.participant_names || []).length === 1 ? '' : 's'}
           </p>
         </div>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5 border-b border-border px-3 py-2">
+        {(room.participant_names || []).map((name, i) => {
+          const me = (room.participant_ids || [])[i] === user.id;
+          return (
+            <span
+              key={i}
+              className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                me ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
+              }`}
+            >
+              {me ? 'You' : name}
+            </span>
+          );
+        })}
       </div>
 
       <div ref={scrollRef} className="flex-1 space-y-2 overflow-y-auto px-3 py-4">
