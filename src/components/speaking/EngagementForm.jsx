@@ -8,10 +8,8 @@ import FormSchedule from './FormSchedule';
 import FormLocation from './FormLocation';
 import FormPresentation from './FormPresentation';
 import RichTextEditor from './RichTextEditor';
-import useHistoryModal from '@/hooks/useHistoryModal';
 
 export default function EngagementForm({ open, item, onClose, onSave }) {
-  const requestClose = useHistoryModal(open, onClose);
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
 
@@ -25,11 +23,11 @@ export default function EngagementForm({ open, item, onClose, onSave }) {
     setSaving(true);
     await onSave(form);
     setSaving(false);
-    requestClose();
+    onClose();
   };
 
   return (
-    <Dialog open={open} onOpenChange={v => !v && requestClose()}>
+    <Dialog open={open} onOpenChange={v => !v && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">{item ? 'Edit Engagement Details' : 'New Engagement Details'}</DialogTitle>
@@ -50,7 +48,7 @@ export default function EngagementForm({ open, item, onClose, onSave }) {
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={requestClose} className="border-border bg-card">Cancel</Button>
+          <Button type="button" variant="outline" onClick={onClose} className="border-border bg-card">Cancel</Button>
           <Button type="button" onClick={submit} disabled={saving} className="bg-[#D9A404] hover:bg-[#B89003]">
             {saving ? 'Saving…' : 'Save Engagement'}
           </Button>

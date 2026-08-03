@@ -4,7 +4,6 @@ import { Pencil, Trash2, FileText, Plane, Car, CalendarDays, Building2, DollarSi
 import { formatCurrency, calcTravelByType, calcLodgingTotal, exportTripCSV, formatPlaces } from '@/lib/trips';
 import { formatTime } from '@/lib/speaking';
 import { useNavigate } from 'react-router-dom';
-import useHistoryModal from '@/hooks/useHistoryModal';
 
 function Row({ icon: Icon, label, children }) {
   return (
@@ -17,15 +16,14 @@ function Row({ icon: Icon, label, children }) {
 }
 
 export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin }) {
-  const requestClose = useHistoryModal(!!trip, onClose);
   const navigate = useNavigate();
   if (!trip) return null;
-  const openChat = () => { onClose(); navigate(`/chat?linkType=trip&linkedId=${trip.id}`); };
+  const openChat = () => { navigate(`/chat?linkType=trip&linkedId=${trip.id}`); };
   const travelByType = calcTravelByType(trip.travel_entries);
   const lodgingTotal = calcLodgingTotal(trip.lodging_entries);
 
   return (
-    <Dialog open={!!trip} onOpenChange={(v) => !v && requestClose()}>
+    <Dialog open={!!trip} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-xl">Trip Details</DialogTitle>
@@ -175,7 +173,7 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
             {isAdmin && (
               <>
                 <Button variant="outline" onClick={onEdit} className="border-border bg-card"><Pencil className="mr-1.5 h-4 w-4" />Edit</Button>
-                <Button variant="destructive" onClick={async () => { if (await onDelete()) requestClose(); }}><Trash2 className="mr-1.5 h-4 w-4" />Delete</Button>
+                <Button variant="destructive" onClick={async () => { if (await onDelete()) onClose(); }}><Trash2 className="mr-1.5 h-4 w-4" />Delete</Button>
               </>
             )}
           </div>

@@ -9,10 +9,8 @@ import FormTravel from './FormTravel';
 import FormPerDiem from './FormPerDiem';
 import FormLodging from './FormLodging';
 import MultiTypeSelect from './MultiTypeSelect';
-import useHistoryModal from '@/hooks/useHistoryModal';
 
 export default function TripForm({ open, item, engagements, onClose, onSave }) {
-  const requestClose = useHistoryModal(open, onClose);
   const [form, setForm] = useState(defaultTrip);
   const [saving, setSaving] = useState(false);
 
@@ -45,11 +43,11 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
       total_cost: totalCost
     });
     setSaving(false);
-    requestClose();
+    onClose();
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && requestClose()}>
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display">{item ? 'Edit Trip Details' : 'New Trip Details'}</DialogTitle>
@@ -100,7 +98,7 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={requestClose} className="border-border bg-card">Cancel</Button>
+          <Button variant="outline" onClick={onClose} className="border-border bg-card">Cancel</Button>
           <Button onClick={handleSubmit} disabled={saving || !form.place.length || !form.department} className="bg-[#D9A404] hover:bg-[#B89003]">
             {saving ? 'Saving…' : 'Save Trip'}
           </Button>

@@ -5,18 +5,16 @@ import { formatDate, formatTime, statusTone, TIMEZONES, asArray } from '@/lib/sp
 import { generateICS, downloadICS } from '@/lib/icsExport';
 import { useNavigate } from 'react-router-dom';
 import RichTextDisplay from './RichTextDisplay';
-import useHistoryModal from '@/hooks/useHistoryModal';
 
 export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAdmin, trip, onViewTrip, admins, currentUserId }) {
-  const requestClose = useHistoryModal(!!item, onClose);
   const navigate = useNavigate();
   if (!item) return null;
-  const openChat = () => { navigate(`/chat?linkType=engagement&linkedId=${item.id}`, { replace: true }); };
+  const openChat = () => { navigate(`/chat?linkType=engagement&linkedId=${item.id}`); };
   const dateForDisplay = item.speaking_date || item.deploy_date;
   const isRange = item.end_date && item.end_date !== dateForDisplay;
   const isPresentation = asArray(item.presentation_type).includes('Presentation(s)');
   return (
-    <Dialog open={!!item} onOpenChange={v => !v && requestClose()}>
+    <Dialog open={!!item} onOpenChange={v => !v && onClose()}>
       <DialogContent className="max-h-[92vh] overflow-y-auto bg-card sm:max-w-xl">
         <DialogHeader className="text-center items-center">
           <DialogTitle className="font-display text-2xl">{item.place || 'Place not set'}</DialogTitle>
@@ -81,7 +79,7 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
         </div>
         {isAdmin && (
           <div className="flex justify-between pt-3">
-            <Button variant="destructive" onClick={async () => { if (await onDelete(item)) requestClose(); }}><Trash2 className="mr-2 h-4 w-4" />Delete</Button>
+            <Button variant="destructive" onClick={async () => { if (await onDelete(item)) onClose(); }}><Trash2 className="mr-2 h-4 w-4" />Delete</Button>
             <Button onClick={() => onEdit(item)} className="bg-[#D9A404] hover:bg-[#B89003]"><Pencil className="mr-2 h-4 w-4" />Edit</Button>
           </div>
         )}

@@ -2,12 +2,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { generateICSBatch, downloadICS } from '@/lib/icsExport';
 import CalendarView from './CalendarView';
 import { Download } from 'lucide-react';
-import useHistoryModal from '@/hooks/useHistoryModal';
 
 export default function CalendarDialog({ open, onClose, items, events, onSelect, onEventSelect, onAddSlot, focusDate }) {
-  const requestClose = useHistoryModal(open, onClose);
   return (
-    <Dialog open={open} onOpenChange={v => !v && requestClose()}>
+    <Dialog open={open} onOpenChange={v => !v && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">Calendar</DialogTitle>

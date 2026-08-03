@@ -1,7 +1,220 @@
-import { useMemo,useState,useRef,useEffect } from 'react';import { useAuth } from '@/lib/AuthContext';import { Search } from 'lucide-react';import { Input } from '@/components/ui/input';import AppHeader from '@/components/speaking/AppHeader';import Dashboard from '@/components/speaking/Dashboard';import EngagementMap from '@/components/speaking/EngagementMap';import Filters from '@/components/speaking/Filters';import EngagementCard from '@/components/speaking/EngagementCard';import DraggableLocationGroup from '@/components/speaking/DraggableLocationGroup';import KanbanBoard from '@/components/speaking/KanbanBoard';import EngagementForm from '@/components/speaking/EngagementForm';import EngagementDetail from '@/components/speaking/EngagementDetail';import InviteDialog from '@/components/speaking/InviteDialog';import CalendarDialog from '@/components/speaking/CalendarDialog';import useEngagements from '@/hooks/useEngagements';import useTrips from '@/hooks/useTrips';import TripForm from '@/components/speaking/TripForm';import TripDetail from '@/components/speaking/TripDetail';import TripListDialog from '@/components/speaking/TripListDialog';import ArchiveDialog from '@/components/speaking/ArchiveDialog';import EngagementQuickLook from '@/components/speaking/EngagementQuickLook';import { DragDropContext,Droppable } from '@hello-pangea/dnd';import { tripPlaceKeys,tripHasPlace } from '@/lib/trips';import useCalendarEvents from '@/hooks/useCalendarEvents';import CalendarEventForm from '@/components/speaking/CalendarEventForm';import { base44 } from '@/api/base44Client';import { formatDate,formatTime } from '@/lib/speaking';
+import { useMemo, useState, useRef, useEffect, useCallback } from 'react';
+import { useAuth } from '@/lib/AuthContext';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import AppHeader from '@/components/speaking/AppHeader';
+import Dashboard from '@/components/speaking/Dashboard';
+import EngagementMap from '@/components/speaking/EngagementMap';
+import Filters from '@/components/speaking/Filters';
+import DraggableLocationGroup from '@/components/speaking/DraggableLocationGroup';
+import KanbanBoard from '@/components/speaking/KanbanBoard';
+import EngagementForm from '@/components/speaking/EngagementForm';
+import EngagementDetail from '@/components/speaking/EngagementDetail';
+import InviteDialog from '@/components/speaking/InviteDialog';
+import CalendarDialog from '@/components/speaking/CalendarDialog';
+import useEngagements from '@/hooks/useEngagements';
+import useTrips from '@/hooks/useTrips';
+import TripForm from '@/components/speaking/TripForm';
+import TripDetail from '@/components/speaking/TripDetail';
+import TripListDialog from '@/components/speaking/TripListDialog';
+import ArchiveDialog from '@/components/speaking/ArchiveDialog';
+import EngagementQuickLook from '@/components/speaking/EngagementQuickLook';
+import { DragDropContext, Droppable } from '@hello-pangea/dnd';
+import { tripPlaceKeys, tripHasPlace } from '@/lib/trips';
+import useCalendarEvents from '@/hooks/useCalendarEvents';
+import CalendarEventForm from '@/components/speaking/CalendarEventForm';
+import { base44 } from '@/api/base44Client';
+import { formatDate, formatTime } from '@/lib/speaking';
 import { useAppSettings } from '@/hooks/useAppSettings';
 import { resolveFeature } from '@/lib/permissions';
 import { useSearchParams } from 'react-router-dom';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
-import useModalHistory from '@/hooks/useModalHistory';
-export default function Home(){const {user}=useAuth();const isAdmin=user?.role==='admin';const isOwner=!!user?.is_owner;const [searchParams,setSearchParams]=useSearchParams();const {items,loading,save,remove,load:loadEngagements}=useEngagements(),{items:trips,loading:tripsLoading,save:saveTrip,remove:removeTrip}=useTrips(),{items:calEvents,loading:calEventsLoading,save:saveCalEvent,remove:removeCalEvent,load:loadCalEvents}=useCalendarEvents(),[filters,setFilters]=useState(()=>{try{const s=sessionStorage.getItem('homeFilters');if(s){const p=JSON.parse(s);return{status:p.status||'all',progress:p.progress||'all',search:p.search||''}}}catch{}return{status:'all',progress:'all',search:''}}),[form,setForm]=useState(false),[selected,setSelected]=useState(null),[invite,setInvite]=useState(false),[calendar,setCalendar]=useState(false),[view,setView]=useState('grid'),[tripList,setTripList]=useState(false),[tripFormOpen,setTripFormOpen]=useState(false),[selectedTrip,setSelectedTrip]=useState(null),[archive,setArchive]=useState(false),[quickLook,setQuickLook]=useState(null),[calEventForm,setCalEventForm]=useState(false),[calFocus,setCalFocus]=useState(null),[users,setUsers]=useState([]);const pendingCalOpenRef=useRef(null);useEffect(()=>{(async()=>{try{const us=await base44.entities.User.list();setUsers(us)}catch{}})()},[]);const { settings }=useAppSettings();const commentUsers=useMemo(()=>users.filter(u=>resolveFeature(u,settings,'can_comment')),[users,settings]);const assignableUsers=useMemo(()=>users.filter(u=>resolveFeature(u,settings,'can_be_assigned')),[users,settings]);useEffect(()=>{const h=()=>setFilters({status:'all',progress:'all',search:''});window.addEventListener('b44:reset-filters',h);return()=>window.removeEventListener('b44:reset-filters',h)},[]);useEffect(()=>{try{sessionStorage.setItem('homeFilters',JSON.stringify(filters))}catch{}},[filters]);useEffect(()=>{const t=setTimeout(()=>{try{const y=Number(sessionStorage.getItem('homeScroll'));if(y>0)window.scrollTo(0,y)}catch{}},300);return()=>{clearTimeout(t);try{sessionStorage.setItem('homeScroll',String(window.scrollY))}catch{}}},[]);const todayStr=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};const applyAction=action=>{if(!action)return;if(action==='new')setForm(true);else if(action==='invite')setInvite(true);else if(action==='calendar')setCalendar(true);else if(action==='new-plan')setCalEventForm({date:todayStr()})};useEffect(()=>{const params=new URLSearchParams(window.location.search);const action=params.get('action');if(action){applyAction(action);params.delete('action');const q=params.toString();window.history.replaceState({},'',window.location.pathname+(q?'?'+q:''))}},[]);useEffect(()=>{const h=e=>applyAction(e.detail&&e.detail.type);window.addEventListener('b44:quick-action',h);return()=>window.removeEventListener('b44:quick-action',h)},[]);useEffect(()=>{const id=searchParams.get('engagementId');if(id&&items.length){const found=items.find(x=>x.id===id);if(found){setSelected(found);const p=new URLSearchParams(searchParams);p.delete('engagementId');setSearchParams(p,{replace:true})}}},[searchParams,items]);const [placeOrder,setPlaceOrder]=useState(()=>{try{return JSON.parse(localStorage.getItem('placeOrder'))||[]}catch{return[]}});const mapRef=useRef(null);const [mapFocus,setMapFocus]=useState(null);const locate=x=>{if(Number.isFinite(Number(x.latitude))&&Number.isFinite(Number(x.longitude))){setMapFocus({item:x,nonce:Date.now()});mapRef.current?.scrollIntoView({behavior:'smooth',block:'start'})}};const tripPlaces=useMemo(()=>tripPlaceKeys(trips),[trips]);const engagementTrip=selected?trips.find(t=>tripHasPlace(t,selected.place)):null;const editTrip=x=>{setSelectedTrip(null);setTripFormOpen(x)};const delTrip=async x=>{if(window.confirm('Delete this trip?')){await removeTrip(x.id);return true}return false};const viewTripFromEng=()=>{if(engagementTrip){setSelected(null);setSelectedTrip(engagementTrip)}};const visible=useMemo(()=>items.filter(x=>x.status!=='Completed'&&(filters.status==='all'||x.status===filters.status)&&(filters.progress==='all'||x.progress===filters.progress)&&`${x.place||''} ${x.title||''} ${Array.isArray(x.presentation_type)?x.presentation_type.join(' '):x.presentation_type||''}`.toLowerCase().includes(filters.search.toLowerCase())),[items,filters]);const archived=useMemo(()=>items.filter(x=>x.status==='Completed'),[items]);const locationGroups=useMemo(()=>{const m={};visible.forEach(x=>{const k=x.place?x.place.trim().toLowerCase():`__n${x.id}`;if(!m[k])m[k]={place:x.place,items:[]};m[k].items.push(x)});return Object.values(m)},[visible]);const orderedGroups=useMemo(()=>{const groups=locationGroups.map(g=>({...g,key:g.place?g.place.trim().toLowerCase():`__n${g.items[0].id}`}));if(placeOrder.length){const orderMap=new Map(placeOrder.map((k,i)=>[k,i]));groups.sort((a,b)=>{const ai=orderMap.get(a.key);const bi=orderMap.get(b.key);if(ai!==undefined&&bi!==undefined)return ai-bi;if(ai!==undefined)return -1;if(bi!==undefined)return 1;return 0})}return groups},[locationGroups,placeOrder]);const onDragEnd=r=>{if(!r.destination)return;const arr=[...orderedGroups];const [moved]=arr.splice(r.source.index,1);arr.splice(r.destination.index,0,moved);const keys=arr.map(g=>g.key);setPlaceOrder(keys);try{localStorage.setItem('placeOrder',JSON.stringify(keys))}catch{}};const edit=x=>{setSelected(null);setForm(x)};const duplicate=x=>{const {id,created_date,updated_date,created_by_id,...fields}=x;setForm({...fields,title:`${x.title} (Copy)`})};const del=async x=>{if(window.confirm(`Delete “${x.title}”?`)){await remove(x.id);return true}return false};const saveCalEventWithNotifs=async item=>{const prev=item.id?calEvents.find(e=>e.id===item.id):null;const wasAssigned=prev?.assignee_id;const wasCompleted=prev?.completed;if(prev){item.was_edited=true;item.was_rescheduled=!!(prev.was_rescheduled||prev.date!==item.date);}const saved=await saveCalEvent(item);if(!item.id){pendingCalOpenRef.current=saved?.date||item.date;}const planId=saved?.id||item.id;const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');const planTitle=item.title||'Plan';const planDate=item.date;const safeTitle=esc(planTitle);if(item.assignee_id&&item.assignee_id!==wasAssigned){const assignee=users.find(u=>u.id===item.assignee_id);try{await base44.entities.Notification.create({engagement_id:planId,engagement_title:planTitle,speaking_date:planDate,speaking_time:item.start_time,window_label:'Assigned to you',email_sent:false,read:false})}catch{}if(assignee?.email){try{await base44.integrations.Core.SendEmail({to:assignee.email,subject:`New plan assigned: ${safeTitle}`,body:`<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B"><h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B">A plan was assigned to you</h2><p style="font-size:16px"><strong>${safeTitle}</strong>${planDate?` on ${formatDate(planDate)}`:''}${item.start_time?` at ${formatTime(item.start_time)}`:''}.</p><p style="font-size:13px;color:#5A6781">Open the RISE calendar to view details and mark it complete.</p></div>`})}catch{}}}if(item.completed&&!wasCompleted){const assignerId=prev?.created_by_id||user?.id;const assigner=users.find(u=>u.id===assignerId);try{await base44.entities.Notification.create({engagement_id:planId,engagement_title:planTitle,speaking_date:item.completed_date||planDate,speaking_time:item.start_time,window_label:'Completed',email_sent:false,read:false})}catch{}if(assigner?.email){try{await base44.integrations.Core.SendEmail({to:assigner.email,subject:`Plan completed: ${safeTitle}`,body:`<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B"><h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B">A plan was completed</h2><p style="font-size:16px"><strong>${safeTitle}</strong> has been marked complete.</p></div>`})}catch{}}}};useModalHistory([{key:'engagementForm',open:!!form,onClose:()=>setForm(false)},{key:'engagementDetail',open:!!selected,onClose:()=>{setSelected(null);setSearchParams(prev=>{prev.delete('engagementId');return prev},{replace:true})}},{key:'invite',open:invite,onClose:()=>setInvite(false)},{key:'calendar',open:calendar,onClose:()=>setCalendar(false)},{key:'tripList',open:tripList,onClose:()=>setTripList(false)},{key:'tripForm',open:!!tripFormOpen,onClose:()=>setTripFormOpen(false)},{key:'tripDetail',open:!!selectedTrip,onClose:()=>setSelectedTrip(null)},{key:'quickLook',open:!!quickLook,onClose:()=>setQuickLook(null)},{key:'calEventForm',open:!!calEventForm,onClose:()=>setCalEventForm(false)},{key:'archive',open:archive,onClose:()=>setArchive(false)}]);useEffect(()=>{if(!calEventForm&&pendingCalOpenRef.current){const d=pendingCalOpenRef.current;pendingCalOpenRef.current=null;setCalFocus({date:d,n:Date.now()});setCalendar(true);}},[calEventForm]);useEffect(()=>{const id=searchParams.get('planId');if(id&&calEvents.length){const found=calEvents.find(e=>e.id===id);if(found){setCalendar(true);setCalFocus({date:found.date,n:Date.now()});setCalEventForm(found);const p=new URLSearchParams(searchParams);p.delete('planId');setSearchParams(p,{replace:true})}}},[searchParams,calEvents]);return <main className="min-h-screen bg-background text-foreground pt-safe pb-safe"><div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9"><PullToRefresh onRefresh={async()=>{await loadEngagements();await loadCalEvents();}}><AppHeader onAdd={()=>setForm(true)} onInvite={()=>setInvite(true)} onCalendar={()=>setCalendar(true)} onTrip={()=>setTripList(true)} isAdmin={isAdmin} isOwner={isOwner} newOpen={!!form} calendarOpen={calendar} inviteOpen={invite}/><div className="relative sm:max-w-xs"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground"/><Input className="bg-card pl-9 text-sm h-9 border-border" placeholder="Search place or engagement type…" value={filters.search} onChange={e=>setFilters({...filters,search:e.target.value})}/></div><Dashboard items={items} onSelect={setQuickLook}/><div ref={mapRef}><EngagementMap items={visible} onView={setSelected} focusItem={mapFocus}/></div><Filters filters={filters} setFilters={setFilters} onArchive={()=>setArchive(true)}/><div className="flex justify-end gap-1"><button onClick={()=>setView('grid')} className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${view==='grid'?'bg-primary text-primary-foreground':'bg-card text-foreground border border-border'}`}>Grid</button><button onClick={()=>setView('kanban')} className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${view==='kanban'?'bg-primary text-primary-foreground':'bg-card text-foreground border border-border'}`}>Kanban</button></div>{loading?<div className="py-14 text-center">Loading engagements…</div>:visible.length?view==='kanban'?<KanbanBoard items={visible} onSave={save} onSelect={setSelected} isAdmin={isAdmin}/>:<DragDropContext onDragEnd={onDragEnd}><Droppable droppableId="locations">{p=>(<div ref={p.innerRef} {...p.droppableProps} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{orderedGroups.map((g,i)=><DraggableLocationGroup key={g.key} id={g.key} index={i} place={g.place} items={g.items} onClick={setSelected} onDuplicate={duplicate} isAdmin={isAdmin} tripPlaces={tripPlaces} onLocate={locate}/>)}{p.placeholder}</div>)}</Droppable></DragDropContext>:<div className="rounded-lg border border-dashed border-primary bg-card/60 py-14 text-center"><h2 className="font-display text-xl font-semibold">{items.length?'Nothing matches':'No engagements yet'}</h2><p className="mt-2 text-sm text-muted-foreground">{items.length?'Try a different filter.':isAdmin?'Add your first speaking engagement to see it mapped here.':'Ask an administrator to add one.'}</p></div>}</PullToRefresh></div><EngagementForm open={!!form} item={form===true?null:form} onClose={()=>setForm(false)} onSave={save}/><EngagementDetail item={selected} onClose={()=>{setSelected(null);setSearchParams(prev=>{prev.delete('engagementId');return prev},{replace:true})}} onEdit={edit} onDelete={del} isAdmin={isAdmin} trip={engagementTrip} onViewTrip={viewTripFromEng} admins={commentUsers} currentUserId={user?.id}/><InviteDialog open={invite} onClose={()=>setInvite(false)}/><CalendarDialog open={calendar} onClose={()=>setCalendar(false)} items={items} events={calEvents} onSelect={setSelected} onEventSelect={setCalEventForm} focusDate={calFocus} onAddSlot={(date,time)=>{const[h,m]=time.split(':').map(Number);const end=h*60+m+60;const eh=Math.floor(end/60)%24,em=end%60;const f=v=>String(v).padStart(2,'0');setCalEventForm({date,start_time:time,end_time:`${f(eh)}:${f(em)}`})}}/><TripListDialog open={tripList} trips={trips} loading={tripsLoading} isAdmin={isAdmin} onClose={()=>setTripList(false)} onAdd={()=>setTripFormOpen(true)} onSelect={setSelectedTrip}/><TripForm open={!!tripFormOpen} item={tripFormOpen===true?null:tripFormOpen} engagements={items} onClose={()=>setTripFormOpen(false)} onSave={async t=>{await saveTrip(t);setTripFormOpen(false)}}/><TripDetail trip={selectedTrip} onClose={()=>setSelectedTrip(null)} onEdit={()=>editTrip(selectedTrip)} onDelete={()=>delTrip(selectedTrip)} isAdmin={isAdmin}/><EngagementQuickLook item={quickLook} onClose={()=>setQuickLook(null)}/><CalendarEventForm open={!!calEventForm} item={calEventForm===true?null:calEventForm} admins={commentUsers} assignableUsers={assignableUsers} currentUserId={user?.id} onClose={()=>setCalEventForm(false)} onSave={saveCalEventWithNotifs} onDelete={async id=>{await removeCalEvent(id)}} onDeleteFuture={async(seriesId,afterDate)=>{const future=calEvents.filter(e=>e.series_id===seriesId&&e.date>afterDate);for(const e of future)await removeCalEvent(e.id)}}/><ArchiveDialog open={archive} onClose={()=>setArchive(false)} items={archived} onSelect={x=>{setArchive(false);setSelected(x)}} isAdmin={isAdmin} tripPlaces={tripPlaces} onLocate={x=>{setArchive(false);locate(x)}} onDuplicate={duplicate}/><div className="h-28 lg:hidden"/></main>}
+import { useHistoryBack } from '@/hooks/useHistoryBack';
+
+export default function Home() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+  const isOwner = !!user?.is_owner;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { items, loading, save, remove, load: loadEngagements } = useEngagements();
+  const { items: trips, loading: tripsLoading, save: saveTrip, remove: removeTrip } = useTrips();
+  const { items: calEvents, loading: calEventsLoading, save: saveCalEvent, remove: removeCalEvent, load: loadCalEvents } = useCalendarEvents();
+
+  const [filters, setFilters] = useState(() => {
+    try { const s = sessionStorage.getItem('homeFilters'); if (s) { const p = JSON.parse(s); return { status: p.status || 'all', progress: p.progress || 'all', search: p.search || '' }; } } catch {}
+    return { status: 'all', progress: 'all', search: '' };
+  });
+  const [view, setView] = useState('grid');
+  const [invite, setInvite] = useState(false);
+  const [archive, setArchive] = useState(false);
+  const [formPrefill, setFormPrefill] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [placeOrder, setPlaceOrder] = useState(() => { try { return JSON.parse(localStorage.getItem('placeOrder')) || []; } catch { return []; } });
+  const mapRef = useRef(null);
+  const [mapFocus, setMapFocus] = useState(null);
+  const lastSaveWasNewRef = useRef(false);
+  const lastSaveDateRef = useRef('');
+
+  useEffect(() => { (async () => { try { const us = await base44.entities.User.list(); setUsers(us); } catch {} })(); }, []);
+  const { settings } = useAppSettings();
+  const commentUsers = useMemo(() => users.filter(u => resolveFeature(u, settings, 'can_comment')), [users, settings]);
+  const assignableUsers = useMemo(() => users.filter(u => resolveFeature(u, settings, 'can_be_assigned')), [users, settings]);
+
+  useEffect(() => { const h = () => setFilters({ status: 'all', progress: 'all', search: '' }); window.addEventListener('b44:reset-filters', h); return () => window.removeEventListener('b44:reset-filters', h); }, []);
+  useEffect(() => { try { sessionStorage.setItem('homeFilters', JSON.stringify(filters)); } catch {} }, [filters]);
+  useEffect(() => { const t = setTimeout(() => { try { const y = Number(sessionStorage.getItem('homeScroll')); if (y > 0) window.scrollTo(0, y); } catch {} }, 300); return () => { clearTimeout(t); try { sessionStorage.setItem('homeScroll', String(window.scrollY)); } catch {} }; }, []);
+
+  const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+
+  // --- URL-driven content modal state (derived from search params) ---
+  const engagementId = searchParams.get('engagementId');
+  const editEngagement = searchParams.get('editEngagement');
+  const quickLookId = searchParams.get('quickLook');
+  const planIdParam = searchParams.get('planId');
+  const tripIdParam = searchParams.get('tripId');
+  const editTrip = searchParams.get('editTrip');
+  const tripsOpen = searchParams.has('trips');
+  const calendarOpen = searchParams.has('calendar');
+  const calDate = searchParams.get('calDate');
+  const planDate = searchParams.get('planDate');
+  const planStart = searchParams.get('planStart');
+  const planEnd = searchParams.get('planEnd');
+
+  const selected = engagementId ? (items.find(x => x.id === engagementId) || null) : null;
+  const form = !editEngagement ? false : editEngagement === 'new' ? (formPrefill || true) : (items.find(x => x.id === editEngagement) || false);
+  const quickLook = quickLookId ? (items.find(x => x.id === quickLookId) || null) : null;
+  const selectedTrip = tripIdParam ? (trips.find(t => t.id === tripIdParam) || null) : null;
+  const tripFormOpen = !editTrip ? false : editTrip === 'new' ? true : (trips.find(t => t.id === editTrip) || false);
+  const calEventForm = !planIdParam ? false : planIdParam === 'new' ? { date: planDate || '', start_time: planStart || '', end_time: planEnd || '' } : (calEvents.find(e => e.id === planIdParam) || false);
+  const calFocus = useMemo(() => (calDate ? { date: calDate } : null), [calDate]);
+
+  // Reset form prefill once the engagement form closes.
+  useEffect(() => { if (!editEngagement) setFormPrefill(null); }, [editEngagement]);
+
+  // --- close handlers (history-aware with idx fallback) ---
+  const closeEngagement = useHistoryBack('engagementId');
+  const closeEditEngagement = useHistoryBack('editEngagement');
+  const closeQuickLook = useHistoryBack('quickLook');
+  const closePlanForm = useHistoryBack(['planId', 'planDate', 'planStart', 'planEnd']);
+  const closeTrip = useHistoryBack('tripId');
+  const closeEditTrip = useHistoryBack('editTrip');
+  const closeTrips = useHistoryBack('trips');
+  const closeCalendar = useHistoryBack(['calendar', 'calDate']);
+
+  // After saving a NEW plan, reopen/focus the calendar on its date; otherwise pop history.
+  const closePlan = () => {
+    if (lastSaveWasNewRef.current) {
+      const d = lastSaveDateRef.current;
+      lastSaveWasNewRef.current = false;
+      lastSaveDateRef.current = '';
+      setSearchParams(prev => { const sp = new URLSearchParams(prev); ['planId', 'planDate', 'planStart', 'planEnd'].forEach(p => sp.delete(p)); sp.set('calendar', '1'); if (d) sp.set('calDate', d); return sp; }, { replace: true });
+    } else {
+      closePlanForm();
+    }
+  };
+
+  const clearParam = useCallback((name) => setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete(name); return sp; }, { replace: true }), [setSearchParams]);
+  const pushParam = useCallback((fn) => setSearchParams(prev => { const sp = new URLSearchParams(prev); fn(sp); return sp; }), [setSearchParams]);
+
+  // --- stale deep-link cleanup: clear a content-modal param when its referenced
+  // item doesn't exist after data has loaded, so stale links land cleanly on Home. ---
+  useEffect(() => { if (loading) return; if (engagementId && !items.some(x => x.id === engagementId)) clearParam('engagementId'); }, [engagementId, items, loading, clearParam]);
+  useEffect(() => { if (loading) return; if (editEngagement && editEngagement !== 'new' && !items.some(x => x.id === editEngagement)) clearParam('editEngagement'); }, [editEngagement, items, loading, clearParam]);
+  useEffect(() => { if (loading) return; if (quickLookId && !items.some(x => x.id === quickLookId)) clearParam('quickLook'); }, [quickLookId, items, loading, clearParam]);
+  useEffect(() => { if (tripsLoading) return; if (tripIdParam && !trips.some(t => t.id === tripIdParam)) clearParam('tripId'); }, [tripIdParam, trips, tripsLoading, clearParam]);
+  useEffect(() => { if (tripsLoading) return; if (editTrip && editTrip !== 'new' && !trips.some(t => t.id === editTrip)) clearParam('editTrip'); }, [editTrip, trips, tripsLoading, clearParam]);
+  useEffect(() => { if (calEventsLoading) return; if (planIdParam && planIdParam !== 'new' && !calEvents.some(e => e.id === planIdParam)) clearParam('planId'); }, [planIdParam, calEvents, calEventsLoading, clearParam]);
+
+  // --- action param (one-time, consumed on mount) + in-page quick actions ---
+  const applyAction = (action, replace = false) => {
+    if (!action) return;
+    const opts = { replace };
+    if (action === 'new') setSearchParams({ editEngagement: 'new' }, opts);
+    else if (action === 'calendar') setSearchParams({ calendar: '1' }, opts);
+    else if (action === 'new-plan') setSearchParams({ planId: 'new', planDate: todayStr() }, opts);
+    else if (action === 'invite') { setInvite(true); if (replace) setSearchParams({}, opts); }
+  };
+  useEffect(() => { const action = searchParams.get('action'); if (action) applyAction(action, true); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
+  useEffect(() => { const h = e => applyAction((e.detail && e.detail.type) || '', false); window.addEventListener('b44:quick-action', h); return () => window.removeEventListener('b44:quick-action', h); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
+
+  const locate = x => { if (Number.isFinite(Number(x.latitude)) && Number.isFinite(Number(x.longitude))) { setMapFocus({ item: x, nonce: Date.now() }); mapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
+  const tripPlaces = useMemo(() => tripPlaceKeys(trips), [trips]);
+  const engagementTrip = selected ? trips.find(t => tripHasPlace(t, selected.place)) : null;
+
+  const edit = x => setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete('engagementId'); sp.set('editEngagement', x.id); return sp; }, { replace: true });
+  const editTripNav = x => setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete('tripId'); sp.set('editTrip', x.id); return sp; }, { replace: true });
+  const viewTripFromEng = () => { if (engagementTrip) setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete('engagementId'); sp.set('tripId', engagementTrip.id); return sp; }, { replace: true }); };
+  const duplicate = x => { const { id, created_date, updated_date, created_by_id, ...fields } = x; setFormPrefill({ ...fields, title: `${x.title} (Copy)` }); setSearchParams({ editEngagement: 'new' }); };
+  const del = async x => { if (window.confirm(`Delete "${x.title}"?`)) { await remove(x.id); return true; } return false; };
+  const delTrip = async x => { if (window.confirm('Delete this trip?')) { await removeTrip(x.id); return true; } return false; };
+
+  const openEngagement = x => setSearchParams({ engagementId: x.id });
+  const openQuickLook = x => setSearchParams({ quickLook: x.id });
+
+  const visible = useMemo(() => items.filter(x => x.status !== 'Completed' && (filters.status === 'all' || x.status === filters.status) && (filters.progress === 'all' || x.progress === filters.progress) && `${x.place || ''} ${x.title || ''} ${Array.isArray(x.presentation_type) ? x.presentation_type.join(' ') : x.presentation_type || ''}`.toLowerCase().includes(filters.search.toLowerCase())), [items, filters]);
+  const archived = useMemo(() => items.filter(x => x.status === 'Completed'), [items]);
+  const locationGroups = useMemo(() => { const m = {}; visible.forEach(x => { const k = x.place ? x.place.trim().toLowerCase() : `__n${x.id}`; if (!m[k]) m[k] = { place: x.place, items: [] }; m[k].items.push(x); }); return Object.values(m); }, [visible]);
+  const orderedGroups = useMemo(() => { const groups = locationGroups.map(g => ({ ...g, key: g.place ? g.place.trim().toLowerCase() : `__n${g.items[0].id}` })); if (placeOrder.length) { const orderMap = new Map(placeOrder.map((k, i) => [k, i])); groups.sort((a, b) => { const ai = orderMap.get(a.key); const bi = orderMap.get(b.key); if (ai !== undefined && bi !== undefined) return ai - bi; if (ai !== undefined) return -1; if (bi !== undefined) return 1; return 0; }); } return groups; }, [locationGroups, placeOrder]);
+  const onDragEnd = r => { if (!r.destination) return; const arr = [...orderedGroups]; const [moved] = arr.splice(r.source.index, 1); arr.splice(r.destination.index, 0, moved); const keys = arr.map(g => g.key); setPlaceOrder(keys); try { localStorage.setItem('placeOrder', JSON.stringify(keys)); } catch {} };
+
+  const saveCalEventWithNotifs = async item => {
+    const prev = item.id ? calEvents.find(e => e.id === item.id) : null;
+    const wasAssigned = prev?.assignee_id;
+    const wasCompleted = prev?.completed;
+    if (prev) { item.was_edited = true; item.was_rescheduled = !!(prev.was_rescheduled || prev.date !== item.date); }
+    const saved = await saveCalEvent(item);
+    const planId = saved?.id || item.id;
+    const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const planTitle = item.title || 'Plan';
+    const planDate = item.date;
+    const safeTitle = esc(planTitle);
+    if (item.assignee_id && item.assignee_id !== wasAssigned) {
+      const assignee = users.find(u => u.id === item.assignee_id);
+      try { await base44.entities.Notification.create({ engagement_id: planId, engagement_title: planTitle, speaking_date: planDate, speaking_time: item.start_time, window_label: 'Assigned to you', email_sent: false, read: false }); } catch {}
+      if (assignee?.email) { try { await base44.integrations.Core.SendEmail({ to: assignee.email, subject: `New plan assigned: ${safeTitle}`, body: `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B"><h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B">A plan was assigned to you</h2><p style="font-size:16px"><strong>${safeTitle}</strong>${planDate ? ` on ${formatDate(planDate)}` : ''}${item.start_time ? ` at ${formatTime(item.start_time)}` : ''}.</p><p style="font-size:13px;color:#5A6781">Open the RISE calendar to view details and mark it complete.</p></div>` }); } catch {} }
+    }
+    if (item.completed && !wasCompleted) {
+      const assignerId = prev?.created_by_id || user?.id;
+      const assigner = users.find(u => u.id === assignerId);
+      try { await base44.entities.Notification.create({ engagement_id: planId, engagement_title: planTitle, speaking_date: item.completed_date || planDate, speaking_time: item.start_time, window_label: 'Completed', email_sent: false, read: false }); } catch {}
+      if (assigner?.email) { try { await base44.integrations.Core.SendEmail({ to: assigner.email, subject: `Plan completed: ${safeTitle}`, body: `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B"><h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B">A plan was completed</h2><p style="font-size:16px"><strong>${safeTitle}</strong> has been marked complete.</p></div>` }); } catch {} }
+    }
+    // Remember whether this was a new plan so the form's close handler can
+    // reopen the calendar focused on the new plan's date.
+    if (!item.id) { lastSaveWasNewRef.current = true; lastSaveDateRef.current = saved?.date || item.date || ''; }
+  };
+
+  return (
+    <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
+      <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
+        <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); }}>
+          <AppHeader onAdd={() => setSearchParams({ editEngagement: 'new' })} onInvite={() => setInvite(true)} onCalendar={() => setSearchParams({ calendar: '1' })} isAdmin={isAdmin} isOwner={isOwner} newOpen={!!editEngagement} calendarOpen={calendarOpen} inviteOpen={invite} />
+          <div className="relative sm:max-w-xs">
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input className="bg-card pl-9 text-sm h-9 border-border" placeholder="Search place or engagement type…" value={filters.search} onChange={e => setFilters({ ...filters, search: e.target.value })} />
+          </div>
+          <Dashboard items={items} onSelect={openQuickLook} />
+          <div ref={mapRef}><EngagementMap items={visible} onView={openEngagement} focusItem={mapFocus} /></div>
+          <Filters filters={filters} setFilters={setFilters} onArchive={() => setArchive(true)} />
+          <div className="flex justify-end gap-1">
+            <button onClick={() => setView('grid')} className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${view === 'grid' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border'}`}>Grid</button>
+            <button onClick={() => setView('kanban')} className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${view === 'kanban' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border'}`}>Kanban</button>
+          </div>
+          {loading ? <div className="py-14 text-center">Loading engagements…</div> : visible.length ? view === 'kanban' ? <KanbanBoard items={visible} onSave={save} onSelect={openEngagement} isAdmin={isAdmin} /> : <DragDropContext onDragEnd={onDragEnd}><Droppable droppableId="locations">{p => (<div ref={p.innerRef} {...p.droppableProps} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{orderedGroups.map((g, i) => <DraggableLocationGroup key={g.key} id={g.key} index={i} place={g.place} items={g.items} onClick={openEngagement} onDuplicate={duplicate} isAdmin={isAdmin} tripPlaces={tripPlaces} onLocate={locate} />)}{p.placeholder}</div>)}</Droppable></DragDropContext> : <div className="rounded-lg border border-dashed border-primary bg-card/60 py-14 text-center"><h2 className="font-display text-xl font-semibold">{items.length ? 'Nothing matches' : 'No engagements yet'}</h2><p className="mt-2 text-sm text-muted-foreground">{items.length ? 'Try a different filter.' : isAdmin ? 'Add your first speaking engagement to see it mapped here.' : 'Ask an administrator to add one.'}</p></div>}
+        </PullToRefresh>
+      </div>
+
+      <EngagementForm open={!!form} item={form === true ? null : form} onClose={closeEditEngagement} onSave={save} />
+      <EngagementDetail item={selected} onClose={closeEngagement} onEdit={edit} onDelete={del} isAdmin={isAdmin} trip={engagementTrip} onViewTrip={viewTripFromEng} admins={commentUsers} currentUserId={user?.id} />
+      <InviteDialog open={invite} onClose={() => setInvite(false)} />
+      <CalendarDialog open={calendarOpen} onClose={closeCalendar} items={items} events={calEvents} onSelect={e => pushParam(sp => sp.set('engagementId', e.id))} onEventSelect={p => pushParam(sp => sp.set('planId', p.id))} focusDate={calFocus} onAddSlot={(date, time) => { const [h, m] = time.split(':').map(Number); const end = h * 60 + m + 60; const eh = Math.floor(end / 60) % 24, em = end % 60; const f = v => String(v).padStart(2, '0'); pushParam(sp => { sp.set('planId', 'new'); sp.set('planDate', date); sp.set('planStart', time); sp.set('planEnd', `${f(eh)}:${f(em)}`); }); }} />
+      <TripListDialog open={tripsOpen} trips={trips} loading={tripsLoading} isAdmin={isAdmin} onClose={closeTrips} onAdd={() => pushParam(sp => sp.set('editTrip', 'new'))} onSelect={t => pushParam(sp => sp.set('tripId', t.id))} />
+      <TripForm open={!!tripFormOpen} item={tripFormOpen === true ? null : tripFormOpen} engagements={items} onClose={closeEditTrip} onSave={async t => { await saveTrip(t); }} />
+      <TripDetail trip={selectedTrip} onClose={closeTrip} onEdit={() => editTripNav(selectedTrip)} onDelete={() => delTrip(selectedTrip)} isAdmin={isAdmin} />
+      <EngagementQuickLook item={quickLook} onClose={closeQuickLook} />
+      <CalendarEventForm open={!!calEventForm} item={calEventForm === true ? null : calEventForm} admins={commentUsers} assignableUsers={assignableUsers} currentUserId={user?.id} onClose={closePlan} onSave={saveCalEventWithNotifs} onDelete={async id => { await removeCalEvent(id); }} onDeleteFuture={async (seriesId, afterDate) => { const future = calEvents.filter(e => e.series_id === seriesId && e.date > afterDate); for (const e of future) await removeCalEvent(e.id); }} />
+      <ArchiveDialog open={archive} onClose={() => setArchive(false)} items={archived} onSelect={x => { setArchive(false); setSearchParams({ engagementId: x.id }); }} isAdmin={isAdmin} tripPlaces={tripPlaces} onLocate={x => { setArchive(false); locate(x); }} onDuplicate={duplicate} />
+      <div className="h-28 lg:hidden" />
+    </main>
+  );
+}

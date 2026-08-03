@@ -5,10 +5,8 @@ import { Input } from '@/components/ui/input';
 import { AlertTriangle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
-import useHistoryModal from '@/hooks/useHistoryModal';
 
 export default function DeleteAccountDialog({ open, onClose }) {
-  const requestClose = useHistoryModal(open, onClose);
   const { toast } = useToast();
   const [confirm, setConfirm] = useState('');
   const [busy, setBusy] = useState(false);
@@ -29,12 +27,12 @@ export default function DeleteAccountDialog({ open, onClose }) {
       await base44.auth.logout('/login');
     } finally {
       setBusy(false);
-      requestClose();
+      onClose();
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && requestClose()}>
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="font-display text-xl text-[#1B2A4B]">Delete account</DialogTitle>
@@ -52,7 +50,7 @@ export default function DeleteAccountDialog({ open, onClose }) {
         </p>
         <Input value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="DELETE" className="border-[#D6DAE3]" />
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={requestClose} disabled={busy}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={onClose} disabled={busy}>Cancel</Button>
           <Button type="button" variant="destructive" disabled={!canDelete || busy} onClick={submit}>
             {busy ? 'Deleting…' : 'Delete account'}
           </Button>

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import useHistoryModal from '@/hooks/useHistoryModal';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -77,7 +76,6 @@ const prefillFromRule = (base, ruleStr) => {
 export default function CalendarEventForm({ open, item, admins, assignableUsers, currentUserId, onClose, onSave, onDelete, onDeleteFuture }) {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
-  const requestClose = useHistoryModal(open, onClose);
   const navigate = useNavigate();
   const [editScope, setEditScope] = useState('single');
   const { user } = useAuth();
@@ -134,7 +132,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
       }
     } finally {
       setSaving(false);
-      requestClose();
+      onClose();
     }
   };
 
@@ -142,7 +140,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
   const showRecurrence = !item?.id || (isSeriesOccurrence && editScope === 'future');
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && requestClose()}>
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-h-[90vh] w-[calc(100vw-1.5rem)] overflow-y-auto bg-card sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-display text-xl">{item?.id ? 'Edit' : 'New'} plan</DialogTitle>
@@ -273,7 +271,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
           {item?.id && (
             <button
               type="button"
-              onClick={() => { navigate(`/chat?linkType=plan&linkedId=${item.id}`, { replace: true }); }}
+              onClick={() => { navigate(`/chat?linkType=plan&linkedId=${item.id}`); }}
               className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-[#1B2A4B] bg-[#1B2A4B] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#2A3D6B]"
             >
               <MessageCircle className="h-4 w-4" />Chat about this plan
@@ -287,14 +285,14 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
                 onClick={async () => {
                   if (window.confirm('Delete this plan?')) {
                     setSaving(true);
-                    try { await onDelete(item.id); } finally { setSaving(false); requestClose(); }
+                    try { await onDelete(item.id); } finally { setSaving(false); onClose(); }
                   }
                 }}
               >
                 Delete
               </Button>
             )}
-            <Button type="button" variant="outline" onClick={requestClose}>
+            <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
             <Button disabled={saving} className="bg-[#D9A404] hover:bg-[#B89003]">
