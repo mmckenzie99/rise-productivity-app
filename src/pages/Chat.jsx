@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import ConversationView from '@/components/chat/ConversationView';
 import NewChatDialog from '@/components/chat/NewChatDialog';
 import { setOpenChatRoom } from '@/lib/chatSession';
-import { formatPlaces } from '@/lib/trips';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
 import useHistoryModal from '@/hooks/useHistoryModal';
 
@@ -21,7 +20,7 @@ export default function Chat() {
   const [query, setQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const [pendingLink, setPendingLink] = useState(null);
-  const [linkCreating, setLinkCreating] = useState(false);
+  const [prefillLink, setPrefillLink] = useState(null);
   const requestClose = useHistoryModal(!!selected, () => setSelected(null));
 
   useEffect(() => {
@@ -34,65 +33,17 @@ export default function Chat() {
     if (lt && lid) setPendingLink({ type: lt, id: lid });
   }, [searchParams]);
 
-  const resolveLinkedTitle = async (link) => {
-    try {
-      if (link.type === 'engagement') {
-        const e = await base44.entities.Engagement.get(link.id);
-        return e?.title || e?.place || 'Engagement';
-      }
-      if (link.type === 'trip') {
-        const t = await base44.entities.Trip.get(link.id);
-        return formatPlaces(t) || 'Trip';
-      }
-      if (link.type === 'plan') {
-        const p = await base44.entities.CalendarEvent.get(link.id);
-        return p?.title || 'Plan';
-      }
-    } catch {
-      /* ignore */
-    }
-    return 'Conversation';
-  };
-
   useEffect(() => {
     if (!pendingLink || loading || !user?.id) return;
     const existing = rooms.find((r) => r.linked_id === pendingLink.id && (r.participant_ids || []).includes(user.id));
     setSearchParams((prev) => { prev.delete('linkType'); prev.delete('linkedId'); return prev; }, { replace: true });
     if (existing) {
       setSelected(existing);
-      setPendingLink(null);
-      return;
+    } else {
+      setPrefillLink(pendingLink);
+      setNewOpen(true);
     }
-    let cancelled = false;
-    (async () => {
-      setLinkCreating(true);
-      try {
-        const [users, resolvedTitle] = await Promise.all([
-          base44.entities.User.list(),
-          resolveLinkedTitle(pendingLink),
-        ]);
-        if (cancelled) return;
-        const partIds = Array.from(new Set([user.id, ...(users || []).map((u) => u.id)]));
-        const nameMap = { [user.id]: user.full_name || user.email };
-        (users || []).forEach((u) => { nameMap[u.id] = u.full_name || u.email; });
-        const room = await base44.entities.ChatRoom.create({
-          title: resolvedTitle,
-          topic: '',
-          type: pendingLink.type,
-          participant_ids: partIds,
-          participant_names: partIds.map((id) => nameMap[id] || 'Unknown'),
-          linked_id: pendingLink.id,
-          linked_title: resolvedTitle,
-        });
-        if (cancelled) return;
-        setRooms((prev) => (prev.some((r) => r.id === room.id) ? prev : [room, ...prev]));
-        setSelected(room);
-      } finally {
-        if (!cancelled) setLinkCreating(false);
-        setPendingLink(null);
-      }
-    })();
-    return () => { cancelled = true; };
+    setPendingLink(null);
   }, [pendingLink, loading, rooms, user?.id]);
 
   const loadRooms = async () => {
@@ -132,7 +83,7 @@ export default function Chat() {
 
   const handleCreated = (room) => {
     setNewOpen(false);
-    setPendingLink(null);
+    setPrefillLink(null);
     if (!rooms.some((r) => r.id === room.id)) setRooms((prev) => [room, ...prev]);
     setSelected(room);
   };
@@ -200,10 +151,6 @@ export default function Chat() {
           <div className={`flex-1 flex-col ${selected ? 'flex' : 'hidden lg:flex'}`}>
             {selected ? (
               <ConversationView room={selected} user={user} onBack={requestClose} query={query} />
-            ) : linkCreating ? (
-              <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-muted border-t-primary" />
-              </div>
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                 Select a conversation
@@ -218,12 +165,12 @@ export default function Chat() {
       <BottomTabBar />
       <NewChatDialog
         open={newOpen}
-        onClose={() => { setNewOpen(false); setPendingLink(null); }}
+        onClose={() => { setNewOpen(false); setPrefillLink(null); }}
         onCreated={handleCreated}
         currentUser={user}
         existingRooms={rooms}
-        initialLinkType={pendingLink?.type}
-        initialLinkedId={pendingLink?.id}
+        initialLinkType={prefillLink?.type}
+        initialLinkedId={prefillLink?.id}
       />
     </main>
   );
