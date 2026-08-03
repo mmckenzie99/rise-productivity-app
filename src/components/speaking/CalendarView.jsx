@@ -120,7 +120,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                     className={`min-h-[72px] cursor-pointer rounded-md border p-1.5 ${cell.muted ? 'border-transparent bg-[#F0F2F6]/50 text-[#5A6781]' : cell.key === todayKey ? 'border-[#D9A404] bg-[#FBF0D0]/40' : 'border-[#D6DAE3] bg-white'}`}
                   >
                     <p className="text-xs font-medium">{cell.day}</p>
-                    {cell.entries.map((x) => {
+                    {cell.entries.slice(0, 3).map((x) => {
                       const isEvent = x._kind === 'event';
                       const tone = isEvent ? planCalTone(x) : calEngagementTone;
                       return (
@@ -136,6 +136,11 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                         </button>
                       );
                     })}
+                    {cell.entries.length > 3 && (
+                      <p className="mt-1 px-1 text-[10px] font-medium text-[#5A6781]">
+                        +{cell.entries.length - 3} more
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
