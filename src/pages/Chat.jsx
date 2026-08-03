@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/AuthContext';
 import RoomList from '@/components/chat/RoomList';
 import ConversationView from '@/components/chat/ConversationView';
 import NewChatDialog from '@/components/chat/NewChatDialog';
+import { setOpenChatRoom } from '@/lib/chatSession';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
 
 export default function Chat() {
@@ -14,6 +15,10 @@ export default function Chat() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
   const [newOpen, setNewOpen] = useState(false);
+
+  useEffect(() => {
+    setOpenChatRoom(selected?.id || null);
+  }, [selected?.id]);
 
   const loadRooms = async () => {
     const list = await base44.entities.ChatRoom.list('-last_message_at', 100);

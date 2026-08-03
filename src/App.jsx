@@ -8,6 +8,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import { Navigate } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import useChatNotifications from '@/hooks/useChatNotifications';
 import { lazy, Suspense } from 'react';
 const Login = lazy(() => import('@/pages/Login'));
 const Register = lazy(() => import('@/pages/Register'));
@@ -24,6 +25,7 @@ import useSystemDarkMode from '@/hooks/useSystemDarkMode';
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
   const location = useLocation();
+  useChatNotifications();
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
