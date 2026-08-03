@@ -137,9 +137,12 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                       );
                     })}
                     {cell.entries.length > 3 && (
-                      <p className="mt-1 px-1 text-[10px] font-medium text-[#5A6781]">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setMode('day'); setCursor(new Date(cell.key + 'T00:00:00')); }}
+                        className="mt-1 px-1 text-[10px] font-medium text-[#5A6781] transition hover:text-[#D9A404]"
+                      >
                         +{cell.entries.length - 3} more
-                      </p>
+                      </button>
                     )}
                   </div>
                 ))}

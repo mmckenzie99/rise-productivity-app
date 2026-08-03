@@ -3,6 +3,7 @@ import { formatTime, calEngagementTone, planCalTone, planMultiTone, planDateKeys
 import { layoutColumns } from '@/lib/eventLayout';
 import DailyReflection from './DailyReflection';
 import WeeklyGoals from './WeeklyGoals';
+import WeeklyListSummary from './WeeklyListSummary';
 
 const START_HOUR = 6;
 const END_HOUR = 23; // grid spans 6:00 → 23:00
@@ -131,6 +132,18 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
             <WeeklyGoals cursor={cursor} />
           </div>
         )}
+        {mode === 'week' && (
+          <div className="mb-4 lg:hidden">
+            <WeeklyListSummary
+              days={days}
+              byDate={byDate}
+              onSelect={onSelect}
+              onEventSelect={onEventSelect}
+              onGoToDate={onGoToDate}
+            />
+          </div>
+        )}
+        <div className={mode === 'week' ? 'hidden lg:block' : ''}>
         {/* Day headers */}
         <div className="flex border-b border-[#D6DAE3]">
           <div className="w-12 shrink-0" />
@@ -269,6 +282,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
             Click an empty time slot to add a personal or work plan.
           </p>
         )}
+        </div>
       </div>
     </div>
   );
