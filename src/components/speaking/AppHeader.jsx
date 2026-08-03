@@ -1,4 +1,4 @@
-import { LogOut, Users, CalendarDays, Plane, LayoutDashboard, Menu, MessageCircle } from 'lucide-react';
+import { LogOut, Users, CalendarDays, Plane, LayoutDashboard, Menu, MessageCircle, Plus } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
@@ -21,11 +21,32 @@ export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, isOwne
         <div className="hidden items-center gap-2 lg:flex">
           <Link to="/dashboard"><Button variant="outline" className={pathname === '/dashboard' ? ACTIVE : IDLE}><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Button></Link>
           <Link to="/chat"><Button variant="outline" className={pathname === '/chat' ? ACTIVE : IDLE}><MessageCircle className="mr-2 h-4 w-4" />Chat</Button></Link>
-          {isAdmin && <Button variant="outline" onClick={onAdd} className={newOpen ? ACTIVE : IDLE}>New engagement</Button>}
-          <Link to="/trips"><Button variant="outline" className={pathname === '/trips' ? ACTIVE : IDLE}><Plane className="mr-2 h-4 w-4" />Engagement Trips</Button></Link>
+          <Link to="/trips"><Button variant="outline" className={pathname === '/trips' ? ACTIVE : IDLE}><Plane className="mr-2 h-4 w-4" />Trips</Button></Link>
           <Button variant="outline" onClick={onCalendar} className={calendarOpen ? ACTIVE : IDLE}><CalendarDays className="mr-2 h-4 w-4" />Calendar</Button>
-          {isOwner && <Button variant="outline" onClick={onInvite} className={inviteOpen ? ACTIVE : IDLE}><Users className="mr-2 h-4 w-4" />Invite</Button>}
-          {isOwner && <Link to="/users"><Button variant="outline" className={pathname === '/users' ? ACTIVE : IDLE}><Users className="mr-2 h-4 w-4" />Manage Users</Button></Link>}
+          {(isAdmin || isOwner) && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className={newOpen || inviteOpen || pathname === '/users' ? ACTIVE : IDLE}><Menu className="mr-2 h-4 w-4" />Manage</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {isAdmin && (
+                  <DropdownMenuItem className={ITEM_HOVER} onClick={onAdd}>
+                    <Plus className="mr-2 h-4 w-4" />New engagement
+                  </DropdownMenuItem>
+                )}
+                {isOwner && (
+                  <DropdownMenuItem className={ITEM_HOVER} onClick={onInvite}>
+                    <Users className="mr-2 h-4 w-4" />Invite
+                  </DropdownMenuItem>
+                )}
+                {isOwner && (
+                  <DropdownMenuItem className={ITEM_HOVER} asChild>
+                    <Link to="/users" className="flex w-full items-center"><Users className="mr-2 h-4 w-4" />Manage Users</Link>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Mobile actions (core navigation lives in the BottomTabBar) */}
