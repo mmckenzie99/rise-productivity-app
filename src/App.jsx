@@ -9,6 +9,7 @@ import ScrollToTop from './components/ScrollToTop';
 import { Navigate } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import useChatNotifications from '@/hooks/useChatNotifications';
+import useRootBackGuard from '@/hooks/useRootBackGuard';
 import { lazy, Suspense } from 'react';
 const Login = lazy(() => import('@/pages/Login'));
 const Register = lazy(() => import('@/pages/Register'));
@@ -26,6 +27,7 @@ const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
   const location = useLocation();
   useChatNotifications();
+  useRootBackGuard();
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
