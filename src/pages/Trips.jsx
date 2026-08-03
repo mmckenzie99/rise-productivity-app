@@ -30,7 +30,7 @@ export default function Trips() {
   }), [trips]);
 
   const visible = useMemo(() => {
-    const sorted = [...trips].sort((a, b) => (b.leave_date || '').localeCompare(a.leave_date || ''));
+    const sorted = [...trips].sort((a, b) => (a.leave_date || '9999').localeCompare(b.leave_date || '9999'));
     if (filter === 'all') return sorted;
     return sorted.filter(t => getTripStatus(t) === filter);
   }, [trips, filter]);
