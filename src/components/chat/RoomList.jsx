@@ -12,7 +12,7 @@ export default function RoomList({ rooms, loading, selectedId, onSelect, onNew, 
   const q = (query || '').trim().toLowerCase();
   const filtered = q
     ? rooms.filter((r) => {
-        const hay = [r.title, ...(r.participant_names || []), r.last_message || ''].join(' ').toLowerCase();
+        const hay = [r.title, r.topic || '', ...(r.participant_names || []), r.last_message || ''].join(' ').toLowerCase();
         return hay.includes(q);
       })
     : rooms;
@@ -62,6 +62,11 @@ export default function RoomList({ rooms, loading, selectedId, onSelect, onNew, 
                       </span>
                     )}
                   </div>
+                  {r.topic && (
+                    <span className="mt-0.5 block truncate text-[11px] italic text-primary/80">
+                      <Highlight text={r.topic} query={query} />
+                    </span>
+                  )}
                   <div className="mt-0.5 truncate text-xs text-muted-foreground">
                     {r.last_sender_name ? `${(r.last_sender_name || '').split(' ')[0]}: ` : ''}
                     <Highlight text={r.last_message || 'No messages yet'} query={query} />

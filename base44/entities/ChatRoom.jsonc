@@ -6,6 +6,10 @@
       "type": "string",
       "description": "Display name for the conversation (other user's name for direct, item name for linked rooms)"
     },
+    "topic": {
+      "type": "string",
+      "description": "Optional short topic/subject for the thread, used to describe its purpose and aid search"
+    },
     "type": {
       "type": "string",
       "enum": [

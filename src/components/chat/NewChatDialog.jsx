@@ -31,6 +31,7 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
   const [linkType, setLinkType] = useState('none');
   const [linkedId, setLinkedId] = useState('');
   const [title, setTitle] = useState('');
+  const [topic, setTopic] = useState('');
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
       setLinkType('none');
       setLinkedId('');
       setTitle('');
+      setTopic('');
     }
   }, [open]);
 
@@ -116,6 +118,7 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
     try {
       const room = await base44.entities.ChatRoom.create({
         title: resolvedTitle,
+        topic: topic.trim(),
         type,
         participant_ids: partIds,
         participant_names: partIds.map((id) => nameMap[id] || 'Unknown'),
@@ -223,6 +226,15 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
               />
             </div>
           )}
+
+          <div>
+            <Label className="mb-1.5 block text-sm">Topic (optional)</Label>
+            <Input
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="e.g. Q3 travel planning"
+            />
+          </div>
         </div>
 
         <DialogFooter>

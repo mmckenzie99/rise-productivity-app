@@ -13,6 +13,8 @@ export default function ConversationView({ room, user, onBack, query }) {
   const [sending, setSending] = useState(false);
   const [pendingFile, setPendingFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [editingTopic, setEditingTopic] = useState(false);
+  const [topicDraft, setTopicDraft] = useState('');
   const scrollRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -54,6 +56,22 @@ export default function ConversationView({ room, user, onBack, query }) {
     const f = e.target.files?.[0];
     if (f) setPendingFile(f);
     e.target.value = '';
+  };
+
+  const startEditTopic = () => {
+    setTopicDraft(room.topic || '');
+    setEditingTopic(true);
+  };
+
+  const saveTopic = async () => {
+    const v = topicDraft.trim();
+    setEditingTopic(false);
+    if (v === (room.topic || '')) return;
+    try {
+      await base44.entities.ChatRoom.update(room.id, { topic: v });
+    } catch {
+      /* ignore */
+    }
   };
 
   const send = async () => {
@@ -118,9 +136,35 @@ export default function ConversationView({ room, user, onBack, query }) {
         </button>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-foreground">{room.title}</p>
-          <p className="truncate text-xs text-muted-foreground">
-            {(room.participant_names || []).length} participant{(room.participant_names || []).length === 1 ? '' : 's'}
-          </p>
+          {editingTopic ? (
+            <Input
+              autoFocus
+              value={topicDraft}
+              onChange={(e) => setTopicDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') { e.preventDefault(); saveTopic(); }
+                else if (e.key === 'Escape') setEditingTopic(false);
+              }}
+              onBlur={saveTopic}
+              placeholder="Topic (e.g. Q3 travel planning)"
+              className="h-7 max-w-full text-xs"
+            />
+          ) : room.topic ? (
+            <button
+              onClick={startEditTopic}
+              className="truncate text-left text-xs font-medium text-primary hover:underline"
+              title="Edit topic"
+            >
+              {room.topic}
+            </button>
+          ) : (
+            <button
+              onClick={startEditTopic}
+              className="text-left text-xs text-muted-foreground transition hover:text-foreground"
+            >
+              + Add topic
+            </button>
+          )}
         </div>
       </div>
 
