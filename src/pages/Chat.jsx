@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, MessageCircle } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Search, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import RoomList from '@/components/chat/RoomList';
+import { Input } from '@/components/ui/input';
 import ConversationView from '@/components/chat/ConversationView';
 import NewChatDialog from '@/components/chat/NewChatDialog';
 import { setOpenChatRoom } from '@/lib/chatSession';
@@ -15,6 +16,7 @@ export default function Chat() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
   const [newOpen, setNewOpen] = useState(false);
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
     setOpenChatRoom(selected?.id || null);
@@ -85,6 +87,25 @@ export default function Chat() {
           </div>
         </div>
 
+        <div className="relative mb-3">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search conversations or messages…"
+            className="pl-9 pr-9"
+          />
+          {query && (
+            <button
+              onClick={() => setQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded text-muted-foreground transition hover:text-foreground"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
         <div className="mb-4 flex min-h-0 flex-1 overflow-hidden rounded-lg border border-border bg-card">
           <div
             className={`w-full flex-col border-r border-border lg:w-80 lg:shrink-0 ${
@@ -98,12 +119,13 @@ export default function Chat() {
               onSelect={setSelected}
               onNew={() => setNewOpen(true)}
               currentUserId={user.id}
+              query={query}
             />
           </div>
 
           <div className={`flex-1 flex-col ${selected ? 'flex' : 'hidden lg:flex'}`}>
             {selected ? (
-              <ConversationView room={selected} user={user} onBack={() => setSelected(null)} />
+              <ConversationView room={selected} user={user} onBack={() => setSelected(null)} query={query} />
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                 Select a conversation

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Send, Paperclip, FileText, Download, X } from 'lucide-react';
+import Highlight from '@/components/chat/Highlight';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { format, parseISO } from 'date-fns';
 
-export default function ConversationView({ room, user, onBack }) {
+export default function ConversationView({ room, user, onBack, query }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [input, setInput] = useState('');
@@ -101,6 +102,11 @@ export default function ConversationView({ room, user, onBack }) {
     }
   };
 
+  const q = (query || '').trim().toLowerCase();
+  const visibleMessages = q
+    ? messages.filter((m) => [m.body || '', m.attachment?.name || ''].join(' ').toLowerCase().includes(q))
+    : messages;
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-2 border-b border-border px-3 py-2.5">
@@ -137,10 +143,12 @@ export default function ConversationView({ room, user, onBack }) {
       <div ref={scrollRef} className="flex-1 space-y-2 overflow-y-auto px-3 py-4">
         {loading ? (
           <div className="py-10 text-center text-sm text-muted-foreground">Loading messages…</div>
-        ) : messages.length === 0 ? (
-          <div className="py-10 text-center text-sm text-muted-foreground">No messages yet. Say hello!</div>
+        ) : visibleMessages.length === 0 ? (
+          <div className="py-10 text-center text-sm text-muted-foreground">
+            {q ? 'No messages match your search.' : 'No messages yet. Say hello!'}
+          </div>
         ) : (
-          messages.map((m) => {
+          visibleMessages.map((m) => {
             const mine = m.author_id === user.id;
             return (
               <div key={m.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
@@ -167,7 +175,7 @@ export default function ConversationView({ room, user, onBack }) {
                       <Download className="ml-auto h-3.5 w-3.5 shrink-0" />
                     </a>
                   )}
-                  {m.body && <p className="whitespace-pre-wrap break-words">{m.body}</p>}
+                  {m.body && <p className="whitespace-pre-wrap break-words"><Highlight text={m.body} query={query} /></p>}
                   <p
                     className={`mt-0.5 text-right text-[9px] ${
                       mine ? 'text-primary-foreground/70' : 'text-muted-foreground'
