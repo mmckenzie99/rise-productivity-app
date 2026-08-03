@@ -19,6 +19,7 @@ export default function ConversationView({ room, user, onBack, query }) {
   const [topicDraft, setTopicDraft] = useState('');
   const scrollRef = useRef(null);
   const fileInputRef = useRef(null);
+  const usersRef = useRef(null);
 
   // "Way back": for a room linked to an engagement/trip/plan, jump back to it.
   const itemLabel = room.type === 'engagement' ? 'Engagement'
@@ -42,6 +43,13 @@ export default function ConversationView({ room, user, onBack, query }) {
         setLoading(false);
       })
       .catch(() => mounted && setLoading(false));
+
+    // Cache users so we can email other participants when a new message starts
+    // a conversation.
+    base44.entities.User
+      .list()
+      .then((list) => { if (mounted) usersRef.current = list || []; })
+      .catch(() => {});
 
     const unsub = base44.entities.ChatMessage.subscribe((event) => {
       if (event.data?.room_id && event.data.room_id !== room.id) return;
@@ -138,6 +146,24 @@ export default function ConversationView({ room, user, onBack, query }) {
         last_message_at: new Date().toISOString(),
         last_sender_name: user.full_name || user.email,
       });
+      // When this is the first message in the conversation, immediately email
+      // the other participants (all registered app users) so they know a new
+      // message is waiting. Fire-and-forget.
+      if (messages.length === 0) {
+        const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const preview = attachment && !text ? `📎 ${attachment.name}` : body.slice(0, 200);
+        const sender = esc(user.full_name || user.email);
+        const subject = attachment && !text ? `${user.full_name || user.email} shared a file with you` : `${user.full_name || user.email} messaged you`;
+        (room.participant_ids || []).filter((id) => id !== user.id).forEach((pid) => {
+          const u = (usersRef.current || []).find((x) => x.id === pid);
+          if (!u?.email) return;
+          base44.integrations.Core.SendEmail({
+            to: u.email,
+            subject,
+            body: `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B"><h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B">New message</h2><p style="font-size:16px"><strong>${sender}</strong> started a conversation with you:</p><p style="font-size:15px;padding:10px 14px;background:#F0F2F6;border-radius:8px">${esc(preview)}</p><p style="font-size:13px;color:#5A6781">Open RISE and tap Chat to reply.</p></div>`,
+          }).catch(() => {});
+        });
+      }
     } finally {
       setSending(false);
     }
