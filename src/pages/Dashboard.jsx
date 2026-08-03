@@ -10,7 +10,6 @@ import PlanListSection from '@/components/speaking/PlanListSection';
 import WeeklyGoalsOverview from '@/components/speaking/WeeklyGoalsOverview';
 import CollapsibleSection from '@/components/speaking/CollapsibleSection';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
-import BottomTabBar from '@/components/speaking/BottomTabBar';
 import { useAuth } from '@/lib/AuthContext';
 import { useAppSettings } from '@/hooks/useAppSettings';
 import { resolveDashboardSection } from '@/lib/permissions';
@@ -180,7 +179,6 @@ export default function Dashboard() {
         </div>
       </PullToRefresh>
       <div className="h-28 lg:hidden" />
-      <BottomTabBar />
     </main>
   );
 }

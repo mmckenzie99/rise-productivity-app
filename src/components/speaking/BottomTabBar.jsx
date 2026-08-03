@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Home, LayoutDashboard, Plane, MessageCircle } from 'lucide-react';
 import QuickActionBar from './QuickActionBar';
@@ -9,9 +10,24 @@ const TABS = [
   { to: '/chat', label: 'Chat', icon: MessageCircle },
 ];
 
+const tabOf = (p) => {
+  if (p === '/') return '/';
+  const seg = '/' + (p.split('/')[1] || '');
+  return TABS.some((t) => t.to === seg) ? seg : null;
+};
+
 export default function BottomTabBar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+
+  // Remember the last path visited under each tab so returning to a tab
+  // restores its previous view (per-tab history / stack preservation).
+  useEffect(() => {
+    const t = tabOf(pathname);
+    if (t) {
+      try { sessionStorage.setItem('b44:tabPath:' + t, pathname); } catch {}
+    }
+  }, [pathname]);
 
   const modalCount = () => {
     const s = window.history.state?.b44_modal;
@@ -19,9 +35,9 @@ export default function BottomTabBar() {
   };
 
   const handleTap = (e, to) => {
-    const match = to === '/' ? pathname === '/' : pathname === to;
+    const isCurrent = tabOf(pathname) === to;
     const open = modalCount();
-    if (match) {
+    if (isCurrent) {
       // Already on this tab: pop any open modals/sheets back to the tab root
       // (native iOS "tap selected tab to go home"), then scroll up and reset.
       e.preventDefault();
@@ -30,21 +46,30 @@ export default function BottomTabBar() {
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
       window.dispatchEvent(new CustomEvent('b44:reset-filters'));
-    } else if (open > 0) {
-      // Switching tabs while modals are open: dismiss them first so the back
-      // stack stays clean (no duplicate/phantom entries left behind), then
-      // navigate once the history pops settle.
-      e.preventDefault();
+      return;
+    }
+    // Switching tabs: dismiss any open modals first so the back stack stays
+    // clean, then restore this tab's last path (per-tab history).
+    e.preventDefault();
+    let target = to;
+    try {
+      const saved = sessionStorage.getItem('b44:tabPath:' + to);
+      if (saved && tabOf(saved) === to) target = saved;
+    } catch {}
+    const go = () => navigate(target);
+    if (open > 0) {
       window.dispatchEvent(new CustomEvent('b44:dismiss-modals'));
       let done = false;
-      const go = () => {
+      const onPop = () => {
         if (done) return;
         done = true;
-        window.removeEventListener('popstate', go);
-        navigate(to);
+        window.removeEventListener('popstate', onPop);
+        go();
       };
-      window.addEventListener('popstate', go);
-      setTimeout(go, 160);
+      window.addEventListener('popstate', onPop);
+      setTimeout(onPop, 160);
+    } else {
+      go();
     }
   };
 

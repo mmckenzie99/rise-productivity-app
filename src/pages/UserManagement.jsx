@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Loader2, MessageSquare, UserCheck, ShieldCheck, ArrowLeft, CalendarDays, Briefcase, Search, Users as UsersIcon, LayoutDashboard } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Brand from '@/components/speaking/Brand';
-import BottomTabBar from '@/components/speaking/BottomTabBar';
 import CollapsibleSection from '@/components/speaking/CollapsibleSection';
 import ResponsiveSelect from '@/components/speaking/ResponsiveSelect';
 import { useAppSettings, DEFAULT_FEATURES } from '@/hooks/useAppSettings';
@@ -311,7 +310,6 @@ export default function UserManagement() {
         )}
       </div>
       <div className="h-16 lg:hidden" />
-      <BottomTabBar />
     </main>
   );
 }

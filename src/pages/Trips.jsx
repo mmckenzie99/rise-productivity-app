@@ -8,7 +8,6 @@ import useEngagements from '@/hooks/useEngagements';
 import { formatCurrency, getTripStatus, formatPlaces } from '@/lib/trips';
 import TripForm from '@/components/speaking/TripForm';
 import TripDetail from '@/components/speaking/TripDetail';
-import BottomTabBar from '@/components/speaking/BottomTabBar';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
 
 const FILTERS = ['all', 'upcoming', 'completed'];
@@ -134,7 +133,6 @@ export default function Trips() {
       <TripForm open={!!formOpen} item={formOpen === true ? null : formOpen} engagements={engagements} onClose={() => setFormOpen(false)} onSave={async t => { await save(t); setFormOpen(false); }} />
       <TripDetail trip={selected} onClose={() => { setSelected(null); setSearchParams(prev => { prev.delete('tripId'); return prev; }, { replace: true }); }} onEdit={() => edit(selected)} onDelete={() => del(selected)} isAdmin={isAdmin} />
       <div className="h-28 lg:hidden" />
-      <BottomTabBar />
     </main>
   );
 }

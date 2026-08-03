@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, MessageCircle, Search, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
@@ -8,24 +8,32 @@ import { Input } from '@/components/ui/input';
 import ConversationView from '@/components/chat/ConversationView';
 import NewChatDialog from '@/components/chat/NewChatDialog';
 import { setOpenChatRoom } from '@/lib/chatSession';
-import BottomTabBar from '@/components/speaking/BottomTabBar';
-import useHistoryModal from '@/hooks/useHistoryModal';
 
 export default function Chat() {
   const { user } = useAuth();
+  const { roomId } = useParams();
+  const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState(null);
   const [newOpen, setNewOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const [pendingLink, setPendingLink] = useState(null);
   const [prefillLink, setPrefillLink] = useState(null);
-  const requestClose = useHistoryModal(!!selected, () => setSelected(null));
+
+  const selected = rooms.find((r) => r.id === roomId) || null;
 
   useEffect(() => {
     setOpenChatRoom(selected?.id || null);
   }, [selected?.id]);
+
+  // If the open room was deleted or is inaccessible, return to the room list.
+  useEffect(() => {
+    if (!roomId || loading) return;
+    if (rooms.length && !rooms.find((r) => r.id === roomId)) {
+      navigate('/chat', { replace: true });
+    }
+  }, [roomId, rooms, loading, navigate]);
 
   useEffect(() => {
     const lt = searchParams.get('linkType');
@@ -38,7 +46,7 @@ export default function Chat() {
     const existing = rooms.find((r) => r.linked_id === pendingLink.id && (r.participant_ids || []).includes(user.id));
     setSearchParams((prev) => { prev.delete('linkType'); prev.delete('linkedId'); return prev; }, { replace: true });
     if (existing) {
-      setSelected(existing);
+      navigate(`/chat/${existing.id}`, { replace: true });
     } else {
       setPrefillLink(pendingLink);
       setNewOpen(true);
@@ -70,22 +78,16 @@ export default function Chat() {
         }
         return prev;
       });
-      if (event.type === 'update' && selected && event.data.id === selected.id) {
-        setSelected(event.data);
-      }
-      if (event.type === 'delete' && selected && event.data.id === selected.id) {
-        setSelected(null);
-      }
     });
     return () => unsub && unsub();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, selected?.id]);
+  }, [user?.id]);
 
   const handleCreated = (room) => {
     setNewOpen(false);
     setPrefillLink(null);
     if (!rooms.some((r) => r.id === room.id)) setRooms((prev) => [room, ...prev]);
-    setSelected(room);
+    navigate(`/chat/${room.id}`);
   };
 
   if (!user) {
@@ -141,7 +143,7 @@ export default function Chat() {
               rooms={rooms}
               loading={loading}
               selectedId={selected?.id}
-              onSelect={setSelected}
+              onSelect={(room) => navigate(`/chat/${room.id}`)}
               onNew={() => setNewOpen(true)}
               currentUserId={user.id}
               query={query}
@@ -150,7 +152,7 @@ export default function Chat() {
 
           <div className={`flex-1 flex-col ${selected ? 'flex' : 'hidden lg:flex'}`}>
             {selected ? (
-              <ConversationView room={selected} user={user} onBack={requestClose} query={query} />
+              <ConversationView room={selected} user={user} onBack={() => navigate('/chat')} query={query} />
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                 Select a conversation
@@ -162,7 +164,6 @@ export default function Chat() {
         <div className="h-28 shrink-0 lg:hidden" />
       </div>
 
-      <BottomTabBar />
       <NewChatDialog
         open={newOpen}
         onClose={() => { setNewOpen(false); setPrefillLink(null); }}
