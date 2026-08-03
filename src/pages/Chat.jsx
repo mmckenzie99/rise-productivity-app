@@ -9,6 +9,7 @@ import ConversationView from '@/components/chat/ConversationView';
 import NewChatDialog from '@/components/chat/NewChatDialog';
 import { setOpenChatRoom } from '@/lib/chatSession';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
+import useHistoryModal from '@/hooks/useHistoryModal';
 
 export default function Chat() {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ export default function Chat() {
   const [selected, setSelected] = useState(null);
   const [newOpen, setNewOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const requestClose = useHistoryModal(!!selected, () => setSelected(null));
 
   useEffect(() => {
     setOpenChatRoom(selected?.id || null);
@@ -125,7 +127,7 @@ export default function Chat() {
 
           <div className={`flex-1 flex-col ${selected ? 'flex' : 'hidden lg:flex'}`}>
             {selected ? (
-              <ConversationView room={selected} user={user} onBack={() => setSelected(null)} query={query} />
+              <ConversationView room={selected} user={user} onBack={requestClose} query={query} />
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                 Select a conversation

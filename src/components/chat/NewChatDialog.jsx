@@ -11,13 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@/components/ui/select';
+import ResponsiveSelect from '@/components/speaking/ResponsiveSelect';
 import useEngagements from '@/hooks/useEngagements';
 import useTrips from '@/hooks/useTrips';
 import { formatPlaces } from '@/lib/trips';
@@ -168,52 +162,46 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
 
           <div>
             <Label className="mb-1.5 block text-sm">Link to (optional)</Label>
-            <Select
+            <ResponsiveSelect
               value={linkType}
               onValueChange={(v) => {
                 setLinkType(v);
                 setLinkedId('');
               }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="No link" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No link</SelectItem>
-                <SelectItem value="engagement">Engagement</SelectItem>
-                <SelectItem value="trip">Trip</SelectItem>
-              </SelectContent>
-            </Select>
+              options={[
+                { value: 'none', label: 'No link' },
+                { value: 'engagement', label: 'Engagement' },
+                { value: 'trip', label: 'Trip' },
+              ]}
+              placeholder="No link"
+              label="Link to (optional)"
+            />
           </div>
 
           {linkType === 'engagement' && (
-            <Select value={linkedId} onValueChange={setLinkedId}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select engagement" />
-              </SelectTrigger>
-              <SelectContent>
-                {engagements.map((e) => (
-                  <SelectItem key={e.id} value={e.id}>
-                    {e.title || e.place || 'Untitled'}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <ResponsiveSelect
+              value={linkedId}
+              onValueChange={setLinkedId}
+              options={engagements.map((e) => ({
+                value: e.id,
+                label: e.title || e.place || 'Untitled',
+              }))}
+              placeholder="Select engagement"
+              label="Select engagement"
+            />
           )}
 
           {linkType === 'trip' && (
-            <Select value={linkedId} onValueChange={setLinkedId}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select trip" />
-              </SelectTrigger>
-              <SelectContent>
-                {trips.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
-                    {formatPlaces(t)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <ResponsiveSelect
+              value={linkedId}
+              onValueChange={setLinkedId}
+              options={trips.map((t) => ({
+                value: t.id,
+                label: formatPlaces(t),
+              }))}
+              placeholder="Select trip"
+              label="Select trip"
+            />
           )}
 
           {linkType === 'none' && selectedUsers.size > 1 && (
