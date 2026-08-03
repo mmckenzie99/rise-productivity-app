@@ -49,34 +49,21 @@ export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, isOwne
           )}
         </div>
 
-        {/* Mobile actions (core navigation lives in the BottomTabBar) */}
-        <div className="lg:hidden">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className={IDLE}><Menu className="mr-2 h-4 w-4" />More</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              {isAdmin && (
-                <DropdownMenuItem className={ITEM_HOVER} onClick={onAdd}>
-                  New engagement
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem className={ITEM_HOVER} onClick={onCalendar}>
-                <CalendarDays className="mr-2 h-4 w-4" />Calendar
-              </DropdownMenuItem>
-              {isOwner && (
-                <DropdownMenuItem className={ITEM_HOVER} onClick={onInvite}>
-                  <Users className="mr-2 h-4 w-4" />Invite
-                </DropdownMenuItem>
-              )}
-              {isOwner && (
+        {/* Mobile admin menu (New, Invite & Calendar live in the bottom QuickActionBar) */}
+        {isOwner && (
+          <div className="lg:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className={pathname === '/users' ? ACTIVE : IDLE}><Menu className="mr-2 h-4 w-4" />Manage</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem className={ITEM_HOVER} asChild>
                   <Link to="/users" className="flex w-full items-center"><Users className="mr-2 h-4 w-4" />Manage Users</Link>
                 </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
 
         <ProfileMenu />
         <div className="hidden lg:block"><NotificationBell /></div>

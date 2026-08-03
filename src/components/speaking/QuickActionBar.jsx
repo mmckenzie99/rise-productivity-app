@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Plus, CalendarPlus, UserPlus, Bell } from 'lucide-react';
+import { Plus, CalendarPlus, UserPlus, Bell, CalendarDays } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { useAppSettings } from '@/hooks/useAppSettings';
 import { isOwner, isAdmin, resolvePlanFlag } from '@/lib/permissions';
@@ -27,6 +27,7 @@ export default function QuickActionBar() {
   const actions = [];
   if (admin) actions.push({ key: 'new', label: 'New', icon: Plus, onClick: () => fire('new', '/?action=new') });
   if (canPlan) actions.push({ key: 'new-plan', label: 'New Plan', icon: CalendarPlus, onClick: () => fire('new-plan', '/?action=new-plan') });
+  actions.push({ key: 'calendar', label: 'Calendar', icon: CalendarDays, onClick: () => fire('calendar', '/?action=calendar') });
   if (owner) actions.push({ key: 'invite', label: 'Invite', icon: UserPlus, onClick: () => fire('invite', '/?action=invite') });
 
   return (
