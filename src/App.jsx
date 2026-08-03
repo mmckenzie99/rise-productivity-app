@@ -17,6 +17,7 @@ const Home = lazy(() => import('@/pages/Home'));
 const Trips = lazy(() => import('@/pages/Trips'));
 const UserManagement = lazy(() => import('@/pages/UserManagement'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Chat = lazy(() => import('@/pages/Chat'));
 import { AnimatePresence, motion } from 'framer-motion';
 import useSystemDarkMode from '@/hooks/useSystemDarkMode';
 
@@ -64,6 +65,7 @@ const AuthenticatedApp = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/trips" element={<Trips />} />
             <Route path="/users" element={<UserManagement />} />
+            <Route path="/chat" element={<Chat />} />
           </Route>
           <Route path="*" element={<PageNotFound />} />
         </Routes>

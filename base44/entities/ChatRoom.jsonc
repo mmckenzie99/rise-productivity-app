@@ -1,0 +1,106 @@
+{
+  "name": "ChatRoom",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Display name for the conversation (other user's name for direct, item name for linked rooms)"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "direct",
+        "engagement",
+        "trip"
+      ],
+      "default": "direct",
+      "description": "Whether this is a direct message or a thread linked to an engagement or trip"
+    },
+    "participant_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User ids of all participants in the room"
+    },
+    "participant_names": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Cached display names of participants, parallel to participant_ids"
+    },
+    "linked_id": {
+      "type": "string",
+      "description": "ID of the linked engagement or trip (when type is engagement or trip)"
+    },
+    "linked_title": {
+      "type": "string",
+      "description": "Cached title of the linked engagement or trip for display"
+    },
+    "last_message": {
+      "type": "string",
+      "description": "Preview snippet of the most recent message"
+    },
+    "last_message_at": {
+      "type": "string",
+      "description": "ISO timestamp of the most recent message, used for sorting rooms"
+    },
+    "last_sender_name": {
+      "type": "string",
+      "description": "Cached display name of the most recent sender"
+    }
+  },
+  "required": [
+    "title",
+    "type",
+    "participant_ids"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.participant_ids": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.participant_ids": {
+        "$in": [
+          "{{user.id}}"
+        ]
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.participant_ids": {
+            "$in": [
+              "{{user.id}}"
+            ]
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
