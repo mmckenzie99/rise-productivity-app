@@ -3,6 +3,25 @@ import { MapContainer,Marker,Popup,TileLayer,useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { asArray } from '@/lib/speaking';
+
+// Guard against Leaflet's "Map container is already initialized" error, which
+// can fire when react-leaflet re-initializes a map on a DOM node Leaflet still
+// considers occupied (e.g. a React 18 Suspense re-appear / concurrent
+// re-attach). If the container already carries a stale Leaflet id, clear the
+// leftover artifacts and retry once instead of throwing.
+const _origInitContainer = L.Map.prototype._initContainer;
+L.Map.prototype._initContainer = function (id) {
+  try {
+    return _origInitContainer.call(this, id);
+  } catch (e) {
+    if (e && e.message && e.message.indexOf('Map container is already initialized') !== -1) {
+      const c = this._container;
+      if (c) { c._leaflet_id = null; c.innerHTML = ''; }
+      return _origInitContainer.call(this, id);
+    }
+    throw e;
+  }
+};
 const upcomingIcon=L.divIcon({html:'<div style="width:18px;height:18px;background:#D9A404;border:2px solid #FFFFFF;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 4px #1B2A4B66"></div>',className:'',iconSize:[20,20],iconAnchor:[10,20]});
 const pastIcon=L.divIcon({html:`<img src="https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/76e4a21d0_Icon.png" style="width:26px;height:26px;border-radius:50%;object-fit:cover"/>`,className:'',iconSize:[26,26],iconAnchor:[13,13]});
 const todayStr=new Date().toISOString().slice(0,10);
