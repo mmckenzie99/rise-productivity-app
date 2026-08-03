@@ -186,7 +186,7 @@ export default function ConversationView({ room, user, onBack, query }) {
       {backToItem && (
         <div className="flex items-center border-b border-border px-3 py-1.5">
           <button
-            onClick={() => navigate(backToItem)}
+            onClick={() => navigate(backToItem, { replace: true })}
             className="inline-flex items-center gap-1.5 text-xs font-medium text-primary transition hover:underline"
             title={`Back to ${itemLabel}`}
           >

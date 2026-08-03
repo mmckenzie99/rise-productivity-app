@@ -11,7 +11,7 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
   const requestClose = useHistoryModal(!!item, onClose);
   const navigate = useNavigate();
   if (!item) return null;
-  const openChat = () => { onClose(); navigate(`/chat?linkType=engagement&linkedId=${item.id}`); };
+  const openChat = () => { navigate(`/chat?linkType=engagement&linkedId=${item.id}`, { replace: true }); };
   const dateForDisplay = item.speaking_date || item.deploy_date;
   const isRange = item.end_date && item.end_date !== dateForDisplay;
   const isPresentation = asArray(item.presentation_type).includes('Presentation(s)');

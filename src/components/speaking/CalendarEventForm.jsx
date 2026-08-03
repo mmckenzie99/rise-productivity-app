@@ -273,7 +273,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
           {item?.id && (
             <button
               type="button"
-              onClick={() => { requestClose(); navigate(`/chat?linkType=plan&linkedId=${item.id}`); }}
+              onClick={() => { navigate(`/chat?linkType=plan&linkedId=${item.id}`, { replace: true }); }}
               className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-[#1B2A4B] bg-[#1B2A4B] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#2A3D6B]"
             >
               <MessageCircle className="h-4 w-4" />Chat about this plan
