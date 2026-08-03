@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Send, Paperclip, FileText, Download, X } from 'lucide-react';
+import { ArrowLeft, Send, Paperclip, FileText, Download, X, Trash2 } from 'lucide-react';
 import Highlight from '@/components/chat/Highlight';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -72,6 +72,24 @@ export default function ConversationView({ room, user, onBack, query }) {
     } catch {
       /* ignore */
     }
+  };
+
+  const canDelete = user.role === 'admin' || room.created_by_id === user.id;
+
+  const handleDelete = async () => {
+    const ok = window.confirm('Delete this conversation and all its messages? This cannot be undone.');
+    if (!ok) return;
+    try {
+      await base44.entities.ChatMessage.deleteMany({ room_id: room.id });
+    } catch {
+      /* ignore */
+    }
+    try {
+      await base44.entities.ChatRoom.delete(room.id);
+    } catch {
+      /* ignore */
+    }
+    onBack();
   };
 
   const send = async () => {
@@ -166,6 +184,15 @@ export default function ConversationView({ room, user, onBack, query }) {
             </button>
           )}
         </div>
+        {canDelete && (
+          <button
+            onClick={handleDelete}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+            title="Delete conversation"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-1.5 border-b border-border px-3 py-2">
