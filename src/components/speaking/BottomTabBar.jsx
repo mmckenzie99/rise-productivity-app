@@ -1,7 +1,6 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Home, LayoutDashboard, Plane, MessageCircle } from 'lucide-react';
 import QuickActionBar from './QuickActionBar';
-import { stack } from '@/lib/backStack';
 
 const TABS = [
   { to: '/', label: 'Home', icon: Home, end: true },
@@ -14,7 +13,10 @@ export default function BottomTabBar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const modalCount = () => stack.length;
+  const modalCount = () => {
+    const s = window.history.state?.b44_modal;
+    return s ? s.split('|').length : 0;
+  };
 
   const handleTap = (e, to) => {
     const match = to === '/' ? pathname === '/' : pathname === to;
