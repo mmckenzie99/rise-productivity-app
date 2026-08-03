@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, Paperclip, FileText, Download, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,10 @@ export default function ConversationView({ room, user, onBack }) {
   const [loading, setLoading] = useState(true);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
+  const [pendingFile, setPendingFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const scrollRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
@@ -46,21 +49,43 @@ export default function ConversationView({ room, user, onBack }) {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
+  const onPickFile = (e) => {
+    const f = e.target.files?.[0];
+    if (f) setPendingFile(f);
+    e.target.value = '';
+  };
+
   const send = async () => {
     const text = input.trim();
-    if (!text || sending) return;
+    if ((!text && !pendingFile) || sending || uploading) return;
+    let attachment = null;
+    if (pendingFile) {
+      setUploading(true);
+      try {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file: pendingFile });
+        attachment = { name: pendingFile.name, url: file_url };
+      } catch {
+        setUploading(false);
+        setPendingFile(null);
+        return;
+      }
+      setUploading(false);
+    }
+    const body = text || (attachment ? attachment.name : '');
     setInput('');
+    setPendingFile(null);
     setSending(true);
     try {
       await base44.entities.ChatMessage.create({
         room_id: room.id,
-        body: text,
+        body,
+        attachment,
         author_id: user.id,
         author_name: user.full_name || user.email,
         participant_ids: room.participant_ids,
       });
       await base44.entities.ChatRoom.update(room.id, {
-        last_message: text.slice(0, 120),
+        last_message: attachment && !text ? `📎 ${attachment.name}` : body.slice(0, 120),
         last_message_at: new Date().toISOString(),
         last_sender_name: user.full_name || user.email,
       });
@@ -127,7 +152,22 @@ export default function ConversationView({ room, user, onBack }) {
                   {!mine && (
                     <p className="mb-0.5 text-[10px] font-semibold opacity-80">{m.author_name}</p>
                   )}
-                  <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                  {m.attachment && (
+                    <a
+                      href={m.attachment.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      download={m.attachment.name}
+                      className={`mb-1 flex items-center gap-2 rounded-lg border px-2 py-1.5 text-xs no-underline ${
+                        mine ? 'border-primary-foreground/30 bg-primary-foreground/10' : 'border-border bg-background/50'
+                      }`}
+                    >
+                      <FileText className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{m.attachment.name}</span>
+                      <Download className="ml-auto h-3.5 w-3.5 shrink-0" />
+                    </a>
+                  )}
+                  {m.body && <p className="whitespace-pre-wrap break-words">{m.body}</p>}
                   <p
                     className={`mt-0.5 text-right text-[9px] ${
                       mine ? 'text-primary-foreground/70' : 'text-muted-foreground'
@@ -142,23 +182,50 @@ export default function ConversationView({ room, user, onBack }) {
         )}
       </div>
 
-      <div className="flex items-center gap-2 border-t border-border px-3 py-2.5">
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={onKeyDown}
-          placeholder="Type a message…"
-          className="flex-1"
-        />
-        <Button
-          onClick={send}
-          disabled={sending || !input.trim()}
-          size="icon"
-          className="h-9 w-9 rounded-full"
-          aria-label="Send"
-        >
-          <Send className="h-4 w-4" />
-        </Button>
+      <div className="border-t border-border px-3 py-2.5">
+        {pendingFile && (
+          <div className="mb-2 flex items-center gap-2 rounded-md bg-secondary px-2 py-1.5 text-xs">
+            <FileText className="h-4 w-4 shrink-0 text-primary" />
+            <span className="truncate text-secondary-foreground">{pendingFile.name}</span>
+            <button
+              onClick={() => setPendingFile(null)}
+              className="ml-auto inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground transition hover:text-foreground"
+              aria-label="Remove attachment"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
+        <div className="flex items-center gap-2">
+          <input ref={fileInputRef} type="file" className="hidden" onChange={onPickFile} />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 shrink-0"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            aria-label="Attach file"
+          >
+            <Paperclip className="h-4 w-4" />
+          </Button>
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={onKeyDown}
+            placeholder={uploading ? 'Uploading…' : 'Type a message…'}
+            className="flex-1"
+            disabled={uploading}
+          />
+          <Button
+            onClick={send}
+            disabled={sending || uploading || (!input.trim() && !pendingFile)}
+            size="icon"
+            className="h-9 w-9 rounded-full"
+            aria-label="Send"
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

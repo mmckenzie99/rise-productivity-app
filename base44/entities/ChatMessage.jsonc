@@ -10,6 +10,20 @@
       "type": "string",
       "description": "Message text"
     },
+    "attachment": {
+      "type": "object",
+      "description": "Optional file shared in the message",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Original file name"
+        },
+        "url": {
+          "type": "string",
+          "description": "Public URL of the uploaded file"
+        }
+      }
+    },
     "author_id": {
       "type": "string",
       "description": "User id of the sender"
