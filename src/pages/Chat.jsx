@@ -87,7 +87,7 @@ export default function Chat() {
     setNewOpen(false);
     setPrefillLink(null);
     if (!rooms.some((r) => r.id === room.id)) setRooms((prev) => [room, ...prev]);
-    navigate(`/chat/${room.id}`);
+    navigate(`/chat/${room.id}`, { replace: true });
   };
 
   if (!user) {

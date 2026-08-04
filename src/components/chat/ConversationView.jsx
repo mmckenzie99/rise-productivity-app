@@ -27,7 +27,7 @@ export default function ConversationView({ room, user, onBack, query }) {
     : room.type === 'plan' ? 'Plan' : '';
   const backToItem = room.linked_id && itemLabel
     ? room.type === 'engagement' ? `/?engagementId=${room.linked_id}`
-      : room.type === 'trip' ? `/trips?tripId=${room.linked_id}`
+      : room.type === 'trip' ? `/?tripId=${room.linked_id}`
       : `/?planId=${room.linked_id}`
     : null;
 
@@ -186,7 +186,7 @@ export default function ConversationView({ room, user, onBack, query }) {
       {backToItem && (
         <div className="flex items-center border-b border-border px-3 py-1.5">
           <button
-            onClick={() => { if (window.history.state && window.history.state.idx > 0) navigate(-1); else navigate(backToItem, { replace: true }); }}
+            onClick={() => navigate(backToItem, { replace: true })}
             className="inline-flex items-center gap-1.5 text-xs font-medium text-primary transition hover:underline"
             title={`Back to ${itemLabel}`}
           >
