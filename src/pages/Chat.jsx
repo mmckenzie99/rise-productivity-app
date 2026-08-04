@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, MessageCircle, Search, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import RoomList from '@/components/chat/RoomList';
+import ArchivedRoomList from '@/components/chat/ArchivedRoomList';
 import { Input } from '@/components/ui/input';
 import ConversationView from '@/components/chat/ConversationView';
 import NewChatDialog from '@/components/chat/NewChatDialog';
@@ -20,8 +21,11 @@ export default function Chat() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pendingLink, setPendingLink] = useState(null);
   const [prefillLink, setPrefillLink] = useState(null);
+  const [tab, setTab] = useState('active');
 
   const selected = rooms.find((r) => r.id === roomId) || null;
+  const activeRooms = useMemo(() => rooms.filter((r) => !r.archived), [rooms]);
+  const archivedRooms = useMemo(() => rooms.filter((r) => r.archived), [rooms]);
 
   useEffect(() => {
     setOpenChatRoom(selected?.id || null);
@@ -60,16 +64,25 @@ export default function Chat() {
     if (!pendingLink || !user?.id) return;
     let cancelled = false;
     (async () => {
-      let existing = null;
+      let active = null;
+      let archived = null;
       try {
         const found = await base44.entities.ChatRoom.filter({ linked_id: pendingLink.id });
-        existing = (found || []).find((r) => (r.participant_ids || []).includes(user.id)) || null;
-      } catch { existing = null; }
+        const mine = (found || []).filter((r) => (r.participant_ids || []).includes(user.id));
+        active = mine.find((r) => !r.archived) || null;
+        archived = mine.find((r) => r.archived) || null;
+      } catch { active = null; archived = null; }
       if (cancelled) return;
       setSearchParams((prev) => { prev.delete('linkType'); prev.delete('linkedId'); return prev; }, { replace: true });
-      if (existing) {
-        setRooms((prev) => (prev.some((r) => r.id === existing.id) ? prev : [existing, ...prev]));
-        navigate(`/chat/${existing.id}`, { replace: true });
+      if (active) {
+        setRooms((prev) => (prev.some((r) => r.id === active.id) ? prev : [active, ...prev]));
+        navigate(`/chat/${active.id}`, { replace: true });
+      } else if (archived) {
+        // The item's only room is archived — restore it, preserving history,
+        // rather than creating a duplicate.
+        try { await base44.entities.ChatRoom.update(archived.id, { archived: false }); } catch {}
+        setRooms((prev) => prev.map((r) => (r.id === archived.id ? { ...r, archived: false } : r)));
+        navigate(`/chat/${archived.id}`, { replace: true });
       } else {
         setPrefillLink(pendingLink);
         setNewOpen(true);
@@ -164,15 +177,37 @@ export default function Chat() {
               selected ? 'hidden lg:flex' : 'flex'
             }`}
           >
-            <RoomList
-              rooms={rooms}
-              loading={loading}
-              selectedId={selected?.id}
-              onSelect={(room) => navigate(`/chat/${room.id}`)}
-              onNew={() => setNewOpen(true)}
-              currentUserId={user.id}
-              query={query}
-            />
+            <div className="flex border-b border-border">
+              <button
+                onClick={() => setTab('active')}
+                className={`flex-1 px-3 py-2 text-sm font-medium transition ${tab === 'active' ? 'border-b-2 border-primary text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Conversations
+              </button>
+              <button
+                onClick={() => setTab('archived')}
+                className={`flex-1 px-3 py-2 text-sm font-medium transition ${tab === 'archived' ? 'border-b-2 border-primary text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Archived{archivedRooms.length > 0 ? ` (${archivedRooms.length})` : ''}
+              </button>
+            </div>
+            {tab === 'active' ? (
+              <RoomList
+                rooms={activeRooms}
+                loading={loading}
+                selectedId={selected?.id}
+                onSelect={(room) => navigate(`/chat/${room.id}`)}
+                onNew={() => setNewOpen(true)}
+                currentUserId={user.id}
+                query={query}
+              />
+            ) : (
+              <ArchivedRoomList
+                rooms={archivedRooms}
+                onSelect={(room) => navigate(`/chat/${room.id}`)}
+                currentUserId={user.id}
+              />
+            )}
           </div>
 
           <div className={`flex-1 flex-col ${selected ? 'flex' : 'hidden lg:flex'}`}>

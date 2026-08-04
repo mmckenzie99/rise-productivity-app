@@ -54,6 +54,11 @@
     "last_sender_name": {
       "type": "string",
       "description": "Cached display name of the most recent sender"
+    },
+    "archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when the conversation has been archived. Archived rooms are hidden from the main list and excluded from the Chat button's existing-room match; they live in the Archived section and can be restored by tapping the item's Chat button."
     }
   },
   "required": [

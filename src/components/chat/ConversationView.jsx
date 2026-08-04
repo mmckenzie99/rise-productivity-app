@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Send, Paperclip, FileText, Download, X, Trash2 } from 'lucide-react';
+import { ArrowLeft, Send, Paperclip, FileText, Download, X, Archive } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Highlight from '@/components/chat/Highlight';
 import { base44 } from '@/api/base44Client';
@@ -107,18 +107,13 @@ export default function ConversationView({ room, user, onBack, query }) {
     }
   };
 
-  const canDelete = user.role === 'admin' || room.created_by_id === user.id;
+  const canArchive = user.role === 'admin' || room.created_by_id === user.id;
 
-  const handleDelete = async () => {
-    const ok = window.confirm('Delete this conversation and all its messages? This cannot be undone.');
+  const handleArchive = async () => {
+    const ok = window.confirm('Archive this conversation? It moves to the Archived section and stays out of the Chat button until you restore it from the item.');
     if (!ok) return;
     try {
-      await base44.entities.ChatMessage.deleteMany({ room_id: room.id });
-    } catch {
-      /* ignore */
-    }
-    try {
-      await base44.entities.ChatRoom.delete(room.id);
+      await base44.entities.ChatRoom.update(room.id, { archived: true });
     } catch {
       /* ignore */
     }
@@ -246,13 +241,13 @@ export default function ConversationView({ room, user, onBack, query }) {
             </button>
           )}
         </div>
-        {canDelete && (
+        {canArchive && (
           <button
-            onClick={handleDelete}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
-            title="Delete conversation"
+            onClick={handleArchive}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+            title="Archive conversation"
           >
-            <Trash2 className="h-4 w-4" />
+            <Archive className="h-4 w-4" />
           </button>
         )}
       </div>
