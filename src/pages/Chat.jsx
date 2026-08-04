@@ -27,13 +27,25 @@ export default function Chat() {
     setOpenChatRoom(selected?.id || null);
   }, [selected?.id]);
 
-  // If the open room was deleted or is inaccessible, return to the room list.
+  // Ghost guard: if the route points at a room not in our list, fetch it from
+  // the DB. A 404/not-found means it was deleted → return to the room list so a
+  // stale ghost can never trap the user in an empty conversation.
   useEffect(() => {
-    if (!roomId || loading) return;
-    if (rooms.length && !rooms.find((r) => r.id === roomId)) {
-      navigate('/chat', { replace: true });
-    }
-  }, [roomId, rooms, loading, navigate]);
+    if (!roomId) return;
+    if (rooms.some((r) => r.id === roomId)) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const room = await base44.entities.ChatRoom.get(roomId);
+        if (cancelled) return;
+        if (room) setRooms((prev) => (prev.some((r) => r.id === room.id) ? prev : [room, ...prev]));
+        else navigate('/chat', { replace: true });
+      } catch {
+        if (!cancelled) navigate('/chat', { replace: true });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [roomId, rooms, navigate]);
 
   useEffect(() => {
     const lt = searchParams.get('linkType');
@@ -41,18 +53,31 @@ export default function Chat() {
     if (lt && lid) setPendingLink({ type: lt, id: lid });
   }, [searchParams]);
 
+  // Resolve a deep link by querying the DB directly for a room linked to this
+  // item that includes the current user — never trust the in-memory rooms list,
+  // which may hold a stale ghost after a deletion.
   useEffect(() => {
-    if (!pendingLink || loading || !user?.id) return;
-    const existing = rooms.find((r) => r.linked_id === pendingLink.id && (r.participant_ids || []).includes(user.id));
-    setSearchParams((prev) => { prev.delete('linkType'); prev.delete('linkedId'); return prev; }, { replace: true });
-    if (existing) {
-      navigate(`/chat/${existing.id}`, { replace: true });
-    } else {
-      setPrefillLink(pendingLink);
-      setNewOpen(true);
-    }
-    setPendingLink(null);
-  }, [pendingLink, loading, rooms, user?.id]);
+    if (!pendingLink || !user?.id) return;
+    let cancelled = false;
+    (async () => {
+      let existing = null;
+      try {
+        const found = await base44.entities.ChatRoom.filter({ linked_id: pendingLink.id });
+        existing = (found || []).find((r) => (r.participant_ids || []).includes(user.id)) || null;
+      } catch { existing = null; }
+      if (cancelled) return;
+      setSearchParams((prev) => { prev.delete('linkType'); prev.delete('linkedId'); return prev; }, { replace: true });
+      if (existing) {
+        setRooms((prev) => (prev.some((r) => r.id === existing.id) ? prev : [existing, ...prev]));
+        navigate(`/chat/${existing.id}`, { replace: true });
+      } else {
+        setPrefillLink(pendingLink);
+        setNewOpen(true);
+      }
+      setPendingLink(null);
+    })();
+    return () => { cancelled = true; };
+  }, [pendingLink, user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadRooms = async () => {
     const list = await base44.entities.ChatRoom.list('-last_message_at', 100);
