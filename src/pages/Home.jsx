@@ -146,8 +146,8 @@ export default function Home() {
   const editTripNav = x => setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete('tripId'); sp.set('editTrip', x.id); return sp; }, { replace: true });
   const viewTripFromEng = () => { if (engagementTrip) setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete('engagementId'); sp.set('tripId', engagementTrip.id); return sp; }, { replace: true }); };
   const duplicate = x => { const { id, created_date, updated_date, created_by_id, ...fields } = x; setFormPrefill({ ...fields, title: `${x.title} (Copy)` }); setSearchParams({ editEngagement: 'new' }); };
-  const del = async x => { if (window.confirm(`Delete "${x.title}"?`)) { await remove(x.id); await deleteLinkedConversations(x.id); return true; } return false; };
-  const delTrip = async x => { if (window.confirm('Delete this trip?')) { await removeTrip(x.id); await deleteLinkedConversations(x.id); return true; } return false; };
+  const del = async x => { if (window.confirm(`Delete "${x.title}"?`)) { await remove(x.id); await deleteLinkedConversations(x.id, 'engagement'); return true; } return false; };
+  const delTrip = async x => { if (window.confirm('Delete this trip?')) { await removeTrip(x.id); await deleteLinkedConversations(x.id, 'trip'); return true; } return false; };
 
   const openEngagement = x => setSearchParams({ engagementId: x.id });
   const openQuickLook = x => setSearchParams({ quickLook: x.id });
@@ -213,7 +213,7 @@ export default function Home() {
       <TripForm open={!!tripFormOpen} item={tripFormOpen === true ? null : tripFormOpen} engagements={items} onClose={closeEditTrip} onSave={async t => { await saveTrip(t); }} />
       <TripDetail trip={selectedTrip} onClose={closeTrip} onEdit={() => editTripNav(selectedTrip)} onDelete={() => delTrip(selectedTrip)} isAdmin={isAdmin} />
       <EngagementQuickLook item={quickLook} onClose={closeQuickLook} />
-      <CalendarEventForm open={!!calEventForm} item={calEventForm === true ? null : calEventForm} admins={commentUsers} assignableUsers={assignableUsers} currentUserId={user?.id} onClose={closePlan} onSave={saveCalEventWithNotifs} onDelete={async id => { await removeCalEvent(id); await deleteLinkedConversations(id); }} onDeleteFuture={async (seriesId, afterDate) => { const future = calEvents.filter(e => e.series_id === seriesId && e.date > afterDate); for (const e of future) { await removeCalEvent(e.id); await deleteLinkedConversations(e.id); } }} />
+      <CalendarEventForm open={!!calEventForm} item={calEventForm === true ? null : calEventForm} admins={commentUsers} assignableUsers={assignableUsers} currentUserId={user?.id} onClose={closePlan} onSave={saveCalEventWithNotifs} onDelete={async id => { await removeCalEvent(id); await deleteLinkedConversations(id, 'plan'); }} onDeleteFuture={async (seriesId, afterDate) => { const future = calEvents.filter(e => e.series_id === seriesId && e.date > afterDate); for (const e of future) { await removeCalEvent(e.id); await deleteLinkedConversations(e.id, 'plan'); } }} />
       <ArchiveDialog open={archive} onClose={() => setArchive(false)} items={archived} onSelect={x => { setArchive(false); setSearchParams({ engagementId: x.id }); }} isAdmin={isAdmin} tripPlaces={tripPlaces} onLocate={x => { setArchive(false); locate(x); }} onDuplicate={duplicate} />
       <div className="h-28 lg:hidden" />
     </main>

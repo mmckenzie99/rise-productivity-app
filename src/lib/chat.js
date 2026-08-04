@@ -1,17 +1,14 @@
 import { base44 } from '@/api/base44Client';
 
-// Permanently delete every conversation (room + its messages) linked to a given
-// engagement, trip, or plan. Called when the linked item itself is deleted so no
-// orphaned chats remain. Runs as the acting user (RLS-respecting): admins — the
-// only deleters of engagements/trips — can remove any room; plan deleters can
-// remove rooms they own.
-export async function deleteLinkedConversations(linkedId) {
-  if (!linkedId) return;
-  try {
-    const rooms = await base44.entities.ChatRoom.filter({ linked_id: linkedId });
-    const ids = (rooms || []).map((r) => r.id);
-    if (!ids.length) return;
-    try { await base44.entities.ChatMessage.deleteMany({ room_id: { $in: ids } }); } catch {}
-    try { await base44.entities.ChatRoom.deleteMany({ linked_id: linkedId }); } catch {}
-  } catch {}
+// Cascade-deletes the conversations (rooms + messages) linked to a deleted
+// engagement, trip, or plan. Delegates to the deleteLinkedConversations backend
+// function, which runs as service role and:
+//   • verifies the linked item is already gone (refuses if it still exists),
+//   • looks up the linked rooms itself (never trusts caller-supplied ids),
+//   • removes every participant's messages, bypassing ChatMessage delete-RLS.
+// Throws on failure so the caller surfaces it — never silently leaves orphans.
+export async function deleteLinkedConversations(linkedId, linkType) {
+  if (!linkedId || !linkType) return;
+  const res = await base44.functions.invoke('deleteLinkedConversations', { linkedId, linkType });
+  if (res?.data?.error) throw new Error(res.data.error);
 }

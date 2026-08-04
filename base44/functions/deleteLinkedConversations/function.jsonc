@@ -1,0 +1,4 @@
+{
+  "name": "deleteLinkedConversations",
+  "entry": "entry.ts"
+}
