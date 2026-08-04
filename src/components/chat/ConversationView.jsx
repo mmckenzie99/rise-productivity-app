@@ -27,9 +27,22 @@ export default function ConversationView({ room, user, onBack, query }) {
     : room.type === 'plan' ? 'Plan' : '';
   const backToItem = room.linked_id && itemLabel
     ? room.type === 'engagement' ? `/?engagementId=${room.linked_id}`
-      : room.type === 'trip' ? `/?tripId=${room.linked_id}`
-      : `/?planId=${room.linked_id}`
+      : room.type === 'trip' ? `/?trips=open&tripId=${room.linked_id}`
+      : `/?calendar=open&planId=${room.linked_id}`
     : null;
+
+  // For plan-linked rooms, focus the weekly calendar on that plan's date.
+  const goBackToItem = async () => {
+    if (room.type === 'plan' && room.linked_id) {
+      let date = '';
+      try { const ev = await base44.entities.CalendarEvent.get(room.linked_id); date = ev?.date || ''; } catch {}
+      const sp = new URLSearchParams({ calendar: 'open', planId: room.linked_id });
+      if (date) sp.set('calDate', date);
+      navigate(`/?${sp.toString()}`, { replace: true });
+      return;
+    }
+    navigate(backToItem, { replace: true });
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -186,7 +199,7 @@ export default function ConversationView({ room, user, onBack, query }) {
       {backToItem && (
         <div className="flex items-center border-b border-border px-3 py-1.5">
           <button
-            onClick={() => navigate(backToItem, { replace: true })}
+            onClick={goBackToItem}
             className="inline-flex items-center gap-1.5 text-xs font-medium text-primary transition hover:underline"
             title={`Back to ${itemLabel}`}
           >
