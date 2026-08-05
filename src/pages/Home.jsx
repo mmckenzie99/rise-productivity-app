@@ -29,7 +29,7 @@ import { useAppSettings } from '@/hooks/useAppSettings';
 import { resolveFeature } from '@/lib/permissions';
 import { useSearchParams } from 'react-router-dom';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
-import { useHistoryBack } from '@/hooks/useHistoryBack';
+import { useCloseModal } from '@/hooks/useCloseModal';
 import { deleteLinkedConversations } from '@/lib/chat';
 
 export default function Home() {
@@ -93,14 +93,14 @@ export default function Home() {
   useEffect(() => { if (!editEngagement) setFormPrefill(null); }, [editEngagement]);
 
   // --- close handlers (history-aware with idx fallback) ---
-  const closeEngagement = useHistoryBack('engagementId');
-  const closeEditEngagement = useHistoryBack('editEngagement');
-  const closeQuickLook = useHistoryBack('quickLook');
-  const closePlanForm = useHistoryBack(['planId', 'planDate', 'planStart', 'planEnd']);
-  const closeTrip = useHistoryBack('tripId');
-  const closeEditTrip = useHistoryBack('editTrip');
-  const closeTrips = useHistoryBack('trips');
-  const closeCalendar = useHistoryBack(['calendar', 'calDate']);
+  const closeEngagement = useCloseModal('engagementId');
+  const closeEditEngagement = useCloseModal('editEngagement');
+  const closeQuickLook = useCloseModal('quickLook');
+  const closePlanForm = useCloseModal(['planId', 'planDate', 'planStart', 'planEnd']);
+  const closeTrip = useCloseModal('tripId');
+  const closeEditTrip = useCloseModal('editTrip');
+  const closeTrips = useCloseModal('trips');
+  const closeCalendar = useCloseModal(['calendar', 'calDate']);
 
   // After saving a NEW plan, reopen/focus the calendar on its date; otherwise pop history.
   const closePlan = () => {

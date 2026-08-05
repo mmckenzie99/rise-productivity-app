@@ -1,10 +1,12 @@
 import { Bell, Bookmark, CheckCheck, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { formatDate, formatTime, TIMEZONES } from '@/lib/speaking';
 import useNotifications from '@/hooks/useNotifications';
 
 export default function NotificationBell({ trigger, side }) {
+  const navigate = useNavigate();
   const { notifications, loading, keepForReview, dismissNotification, markAllAsRead, unreadCount } = useNotifications();
 
   return (
@@ -40,12 +42,23 @@ export default function NotificationBell({ trigger, side }) {
             notifications.map(n => (
               <div
                 key={n.id}
-                className={`flex items-start gap-2 border-b border-[#D6DAE3] p-3 last:border-0 ${!n.read ? 'bg-[#D9A404]/5' : ''}`}
+                onClick={() => {
+                  if (n.window_label === 'New Message' && n.engagement_id) {
+                    navigate(`/chat/${n.engagement_id}`);
+                    if (!n.read) keepForReview(n.id);
+                  }
+                }}
+                className={`flex items-start gap-2 border-b border-[#D6DAE3] p-3 last:border-0 ${!n.read ? 'bg-[#D9A404]/5' : ''} ${n.window_label === 'New Message' ? 'cursor-pointer hover:bg-[#F0F2F6]' : ''}`}
               >
                 <div className="flex-1">
                   <p className="text-sm font-medium leading-tight">{n.engagement_title}</p>
                   <p className="mt-0.5 text-xs text-[#5A6781]">
-                    {n.window_label==='Assigned to you'||n.window_label==='Completed'?n.window_label:`${n.window_label} reminder`} · {formatDate(n.speaking_date)}
+                    {n.window_label === 'New Message'
+                      ? 'New Message'
+                      : (n.window_label === 'Assigned to you' || n.window_label === 'Completed'
+                          ? n.window_label
+                          : `${n.window_label} reminder`)}
+                    {n.speaking_date && ` · ${formatDate(n.speaking_date)}`}
                     {n.speaking_time && ` · ${formatTime(n.speaking_time)}`}
                   </p>
                   {n.email_sent && (

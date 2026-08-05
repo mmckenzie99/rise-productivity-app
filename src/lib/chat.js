@@ -7,6 +7,17 @@ import { base44 } from '@/api/base44Client';
 //   • looks up the linked rooms itself (never trusts caller-supplied ids),
 //   • removes every participant's messages, bypassing ChatMessage delete-RLS.
 // Throws on failure so the caller surfaces it — never silently leaves orphans.
+// Permanently deletes one archived conversation (room + all its messages),
+// initiated by a participant from the Archived tab. Delegates to the
+// deleteSingleConversation backend function, which verifies the caller is a
+// participant and that the room is archived before service-role deleting it
+// and its messages. Throws on failure so the caller can surface it.
+export async function deleteSingleConversation(roomId) {
+  if (!roomId) return;
+  const res = await base44.functions.invoke('deleteSingleConversation', { roomId });
+  if (res?.data?.error) throw new Error(res.data.error);
+}
+
 export async function deleteLinkedConversations(linkedId, linkType) {
   if (!linkedId || !linkType) return;
   const res = await base44.functions.invoke('deleteLinkedConversations', { linkedId, linkType });

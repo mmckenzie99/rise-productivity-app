@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import ConversationView from '@/components/chat/ConversationView';
 import NewChatDialog from '@/components/chat/NewChatDialog';
 import { setOpenChatRoom } from '@/lib/chatSession';
+import { deleteSingleConversation } from '@/lib/chat';
 
 export default function Chat() {
   const { user } = useAuth();
@@ -128,6 +129,27 @@ export default function Chat() {
     navigate(`/chat/${room.id}`, { replace: true });
   };
 
+  const handleUnarchive = async (room) => {
+    try {
+      await base44.entities.ChatRoom.update(room.id, { archived: false });
+      setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, archived: false } : r)));
+      setTab('active');
+    } catch (e) {
+      console.warn('Unarchive failed', e?.message || e);
+    }
+  };
+
+  const handleDeleteRoom = async (room) => {
+    if (!window.confirm('Permanently delete this conversation and all its messages? This cannot be undone.')) return;
+    try {
+      await deleteSingleConversation(room.id);
+      setRooms((prev) => prev.filter((r) => r.id !== room.id));
+      if (selected?.id === room.id) navigate('/chat', { replace: true });
+    } catch (e) {
+      window.alert(`Delete failed: ${e?.message || e}`);
+    }
+  };
+
   if (!user) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-background pt-safe pb-safe">
@@ -205,6 +227,8 @@ export default function Chat() {
               <ArchivedRoomList
                 rooms={archivedRooms}
                 onSelect={(room) => navigate(`/chat/${room.id}`)}
+                onUnarchive={handleUnarchive}
+                onDelete={handleDeleteRoom}
                 currentUserId={user.id}
               />
             )}

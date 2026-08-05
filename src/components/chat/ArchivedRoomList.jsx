@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Archive, Search, MessageCircle, MapPin, Plane, CalendarDays } from 'lucide-react';
+import { Archive, Search, MessageCircle, MapPin, Plane, CalendarDays, RotateCcw, Trash2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 
 const roomIcon = (room) => {
@@ -9,7 +9,7 @@ const roomIcon = (room) => {
   return <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />;
 };
 
-export default function ArchivedRoomList({ rooms, onSelect, currentUserId }) {
+export default function ArchivedRoomList({ rooms, onSelect, onUnarchive, onDelete, currentUserId }) {
   const [q, setQ] = useState('');
   const query = q.trim().toLowerCase();
   const filtered = useMemo(() => {
@@ -52,29 +52,48 @@ export default function ArchivedRoomList({ rooms, onSelect, currentUserId }) {
                     .join(', ') || r.title
                 : r.title;
             return (
-              <button
+              <div
                 key={r.id}
-                onClick={() => onSelect(r)}
-                className="flex w-full items-start gap-2.5 border-b border-border px-3 py-2.5 text-left transition hover:bg-accent"
+                className="flex w-full items-start gap-2.5 border-b border-border px-3 py-2.5 transition hover:bg-accent"
               >
-                {roomIcon(r)}
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="truncate text-sm font-medium text-foreground">{otherName}</span>
-                    {r.last_message_at && (
-                      <span className="shrink-0 text-[10px] text-muted-foreground">
-                        {format(parseISO(r.last_message_at), 'MMM d')}
-                      </span>
+                <button onClick={() => onSelect(r)} className="flex min-w-0 flex-1 items-start gap-2.5 text-left">
+                  {roomIcon(r)}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate text-sm font-medium text-foreground">{otherName}</span>
+                      {r.last_message_at && (
+                        <span className="shrink-0 text-[10px] text-muted-foreground">
+                          {format(parseISO(r.last_message_at), 'MMM d')}
+                        </span>
+                      )}
+                    </div>
+                    {r.linked_title && r.type !== 'direct' && (
+                      <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">{r.linked_title}</span>
                     )}
+                    <div className="mt-0.5 truncate text-xs text-muted-foreground">
+                      {r.last_message || 'No messages yet'}
+                    </div>
                   </div>
-                  {r.linked_title && r.type !== 'direct' && (
-                    <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">{r.linked_title}</span>
-                  )}
-                  <div className="mt-0.5 truncate text-xs text-muted-foreground">
-                    {r.last_message || 'No messages yet'}
-                  </div>
+                </button>
+                <div className="flex shrink-0 items-center gap-1">
+                  <button
+                    onClick={() => onUnarchive?.(r)}
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-primary"
+                    title="Move to Conversations"
+                    aria-label="Move to Conversations"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={() => onDelete?.(r)}
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                    title="Delete permanently"
+                    aria-label="Delete permanently"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
-              </button>
+              </div>
             );
           })
         )}
