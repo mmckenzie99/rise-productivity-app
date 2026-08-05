@@ -81,7 +81,7 @@
         },
         {
           "user_condition": {
-            "role": "admin"
+            "is_owner": true
           }
         }
       ]
