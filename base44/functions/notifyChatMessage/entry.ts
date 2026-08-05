@@ -64,8 +64,9 @@ export default async function (req: Request): Promise<Response> {
       const msg = msgs[0];
       const isFileOnly = !msg.body && msg.attachment;
       const preview = isFileOnly ? `📎 ${msg.attachment.name}` : (msg.body || '').slice(0, 200);
-      const subject = isFileOnly ? `${senderName} shared a file with you` : `${senderName} messaged you`;
+      const subject = isFileOnly ? `${senderName} shared a file with you` : `${senderName} started a conversation with you`;
       const esc = (s: string) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const link = `https://rise-60-1.base44.app/chat/${roomId}`;
       const users = await base44.asServiceRole.entities.User.list();
       for (const rid of recipients) {
         const u = (users || []).find((x: any) => x.id === rid);
@@ -77,7 +78,7 @@ export default async function (req: Request): Promise<Response> {
           await base44.integrations.Core.SendEmail({
             to: u.email,
             subject,
-            body: `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B"><h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B">New message</h2><p style="font-size:16px"><strong>${esc(senderName)}</strong> started a conversation with you:</p><p style="font-size:15px;padding:10px 14px;background:#F0F2F6;border-radius:8px">${esc(preview)}</p><p style="font-size:13px;color:#5A6781">Open RISE and tap Chat to reply.</p></div>`,
+            body: `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B"><h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B">New Conversation</h2><p style="font-size:16px"><strong>${esc(senderName)}</strong> started a conversation with you:</p><p style="font-size:15px;padding:10px 14px;background:#F0F2F6;border-radius:8px">${esc(preview)}</p><p style="margin-top:18px"><a href="${link}" style="display:inline-block;background:#D9A404;color:#1B2A4B;font-family:Inter,Arial,sans-serif;font-size:15px;font-weight:600;text-decoration:none;padding:11px 22px;border-radius:8px">Open Conversation</a></p></div>`,
           });
         } catch (e: any) {
           console.error('notifyChatMessage: SendEmail failed for', rid, e?.message || e);
