@@ -80,10 +80,8 @@
       ]
     },
     "create": {
-      "data.participant_ids": {
-        "$in": [
-          "{{user.id}}"
-        ]
+      "user_condition": {
+        "role": "no_direct_create"
       }
     },
     "update": {
