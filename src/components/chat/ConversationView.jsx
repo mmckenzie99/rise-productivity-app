@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Send, Paperclip, FileText, Download, X, Archive } from 'lucide-react';
+import { ArrowLeft, Send, Paperclip, FileText, Download, X, Archive, UserPlus } from 'lucide-react';
+import AddParticipantDialog from '@/components/chat/AddParticipantDialog';
 import { useNavigate } from 'react-router-dom';
 import Highlight from '@/components/chat/Highlight';
 import { base44 } from '@/api/base44Client';
@@ -16,6 +17,7 @@ export default function ConversationView({ room, user, onBack, query }) {
   const [pendingFile, setPendingFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [editingTopic, setEditingTopic] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
   const [topicDraft, setTopicDraft] = useState('');
   const scrollRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -254,7 +256,7 @@ export default function ConversationView({ room, user, onBack, query }) {
         )}
       </div>
 
-      <div className="flex flex-wrap gap-1.5 border-b border-border px-3 py-2">
+      <div className="flex flex-wrap items-center gap-1.5 border-b border-border px-3 py-2">
         {(room.participant_names || []).map((name, i) => {
           const me = (room.participant_ids || [])[i] === user.id;
           return (
@@ -268,6 +270,13 @@ export default function ConversationView({ room, user, onBack, query }) {
             </span>
           );
         })}
+        <button
+          onClick={() => setAddOpen(true)}
+          className="inline-flex items-center gap-1 rounded-full border border-dashed border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground transition hover:border-primary hover:text-primary"
+          title="Add participant"
+        >
+          <UserPlus className="h-3 w-3" /> Add
+        </button>
       </div>
 
       <div ref={scrollRef} className="flex-1 space-y-2 overflow-y-auto px-3 py-4">
@@ -279,6 +288,15 @@ export default function ConversationView({ room, user, onBack, query }) {
           </div>
         ) : (
           visibleMessages.map((m) => {
+            if (m.is_system) {
+              return (
+                <div key={m.id} className="flex justify-center">
+                  <p className="rounded-full bg-muted/60 px-3 py-1 text-center text-[11px] text-muted-foreground">
+                    {m.body}
+                  </p>
+                </div>
+              );
+            }
             const mine = m.author_id === user.id;
             return (
               <div key={m.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
@@ -365,6 +383,14 @@ export default function ConversationView({ room, user, onBack, query }) {
           </Button>
         </div>
       </div>
+
+      <AddParticipantDialog
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        room={room}
+        currentUser={user}
+        onAdded={() => setAddOpen(false)}
+      />
     </div>
   );
 }
