@@ -30,6 +30,10 @@
     "can_create_work_plans": {
       "type": "boolean",
       "description": "Explicit per-user override for creating work (coworker) calendar plans. true forces on, false forces off; when unset the role default applies."
+    },
+    "can_start_chats": {
+      "type": "boolean",
+      "description": "Explicit per-user override for starting chat conversations (creating a ChatRoom). true forces on, false forces off; when unset the role default from AppSettings applies. Users without this permission may still be added to, and reply within, conversations that others start."
     }
   },
   "required": [

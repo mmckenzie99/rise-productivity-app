@@ -50,6 +50,18 @@
             }
           }
         },
+        "can_start_chats": {
+          "type": "object",
+          "description": "Default per role for starting chat conversations. Owner always bypasses; an explicit per-user can_start_chats override on the User record wins over this default.",
+          "properties": {
+            "admin": {
+              "type": "boolean"
+            },
+            "user": {
+              "type": "boolean"
+            }
+          }
+        },
         "dashboard_sections": {
           "type": "object",
           "description": "Per-role visibility for each Dashboard section. Missing keys default to visible (true).",
