@@ -134,5 +134,5 @@
   .mb-safe { margin-bottom: env(safe-area-inset-bottom); }
 }
 
-html, body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
+body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
 button, [role="button"] { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
