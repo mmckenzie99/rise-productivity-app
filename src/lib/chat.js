@@ -40,3 +40,14 @@ export async function deleteLinkedConversations(linkedId, linkType) {
   const res = await base44.functions.invoke('deleteLinkedConversations', { linkedId, linkType });
   if (res?.data?.error) throw new Error(res.data.error);
 }
+
+// Owner-only oversight list of chat rooms, via the listMyRooms backend function
+// (service role). Returns every room for the Owner (oversight) and only
+// participant rooms for everyone else. ChatRoom read-RLS is participant-only, so
+// this function is the sole source of the Owner's full visibility. Throws on
+// failure so the caller can surface it.
+export async function listMyRooms() {
+  const res = await base44.functions.invoke('listMyRooms', {});
+  if (res?.data?.error) throw new Error(res.data.error);
+  return res?.data?.rooms || [];
+}

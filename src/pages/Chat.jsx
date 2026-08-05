@@ -11,7 +11,7 @@ import ConversationView from '@/components/chat/ConversationView';
 import NewChatDialog from '@/components/chat/NewChatDialog';
 import DeleteChatDialog from '@/components/chat/DeleteChatDialog';
 import { setOpenChatRoom } from '@/lib/chatSession';
-import { archiveChatRoom, deleteSingleConversation, unarchiveChatRoom } from '@/lib/chat';
+import { archiveChatRoom, deleteSingleConversation, listMyRooms, unarchiveChatRoom } from '@/lib/chat';
 import { ToastAction } from '@/components/ui/toast';
 import { toast } from '@/components/ui/use-toast';
 
@@ -103,7 +103,7 @@ export default function Chat() {
   }, [pendingLink, user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadRooms = async () => {
-    const list = await base44.entities.ChatRoom.list('-last_message_at', 100);
+    const list = await listMyRooms();
     setRooms(list || []);
     setLoading(false);
   };
