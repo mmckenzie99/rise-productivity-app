@@ -113,7 +113,13 @@ export default function Chat() {
           return [event.data, ...prev];
         }
         if (event.type === 'update') {
-          const next = prev.map((r) => (r.id === event.data.id ? event.data : r));
+          const next = prev.map((r) => {
+            if (r.id !== event.data.id) return r;
+            // Skip stale realtime events (e.g. an out-of-order pre-image)
+            // that would revert a fresher local state right after a toggle.
+            if (r.updated_date && event.data.updated_date && r.updated_date > event.data.updated_date) return r;
+            return event.data;
+          });
           return [...next].sort((a, b) => (b.last_message_at || '').localeCompare(a.last_message_at || ''));
         }
         if (event.type === 'delete') {
@@ -135,11 +141,15 @@ export default function Chat() {
 
   const handleUnarchive = async (room) => {
     try {
-      const updated = await unarchiveChatRoom(room.id);
-      setRooms((prev) => prev.map((r) => (r.id === room.id ? (updated || { ...r, archived_by: (r.archived_by || []).filter((id) => id !== user.id) }) : r)));
+      await unarchiveChatRoom(room.id);
+      // Optimistically drop the caller from archived_by so the room leaves
+      // the Archived tab instantly, then refetch the authoritative list so the
+      // tabs re-filter and a stale realtime event can't strand the room there.
+      setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, archived_by: (r.archived_by || []).filter((id) => id !== user.id) } : r)));
       setTab('active');
+      await loadRooms();
     } catch (e) {
-      console.warn('Unarchive failed', e?.message || e);
+      window.alert(`Restore failed: ${e?.message || e}`);
     }
   };
 
