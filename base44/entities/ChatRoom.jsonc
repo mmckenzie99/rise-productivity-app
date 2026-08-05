@@ -75,16 +75,7 @@
   ],
   "rls": {
     "read": {
-      "$or": [
-        {
-          "data.participant_ids": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
+      "data.participant_ids": "{{user.id}}"
     },
     "create": {
       "user_condition": {
