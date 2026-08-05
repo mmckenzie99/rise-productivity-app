@@ -26,11 +26,16 @@
     },
     "author_id": {
       "type": "string",
-      "description": "User id of the sender"
+      "description": "User id of the sender. Set to 'system' for system-authored audit messages."
     },
     "author_name": {
       "type": "string",
       "description": "Cached display name of the sender"
+    },
+    "is_system": {
+      "type": "boolean",
+      "default": false,
+      "description": "True for system-authored audit messages (e.g. 'Marshall added Rosemary'). These are created server-side via the service role only; the create-RLS blocks regular clients from setting this to true."
     },
     "participant_ids": {
       "type": "array",
@@ -58,7 +63,25 @@
       ]
     },
     "create": {
-      "created_by_id": "{{user.id}}"
+      "$or": [
+        {
+          "$and": [
+            {
+              "created_by_id": "{{user.id}}"
+            },
+            {
+              "data.is_system": {
+                "$ne": true
+              }
+            }
+          ]
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
     },
     "update": {
       "$or": [
