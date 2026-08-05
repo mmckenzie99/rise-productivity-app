@@ -55,10 +55,9 @@
       "type": "string",
       "description": "Cached display name of the most recent sender"
     },
-    "archived": {
-      "type": "boolean",
-      "default": false,
-      "description": "DEPRECATED \u2014 legacy room-level archive flag, retained only for the migration window. Per-person archiving now uses archived_by. The migrateChatArchives function copies archived=true into archived_by; once verified, this field is unset in a follow-up cleanup."
+    "started_by_id": {
+      "type": "string",
+      "description": "User id of the participant who initiated this conversation. Set server-side only by createChatRoom to the authenticated caller's id \u2014 never accepted from a client payload. Used as the permanent-deletion authority: only this user (or the app Owner) may permanently delete the conversation."
     },
     "archived_by": {
       "type": "array",

@@ -4,12 +4,11 @@ import AddParticipantDialog from '@/components/chat/AddParticipantDialog';
 import { useNavigate } from 'react-router-dom';
 import Highlight from '@/components/chat/Highlight';
 import { base44 } from '@/api/base44Client';
-import { archiveChatRoom } from '@/lib/chat';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { format, parseISO } from 'date-fns';
 
-export default function ConversationView({ room, user, onBack, query }) {
+export default function ConversationView({ room, user, onBack, onArchive, query }) {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -123,15 +122,10 @@ export default function ConversationView({ room, user, onBack, query }) {
     }
   };
 
-  const handleArchive = async () => {
-    const ok = window.confirm('Archive this conversation for yourself? It moves to your Archived tab only — other participants still see it.');
-    if (!ok) return;
-    try {
-      await archiveChatRoom(room.id);
-    } catch (e) {
-      console.warn('Archive failed', e?.message || e);
-    }
-    onBack();
+  // Archiving is reversible and needs no confirmation — the parent handles the
+  // optimistic update, authoritative refetch, and the Undo toast.
+  const handleArchive = () => {
+    onArchive?.(room);
   };
 
   const send = async () => {

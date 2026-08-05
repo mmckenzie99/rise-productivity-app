@@ -84,7 +84,7 @@ export default function ArchivedRoomList({ rooms, onSelect, onUnarchive, onDelet
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
                   </button>
-                  {(r.created_by_id === currentUserId || isOwner) && (
+                  {(r.started_by_id === currentUserId || isOwner) && (
                     <button
                       onClick={() => onDelete?.(r)}
                       className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"

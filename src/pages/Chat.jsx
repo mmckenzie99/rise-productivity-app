@@ -9,8 +9,11 @@ import ArchivedRoomList from '@/components/chat/ArchivedRoomList';
 import { Input } from '@/components/ui/input';
 import ConversationView from '@/components/chat/ConversationView';
 import NewChatDialog from '@/components/chat/NewChatDialog';
+import DeleteChatDialog from '@/components/chat/DeleteChatDialog';
 import { setOpenChatRoom } from '@/lib/chatSession';
-import { deleteSingleConversation, unarchiveChatRoom } from '@/lib/chat';
+import { archiveChatRoom, deleteSingleConversation, unarchiveChatRoom } from '@/lib/chat';
+import { ToastAction } from '@/components/ui/toast';
+import { toast } from '@/components/ui/use-toast';
 
 export default function Chat() {
   const { user } = useAuth();
@@ -24,6 +27,8 @@ export default function Chat() {
   const [pendingLink, setPendingLink] = useState(null);
   const [prefillLink, setPrefillLink] = useState(null);
   const [tab, setTab] = useState('active');
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const canStart = useFeatureFlag('can_start_chats');
 
   const selected = rooms.find((r) => r.id === roomId) || null;
@@ -139,28 +144,68 @@ export default function Chat() {
     navigate(`/chat/${room.id}`, { replace: true });
   };
 
-  const handleUnarchive = async (room) => {
+  const handleArchive = async (room) => {
+    // Archiving is reversible — no confirmation. Optimistically add the caller
+    // to archived_by so the room leaves Conversations instantly, then refetch the
+    // authoritative list so the tabs re-filter on every platform. Show a toast
+    // with an Undo action that restores the room.
+    setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, archived_by: Array.from(new Set([...(r.archived_by || []), user.id])) } : r)));
     try {
-      await unarchiveChatRoom(room.id);
-      // Optimistically drop the caller from archived_by so the room leaves
-      // the Archived tab instantly, then refetch the authoritative list so the
-      // tabs re-filter and a stale realtime event can't strand the room there.
-      setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, archived_by: (r.archived_by || []).filter((id) => id !== user.id) } : r)));
-      setTab('active');
+      await archiveChatRoom(room.id);
+      toast({
+        title: 'Moved to Archived',
+        description: 'Other participants still see it.',
+        action: <ToastAction altText="Undo" onClick={() => handleUnarchive(room)}>Undo</ToastAction>,
+      });
+      if (selected?.id === room.id) navigate('/chat', { replace: true });
       await loadRooms();
     } catch (e) {
-      window.alert(`Restore failed: ${e?.message || e}`);
+      // Revert the optimistic move on failure and surface the error as a toast.
+      setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, archived_by: (r.archived_by || []).filter((id) => id !== user.id) } : r)));
+      toast({ variant: 'destructive', title: 'Archive failed', description: e?.message || String(e) });
     }
   };
 
-  const handleDeleteRoom = async (room) => {
-    if (!window.confirm('Permanently delete this conversation and all its messages for everyone? This cannot be undone.')) return;
+  const handleUnarchive = async (room) => {
+    // Optimistically drop the caller from archived_by so the room leaves the
+    // Archived tab instantly, then refetch the authoritative list so the tabs
+    // re-filter on every platform. Show a toast with an Undo action that
+    // re-archives the room.
+    setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, archived_by: (r.archived_by || []).filter((id) => id !== user.id) } : r)));
+    setTab('active');
+    try {
+      await unarchiveChatRoom(room.id);
+      toast({
+        title: 'Moved to Conversations',
+        action: <ToastAction altText="Undo" onClick={() => handleArchive(room)}>Undo</ToastAction>,
+      });
+      await loadRooms();
+    } catch (e) {
+      setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, archived_by: Array.from(new Set([...(r.archived_by || []), user.id])) } : r)));
+      toast({ variant: 'destructive', title: 'Restore failed', description: e?.message || String(e) });
+    }
+  };
+
+  const handleDeleteRoom = (room) => {
+    // Open the in-app AlertDialog instead of window.confirm; the actual delete
+    // runs in confirmDelete once the user confirms.
+    setDeleteTarget(room);
+  };
+
+  const confirmDelete = async () => {
+    const room = deleteTarget;
+    if (!room) return;
+    setDeleting(true);
     try {
       await deleteSingleConversation(room.id);
       setRooms((prev) => prev.filter((r) => r.id !== room.id));
       if (selected?.id === room.id) navigate('/chat', { replace: true });
+      setDeleteTarget(null);
+      toast({ title: 'Conversation deleted', description: 'Removed for everyone.' });
     } catch (e) {
-      window.alert(`Delete failed: ${e?.message || e}`);
+      toast({ variant: 'destructive', title: 'Delete failed', description: e?.message || String(e) });
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -252,7 +297,7 @@ export default function Chat() {
 
           <div className={`flex-1 flex-col ${selected ? 'flex' : 'hidden lg:flex'}`}>
             {selected ? (
-              <ConversationView room={selected} user={user} onBack={() => navigate('/chat')} query={query} />
+              <ConversationView room={selected} user={user} onBack={() => navigate('/chat')} onArchive={handleArchive} query={query} />
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                 Select a conversation
@@ -272,6 +317,14 @@ export default function Chat() {
         existingRooms={rooms}
         initialLinkType={prefillLink?.type}
         initialLinkedId={prefillLink?.id}
+      />
+
+      <DeleteChatDialog
+        open={!!deleteTarget}
+        room={deleteTarget}
+        loading={deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
       />
     </main>
   );

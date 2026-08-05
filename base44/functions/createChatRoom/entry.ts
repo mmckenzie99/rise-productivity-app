@@ -109,6 +109,9 @@ export default async function (req: Request): Promise<Response> {
       if (existing) return Response.json({ ok: true, room: existing, duplicate: true });
     }
 
+    // started_by_id is the human initiator's id — set server-side from the
+    // authenticated caller, never from the client payload. It is the
+    // permanent-deletion authority (only this user or the Owner may delete).
     const room = await base44.asServiceRole.entities.ChatRoom.create({
       title: resolvedTitle,
       topic: (topic || '').trim(),
@@ -117,6 +120,7 @@ export default async function (req: Request): Promise<Response> {
       participant_names: ids.map((id) => nameMap[id] || 'Unknown'),
       linked_id: linkType !== 'none' ? linkedId : undefined,
       linked_title,
+      started_by_id: user.id,
     });
 
     return Response.json({ ok: true, room });

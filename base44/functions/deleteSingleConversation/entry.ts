@@ -6,11 +6,11 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 // Security contract (server-side source of truth, not just UI-hidden):
 //  1. Authenticate the caller.
 //  2. Look up the room (service role) — never trust caller-supplied data.
-//  3. Verify the caller is the room CREATOR (created_by_id) OR the app Owner.
-//     A participant who did not create the room cannot delete it, even though
-//     they can read it. (created_by_id is a platform-managed built-in on every
-//     ChatRoom record, populated when createChatRoom created it as service
-//     role — it is the creating user's id.)
+//  3. Verify the caller is the conversation INITIATOR (started_by_id) OR the app
+//     Owner (is_owner). A participant who did not start the room cannot delete
+//     it, even though they can read it. started_by_id is set by createChatRoom
+//     to the authenticated caller's user.id; Owner status is read from
+//     user.is_owner — no role-string comparisons.
 //  4. Verify the room is archived BY THE DELETER — archived_by must include
 //     the deleter's id. Only a room the deleter moved to their own Archived tab
 //     can be permanently deleted (two-step "trash then empty trash" flow).
@@ -30,11 +30,11 @@ export default async function (req: Request): Promise<Response> {
     const room = await base44.asServiceRole.entities.ChatRoom.get(roomId);
     if (!room) return Response.json({ error: 'Room not found' }, { status: 404 });
 
-    const isCreator = !!room.created_by_id && room.created_by_id === user.id;
-    const isOwner = !!user.is_owner;
-    if (!isCreator && !isOwner) {
+    const callerIsInitiator = !!room.started_by_id && room.started_by_id === user.id;
+    const callerIsOwner = !!user.is_owner;
+    if (!callerIsInitiator && !callerIsOwner) {
       return Response.json(
-        { error: 'Only the conversation creator or the app Owner can delete this conversation' },
+        { error: 'Only the conversation initiator or the app Owner can delete this conversation' },
         { status: 403 }
       );
     }

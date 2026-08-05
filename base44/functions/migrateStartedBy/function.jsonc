@@ -1,0 +1,26 @@
+{
+  "name": "migrateStartedBy",
+  "description": "Idempotent one-time backfill of ChatRoom.started_by_id for rooms created before the field existed. Defaults the initiator to the authenticated Owner's user id when the original initiator can't be determined (legacy rooms were created by a system service, so created_by_id is not the human initiator). Skips rooms that already have started_by_id set.",
+  "is_public": false,
+  "request": {
+    "body_schema": {
+      "type": "object",
+      "properties": {
+        "fallbackOwnerId": {
+          "type": "string",
+          "description": "User id to assign as started_by_id for rooms missing it. Defaults to the authenticated caller's id."
+        }
+      }
+    }
+  },
+  "response": {
+    "response_schema": {
+      "type": "object",
+      "properties": {
+        "ok": { "type": "boolean" },
+        "assigned": { "type": "array", "items": { "type": "object", "properties": { "id": { "type": "string" }, "title": { "type": "string" }, "started_by_id": { "type": "string" } } } },
+        "skipped": { "type": "array", "items": { "type": "object", "properties": { "id": { "type": "string" }, "title": { "type": "string" }, "started_by_id": { "type": "string" } } } }
+      }
+    }
+  }
+}

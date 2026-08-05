@@ -9,6 +9,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ToastAction } from '@/components/ui/toast';
+import { toast } from '@/components/ui/use-toast';
 
 // Single-select user picker for adding one participant to an existing room.
 // Reuses the checkbox-list pattern from NewChatDialog. The actual append +
@@ -51,11 +53,14 @@ export default function AddParticipantDialog({ open, onClose, room, currentUser,
       if (data.ok) {
         onAdded();
       } else if (data.added) {
-        // Participant added but a secondary step failed — refresh AND alert loudly.
+        // Participant added but a secondary step failed — refresh AND surface loudly via toast.
         onAdded();
-        window.alert(
-          `Participant added, but a step failed: ${(data.errors || []).join('; ')}. The conversation has been refreshed.`
-        );
+        toast({
+          variant: 'destructive',
+          title: 'Participant added — a step failed',
+          description: `${(data.errors || []).join('; ')}. The conversation has been refreshed.`,
+          action: <ToastAction altText="Dismiss" onClick={() => {}}>Dismiss</ToastAction>,
+        });
       } else {
         setError(data.error || 'Failed to add participant');
       }
