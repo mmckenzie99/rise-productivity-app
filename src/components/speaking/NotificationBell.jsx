@@ -68,7 +68,7 @@ export default function NotificationBell({ trigger, side }) {
                 <div className="flex shrink-0 items-center gap-1">
                   {!n.read && (
                     <button
-                      onClick={() => keepForReview(n.id)}
+                      onClick={(e) => { e.stopPropagation(); keepForReview(n.id); }}
                       className="shrink-0 rounded p-1 text-[#1B2A4B] hover:bg-[#F0F2F6]"
                       aria-label="Keep for review"
                       title="Keep for review"
@@ -77,7 +77,7 @@ export default function NotificationBell({ trigger, side }) {
                     </button>
                   )}
                   <button
-                    onClick={() => dismissNotification(n.id)}
+                    onClick={(e) => { e.stopPropagation(); dismissNotification(n.id); }}
                     className="shrink-0 rounded p-1 text-[#B43A2E] hover:bg-[#B43A2E]/10"
                     aria-label="Dismiss"
                     title="Dismiss"
