@@ -9,7 +9,7 @@ const roomIcon = (room) => {
   return <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />;
 };
 
-export default function ArchivedRoomList({ rooms, onSelect, onUnarchive, onDelete, currentUserId }) {
+export default function ArchivedRoomList({ rooms, onSelect, onUnarchive, onDelete, currentUserId, isOwner }) {
   const [q, setQ] = useState('');
   const query = q.trim().toLowerCase();
   const filtered = useMemo(() => {
@@ -84,14 +84,16 @@ export default function ArchivedRoomList({ rooms, onSelect, onUnarchive, onDelet
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
                   </button>
-                  <button
-                    onClick={() => onDelete?.(r)}
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
-                    title="Delete permanently"
-                    aria-label="Delete permanently"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+                  {(r.created_by_id === currentUserId || isOwner) && (
+                    <button
+                      onClick={() => onDelete?.(r)}
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                      title="Delete permanently"
+                      aria-label="Delete permanently"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                 </div>
               </div>
             );

@@ -58,7 +58,15 @@
     "archived": {
       "type": "boolean",
       "default": false,
-      "description": "True when the conversation has been archived. Archived rooms are hidden from the main list and excluded from the Chat button's existing-room match; they live in the Archived section and can be restored by tapping the item's Chat button."
+      "description": "DEPRECATED \u2014 legacy room-level archive flag, retained only for the migration window. Per-person archiving now uses archived_by. The migrateChatArchives function copies archived=true into archived_by; once verified, this field is unset in a follow-up cleanup."
+    },
+    "archived_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "User ids of participants who have archived this conversation for themselves. A room appears in a user's Archived tab only when their id is present here, and in their Conversations tab when it is absent \u2014 so archiving is independent per person. Written only by the toggleChatArchive backend function (service role); never by a client ChatRoom.update."
     }
   },
   "required": [

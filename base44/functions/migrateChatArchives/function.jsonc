@@ -1,0 +1,4 @@
+{
+  "name": "migrateChatArchives",
+  "entry": "entry.ts"
+}

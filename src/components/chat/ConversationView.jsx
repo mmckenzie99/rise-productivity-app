@@ -4,6 +4,7 @@ import AddParticipantDialog from '@/components/chat/AddParticipantDialog';
 import { useNavigate } from 'react-router-dom';
 import Highlight from '@/components/chat/Highlight';
 import { base44 } from '@/api/base44Client';
+import { archiveChatRoom } from '@/lib/chat';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { format, parseISO } from 'date-fns';
@@ -122,15 +123,13 @@ export default function ConversationView({ room, user, onBack, query }) {
     }
   };
 
-  const canArchive = user.role === 'admin' || room.created_by_id === user.id;
-
   const handleArchive = async () => {
-    const ok = window.confirm('Archive this conversation? It moves to the Archived section and stays out of the Chat button until you restore it from the item.');
+    const ok = window.confirm('Archive this conversation for yourself? It moves to your Archived tab only — other participants still see it.');
     if (!ok) return;
     try {
-      await base44.entities.ChatRoom.update(room.id, { archived: true });
-    } catch {
-      /* ignore */
+      await archiveChatRoom(room.id);
+    } catch (e) {
+      console.warn('Archive failed', e?.message || e);
     }
     onBack();
   };
@@ -245,15 +244,13 @@ export default function ConversationView({ room, user, onBack, query }) {
             </button>
           )}
         </div>
-        {canArchive && (
-          <button
-            onClick={handleArchive}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
-            title="Archive conversation"
-          >
-            <Archive className="h-4 w-4" />
-          </button>
-        )}
+        <button
+          onClick={handleArchive}
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+          title="Archive conversation for yourself"
+        >
+          <Archive className="h-4 w-4" />
+        </button>
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 border-b border-border px-3 py-2">

@@ -18,6 +18,23 @@ export async function deleteSingleConversation(roomId) {
   if (res?.data?.error) throw new Error(res.data.error);
 }
 
+// Per-person archive / unarchive via the toggleChatArchive backend function
+// (service role). The caller's id is added/removed from archived_by only —
+// other participants' views are unaffected. Returns the updated room record.
+export async function archiveChatRoom(roomId) {
+  if (!roomId) return;
+  const res = await base44.functions.invoke('toggleChatArchive', { roomId, action: 'archive' });
+  if (res?.data?.error) throw new Error(res.data.error);
+  return res?.data?.room;
+}
+
+export async function unarchiveChatRoom(roomId) {
+  if (!roomId) return;
+  const res = await base44.functions.invoke('toggleChatArchive', { roomId, action: 'unarchive' });
+  if (res?.data?.error) throw new Error(res.data.error);
+  return res?.data?.room;
+}
+
 export async function deleteLinkedConversations(linkedId, linkType) {
   if (!linkedId || !linkType) return;
   const res = await base44.functions.invoke('deleteLinkedConversations', { linkedId, linkType });

@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import ConversationView from '@/components/chat/ConversationView';
 import NewChatDialog from '@/components/chat/NewChatDialog';
 import { setOpenChatRoom } from '@/lib/chatSession';
-import { deleteSingleConversation } from '@/lib/chat';
+import { deleteSingleConversation, unarchiveChatRoom } from '@/lib/chat';
 
 export default function Chat() {
   const { user } = useAuth();
@@ -27,8 +27,8 @@ export default function Chat() {
   const canStart = useFeatureFlag('can_start_chats');
 
   const selected = rooms.find((r) => r.id === roomId) || null;
-  const activeRooms = useMemo(() => rooms.filter((r) => !r.archived), [rooms]);
-  const archivedRooms = useMemo(() => rooms.filter((r) => r.archived), [rooms]);
+  const activeRooms = useMemo(() => rooms.filter((r) => !((r.archived_by || []).includes(user.id))), [rooms, user.id]);
+  const archivedRooms = useMemo(() => rooms.filter((r) => (r.archived_by || []).includes(user.id)), [rooms, user.id]);
 
   useEffect(() => {
     setOpenChatRoom(selected?.id || null);
@@ -72,8 +72,8 @@ export default function Chat() {
       try {
         const found = await base44.entities.ChatRoom.filter({ linked_id: pendingLink.id });
         const mine = (found || []).filter((r) => (r.participant_ids || []).includes(user.id));
-        active = mine.find((r) => !r.archived) || null;
-        archived = mine.find((r) => r.archived) || null;
+        active = mine.find((r) => !((r.archived_by || []).includes(user.id))) || null;
+        archived = mine.find((r) => (r.archived_by || []).includes(user.id)) || null;
       } catch { active = null; archived = null; }
       if (cancelled) return;
       setSearchParams((prev) => { prev.delete('linkType'); prev.delete('linkedId'); return prev; }, { replace: true });
@@ -81,10 +81,12 @@ export default function Chat() {
         setRooms((prev) => (prev.some((r) => r.id === active.id) ? prev : [active, ...prev]));
         navigate(`/chat/${active.id}`, { replace: true });
       } else if (archived) {
-        // The item's only room is archived — restore it, preserving history,
-        // rather than creating a duplicate.
-        try { await base44.entities.ChatRoom.update(archived.id, { archived: false }); } catch {}
-        setRooms((prev) => prev.map((r) => (r.id === archived.id ? { ...r, archived: false } : r)));
+        // The item's only room is archived (for me) — restore it for me only,
+        // preserving history, rather than creating a duplicate.
+        try {
+          const updated = await unarchiveChatRoom(archived.id);
+          setRooms((prev) => prev.map((r) => (r.id === archived.id ? (updated || r) : r)));
+        } catch {}
         navigate(`/chat/${archived.id}`, { replace: true });
       } else {
         setPrefillLink(pendingLink);
@@ -133,8 +135,8 @@ export default function Chat() {
 
   const handleUnarchive = async (room) => {
     try {
-      await base44.entities.ChatRoom.update(room.id, { archived: false });
-      setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, archived: false } : r)));
+      const updated = await unarchiveChatRoom(room.id);
+      setRooms((prev) => prev.map((r) => (r.id === room.id ? (updated || { ...r, archived_by: (r.archived_by || []).filter((id) => id !== user.id) }) : r)));
       setTab('active');
     } catch (e) {
       console.warn('Unarchive failed', e?.message || e);
@@ -142,7 +144,7 @@ export default function Chat() {
   };
 
   const handleDeleteRoom = async (room) => {
-    if (!window.confirm('Permanently delete this conversation and all its messages? This cannot be undone.')) return;
+    if (!window.confirm('Permanently delete this conversation and all its messages for everyone? This cannot be undone.')) return;
     try {
       await deleteSingleConversation(room.id);
       setRooms((prev) => prev.filter((r) => r.id !== room.id));
@@ -233,6 +235,7 @@ export default function Chat() {
                 onUnarchive={handleUnarchive}
                 onDelete={handleDeleteRoom}
                 currentUserId={user.id}
+                isOwner={!!user.is_owner}
               />
             )}
           </div>
