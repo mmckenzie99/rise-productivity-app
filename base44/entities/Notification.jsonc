@@ -4,11 +4,11 @@
   "properties": {
     "engagement_id": {
       "type": "string",
-      "description": "ID of the linked engagement (omitted for reflection/goal reminders)"
+      "description": "ID of the linked entity. For engagement reminders this is the engagement id; for chat-message notifications this is the ChatRoom id (used by the recipient's app to find and clear them on open)."
     },
     "engagement_title": {
       "type": "string",
-      "description": "Cached title for display (engagement title or reminder label)"
+      "description": "Cached title for display (engagement title, reminder label, or 'Sender in Room' for chat messages)"
     },
     "speaking_date": {
       "type": "string",
@@ -22,7 +22,11 @@
     },
     "window_label": {
       "type": "string",
-      "description": "Which reminder window triggered this (e.g. 14 Days, 15 Minutes, Meditation, Goal)"
+      "description": "Which reminder window triggered this (e.g. 14 Days, 15 Minutes, Meditation, Goal) or 'New Message' for chat-message notifications"
+    },
+    "recipient_id": {
+      "type": "string",
+      "description": "User id this notification is addressed to. Set for targeted notifications (e.g. chat messages) so only the recipient sees them in their bell and can mark them read. Omitted for broadcast reminders, which remain visible to all authenticated users as before."
     },
     "email_sent": {
       "type": "boolean",
@@ -47,11 +51,28 @@
         "role": "admin"
       }
     },
-    "read": null,
+    "read": {
+      "$or": [
+        {
+          "data.recipient_id": "{{user.id}}"
+        },
+        {
+          "data.recipient_id": null
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
     "update": {
       "$or": [
         {
           "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.recipient_id": "{{user.id}}"
         },
         {
           "user_condition": {
