@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { base44 } from '@/api/base44Client';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Loader2, MessageSquare, UserCheck, ShieldCheck, ArrowLeft, CalendarDays, Briefcase, Search, Users as UsersIcon, LayoutDashboard } from 'lucide-react';
+import { Loader2, MessageSquare, MessageCircle, UserCheck, ShieldCheck, ArrowLeft, CalendarDays, Briefcase, Search, Users as UsersIcon, LayoutDashboard } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Brand from '@/components/speaking/Brand';
 import CollapsibleSection from '@/components/speaking/CollapsibleSection';
@@ -32,6 +32,7 @@ const FEATURE_META = [
   { key: 'can_be_assigned', label: 'Be assigned to plans', description: 'Work plan assignments' },
   { key: 'can_create_personal_plans', label: 'Create personal plans', description: 'Family / personal calendar entries', perAdmin: true },
   { key: 'can_create_work_plans', label: 'Create work plans', description: 'Coworker / work calendar entries', perAdmin: true },
+  { key: 'can_start_chats', label: 'Start conversations', description: 'Create new chat conversations' },
 ];
 
 function RoleDefaultsCard({ settings, update }) {
@@ -287,6 +288,14 @@ export default function UserManagement() {
                       checked={resolvePlanFlag(u, settings, 'can_create_work_plans')}
                       disabled={isSelf}
                       onCheckedChange={(v) => updateField(u.id, 'can_create_work_plans', v)}
+                    />
+                    <PermissionToggle
+                      icon={<MessageCircle className="h-4 w-4" />}
+                      label="Can start conversations"
+                      description="Create new chat conversations"
+                      checked={resolveFeature(u, settings, 'can_start_chats')}
+                      disabled={isSelf}
+                      onCheckedChange={(v) => updateField(u.id, 'can_start_chats', v)}
                     />
                   </div>
                   {!isSelf && (

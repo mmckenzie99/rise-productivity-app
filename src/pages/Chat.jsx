@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, MessageCircle, Search, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
+import useFeatureFlag from '@/hooks/useFeatureFlag';
 import RoomList from '@/components/chat/RoomList';
 import ArchivedRoomList from '@/components/chat/ArchivedRoomList';
 import { Input } from '@/components/ui/input';
@@ -23,6 +24,7 @@ export default function Chat() {
   const [pendingLink, setPendingLink] = useState(null);
   const [prefillLink, setPrefillLink] = useState(null);
   const [tab, setTab] = useState('active');
+  const canStart = useFeatureFlag('can_start_chats');
 
   const selected = rooms.find((r) => r.id === roomId) || null;
   const activeRooms = useMemo(() => rooms.filter((r) => !r.archived), [rooms]);
@@ -222,6 +224,7 @@ export default function Chat() {
                 onNew={() => setNewOpen(true)}
                 currentUserId={user.id}
                 query={query}
+                canStart={canStart}
               />
             ) : (
               <ArchivedRoomList

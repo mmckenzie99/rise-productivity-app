@@ -26,15 +26,14 @@ export default function AddParticipantDialog({ open, onClose, room, currentUser,
     setLoading(true);
     setError('');
     setSelectedId('');
-    base44.entities.User
-      .list()
-      .then((u) =>
-        setUsers(
-          (u || []).filter(
-            (x) => x.id !== currentUser.id && !(room.participant_ids || []).includes(x.id)
-          )
-        )
-      )
+    base44.functions
+      .invoke('listParticipants')
+      .then((res) => {
+        const roster = (res?.data?.users || []).filter(
+          (x) => x.id !== currentUser.id && !(room.participant_ids || []).includes(x.id)
+        );
+        setUsers(roster);
+      })
       .catch(() => setUsers([]))
       .finally(() => setLoading(false));
   }, [open, currentUser.id, room.id, room.participant_ids]);
@@ -89,7 +88,7 @@ export default function AddParticipantDialog({ open, onClose, room, currentUser,
                     checked={selectedId === u.id}
                     onCheckedChange={(v) => setSelectedId(v ? u.id : '')}
                   />
-                  <span className="text-sm text-foreground">{u.full_name || u.email}</span>
+                  <span className="text-sm text-foreground">{u.name}</span>
                   <span className="ml-auto text-xs capitalize text-muted-foreground">{u.role}</span>
                 </label>
               ))}

@@ -82,6 +82,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
   const userCanComment = useFeatureFlag('can_comment');
   const canCreatePersonal = usePlanFlag('can_create_personal_plans');
   const canCreateWork = usePlanFlag('can_create_work_plans');
+  const canStart = useFeatureFlag('can_start_chats');
   const isAdmin = user?.role === 'admin';
   const assignees = (assignableUsers || []).filter((u) => u.id !== currentUserId);
 
@@ -268,7 +269,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
             />
           </div>
 
-          {item?.id && (
+          {item?.id && canStart && (
             <button
               type="button"
               onClick={() => { navigate(`/chat?linkType=plan&linkedId=${item.id}`); }}

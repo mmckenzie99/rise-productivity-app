@@ -4,10 +4,12 @@ import { CalendarDays, MapPin, Paperclip, Pencil, Trash2, Download, Plane, FileT
 import { formatDate, formatTime, statusTone, TIMEZONES, asArray } from '@/lib/speaking';
 import { generateICS, downloadICS } from '@/lib/icsExport';
 import { useNavigate } from 'react-router-dom';
+import useFeatureFlag from '@/hooks/useFeatureFlag';
 import RichTextDisplay from './RichTextDisplay';
 
 export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAdmin, trip, onViewTrip, admins, currentUserId }) {
   const navigate = useNavigate();
+  const canStart = useFeatureFlag('can_start_chats');
   if (!item) return null;
   const openChat = () => { navigate(`/chat?linkType=engagement&linkedId=${item.id}`); };
   const dateForDisplay = item.speaking_date || item.deploy_date;
@@ -65,9 +67,11 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
           </a>
         ))}
         <div className="flex flex-wrap gap-2 border-t border-border pt-3">
-          <button onClick={openChat} className="inline-flex items-center gap-1.5 rounded-md border border-[#1B2A4B] bg-[#1B2A4B] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#2A3D6B]">
-            <MessageCircle className="h-3.5 w-3.5" />Chat
-          </button>
+          {canStart && (
+            <button onClick={openChat} className="inline-flex items-center gap-1.5 rounded-md border border-[#1B2A4B] bg-[#1B2A4B] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#2A3D6B]">
+              <MessageCircle className="h-3.5 w-3.5" />Chat
+            </button>
+          )}
           <button onClick={() => downloadICS(generateICS(item), `${item.title || item.place || 'engagement'}.ics`)} className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-[#D9A404] hover:text-[#D9A404]">
             <Download className="h-3.5 w-3.5" />Download .ics
           </button>

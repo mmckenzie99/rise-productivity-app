@@ -9,7 +9,7 @@ const roomIcon = (room) => {
   return <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />;
 };
 
-export default function RoomList({ rooms, loading, selectedId, onSelect, onNew, currentUserId, query }) {
+export default function RoomList({ rooms, loading, selectedId, onSelect, onNew, currentUserId, query, canStart = true }) {
   const q = (query || '').trim().toLowerCase();
   const filtered = q
     ? rooms.filter((r) => {
@@ -21,13 +21,15 @@ export default function RoomList({ rooms, loading, selectedId, onSelect, onNew, 
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b border-border px-3 py-2.5">
         <span className="text-sm font-semibold text-foreground">Conversations</span>
-        <button
-          onClick={onNew}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground transition hover:bg-primary/90"
-          title="New chat"
-        >
-          <Plus className="h-4 w-4" />
-        </button>
+        {canStart && (
+          <button
+            onClick={onNew}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground transition hover:bg-primary/90"
+            title="New chat"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+        )}
       </div>
       <div className="flex-1 overflow-y-auto">
         {loading ? (
