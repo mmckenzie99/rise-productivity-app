@@ -11,7 +11,6 @@ import KanbanBoard from '@/components/speaking/KanbanBoard';
 import EngagementForm from '@/components/speaking/EngagementForm';
 import EngagementDetail from '@/components/speaking/EngagementDetail';
 import InviteDialog from '@/components/speaking/InviteDialog';
-import CalendarDialog from '@/components/speaking/CalendarDialog';
 import useEngagements from '@/hooks/useEngagements';
 import useTrips from '@/hooks/useTrips';
 import TripForm from '@/components/speaking/TripForm';
@@ -21,13 +20,10 @@ import ArchiveDialog from '@/components/speaking/ArchiveDialog';
 import EngagementQuickLook from '@/components/speaking/EngagementQuickLook';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { tripPlaceKeys, tripHasPlace } from '@/lib/trips';
-import useCalendarEvents from '@/hooks/useCalendarEvents';
-import CalendarEventForm from '@/components/speaking/CalendarEventForm';
 import { base44 } from '@/api/base44Client';
-import { formatDate, formatTime } from '@/lib/speaking';
 import { useAppSettings } from '@/hooks/useAppSettings';
 import { resolveFeature } from '@/lib/permissions';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
 import { useCloseModal } from '@/hooks/useCloseModal';
 import { deleteLinkedConversations } from '@/lib/chat';
@@ -39,7 +35,6 @@ export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { items, loading, save, remove, load: loadEngagements } = useEngagements();
   const { items: trips, loading: tripsLoading, save: saveTrip, remove: removeTrip } = useTrips();
-  const { items: calEvents, loading: calEventsLoading, save: saveCalEvent, remove: removeCalEvent, load: loadCalEvents } = useCalendarEvents();
 
   const [filters, setFilters] = useState(() => {
     try { const s = sessionStorage.getItem('homeFilters'); if (s) { const p = JSON.parse(s); return { status: p.status || 'all', progress: p.progress || 'all', search: p.search || '' }; } } catch {}
@@ -53,8 +48,6 @@ export default function Home() {
   const [placeOrder, setPlaceOrder] = useState(() => { try { return JSON.parse(localStorage.getItem('placeOrder')) || []; } catch { return []; } });
   const mapRef = useRef(null);
   const [mapFocus, setMapFocus] = useState(null);
-  const lastSaveWasNewRef = useRef(false);
-  const lastSaveDateRef = useRef('');
 
   useEffect(() => { (async () => { try { const us = await base44.entities.User.list(); setUsers(us); } catch {} })(); }, []);
   const { settings } = useAppSettings();
@@ -71,23 +64,15 @@ export default function Home() {
   const engagementId = searchParams.get('engagementId');
   const editEngagement = searchParams.get('editEngagement');
   const quickLookId = searchParams.get('quickLook');
-  const planIdParam = searchParams.get('planId');
   const tripIdParam = searchParams.get('tripId');
   const editTrip = searchParams.get('editTrip');
   const tripsOpen = searchParams.has('trips');
-  const calendarOpen = searchParams.has('calendar');
-  const calDate = searchParams.get('calDate');
-  const planDate = searchParams.get('planDate');
-  const planStart = searchParams.get('planStart');
-  const planEnd = searchParams.get('planEnd');
 
   const selected = engagementId ? (items.find(x => x.id === engagementId) || null) : null;
   const form = !editEngagement ? false : editEngagement === 'new' ? (formPrefill || true) : (items.find(x => x.id === editEngagement) || false);
   const quickLook = quickLookId ? (items.find(x => x.id === quickLookId) || null) : null;
   const selectedTrip = tripIdParam ? (trips.find(t => t.id === tripIdParam) || null) : null;
   const tripFormOpen = !editTrip ? false : editTrip === 'new' ? true : (trips.find(t => t.id === editTrip) || false);
-  const calEventForm = !planIdParam ? false : planIdParam === 'new' ? { date: planDate || '', start_time: planStart || '', end_time: planEnd || '' } : (calEvents.find(e => e.id === planIdParam) || false);
-  const calFocus = useMemo(() => (calDate ? { date: calDate } : null), [calDate]);
 
   // Reset form prefill once the engagement form closes.
   useEffect(() => { if (!editEngagement) setFormPrefill(null); }, [editEngagement]);
@@ -96,23 +81,9 @@ export default function Home() {
   const closeEngagement = useCloseModal('engagementId');
   const closeEditEngagement = useCloseModal('editEngagement');
   const closeQuickLook = useCloseModal('quickLook');
-  const closePlanForm = useCloseModal(['planId', 'planDate', 'planStart', 'planEnd']);
   const closeTrip = useCloseModal('tripId');
   const closeEditTrip = useCloseModal('editTrip');
   const closeTrips = useCloseModal('trips');
-  const closeCalendar = useCloseModal(['calendar', 'calDate']);
-
-  // After saving a NEW plan, reopen/focus the calendar on its date; otherwise pop history.
-  const closePlan = () => {
-    if (lastSaveWasNewRef.current) {
-      const d = lastSaveDateRef.current;
-      lastSaveWasNewRef.current = false;
-      lastSaveDateRef.current = '';
-      setSearchParams(prev => { const sp = new URLSearchParams(prev); ['planId', 'planDate', 'planStart', 'planEnd'].forEach(p => sp.delete(p)); sp.set('calendar', '1'); if (d) sp.set('calDate', d); return sp; }, { replace: true });
-    } else {
-      closePlanForm();
-    }
-  };
 
   const clearParam = useCallback((name) => setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete(name); return sp; }, { replace: true }), [setSearchParams]);
   const pushParam = useCallback((fn) => setSearchParams(prev => { const sp = new URLSearchParams(prev); fn(sp); return sp; }), [setSearchParams]);
@@ -124,15 +95,16 @@ export default function Home() {
   useEffect(() => { if (loading) return; if (quickLookId && !items.some(x => x.id === quickLookId)) clearParam('quickLook'); }, [quickLookId, items, loading, clearParam]);
   useEffect(() => { if (tripsLoading) return; if (tripIdParam && !trips.some(t => t.id === tripIdParam)) clearParam('tripId'); }, [tripIdParam, trips, tripsLoading, clearParam]);
   useEffect(() => { if (tripsLoading) return; if (editTrip && editTrip !== 'new' && !trips.some(t => t.id === editTrip)) clearParam('editTrip'); }, [editTrip, trips, tripsLoading, clearParam]);
-  useEffect(() => { if (calEventsLoading) return; if (planIdParam && planIdParam !== 'new' && !calEvents.some(e => e.id === planIdParam)) clearParam('planId'); }, [planIdParam, calEvents, calEventsLoading, clearParam]);
 
   // --- action param (one-time, consumed on mount) + in-page quick actions ---
+  // Calendar actions migrated to the dedicated /calendar route.
+  const navigate = useNavigate();
   const applyAction = (action, replace = false) => {
     if (!action) return;
     const opts = { replace };
     if (action === 'new') setSearchParams({ editEngagement: 'new' }, opts);
-    else if (action === 'calendar') setSearchParams({ calendar: '1' }, opts);
-    else if (action === 'new-plan') setSearchParams({ planId: 'new', planDate: todayStr() }, opts);
+    else if (action === 'calendar') navigate('/calendar', opts);
+    else if (action === 'new-plan') navigate(`/calendar?planId=new&calDate=${todayStr()}`, opts);
     else if (action === 'invite') { setInvite(true); if (replace) setSearchParams({}, opts); }
   };
   useEffect(() => { const action = searchParams.get('action'); if (action) applyAction(action, true); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
@@ -158,38 +130,11 @@ export default function Home() {
   const orderedGroups = useMemo(() => { const groups = locationGroups.map(g => ({ ...g, key: g.place ? g.place.trim().toLowerCase() : `__n${g.items[0].id}` })); if (placeOrder.length) { const orderMap = new Map(placeOrder.map((k, i) => [k, i])); groups.sort((a, b) => { const ai = orderMap.get(a.key); const bi = orderMap.get(b.key); if (ai !== undefined && bi !== undefined) return ai - bi; if (ai !== undefined) return -1; if (bi !== undefined) return 1; return 0; }); } return groups; }, [locationGroups, placeOrder]);
   const onDragEnd = r => { if (!r.destination) return; const arr = [...orderedGroups]; const [moved] = arr.splice(r.source.index, 1); arr.splice(r.destination.index, 0, moved); const keys = arr.map(g => g.key); setPlaceOrder(keys); try { localStorage.setItem('placeOrder', JSON.stringify(keys)); } catch {} };
 
-  const saveCalEventWithNotifs = async item => {
-    const prev = item.id ? calEvents.find(e => e.id === item.id) : null;
-    const wasAssigned = prev?.assignee_id;
-    const wasCompleted = prev?.completed;
-    if (prev) { item.was_edited = true; item.was_rescheduled = !!(prev.was_rescheduled || prev.date !== item.date); }
-    const saved = await saveCalEvent(item);
-    const planId = saved?.id || item.id;
-    const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    const planTitle = item.title || 'Plan';
-    const planDate = item.date;
-    const safeTitle = esc(planTitle);
-    if (item.assignee_id && item.assignee_id !== wasAssigned) {
-      const assignee = users.find(u => u.id === item.assignee_id);
-      try { await base44.entities.Notification.create({ engagement_id: planId, engagement_title: planTitle, speaking_date: planDate, speaking_time: item.start_time, window_label: 'Assigned to you', email_sent: false, read: false }); } catch {}
-      if (assignee?.email) { try { await base44.integrations.Core.SendEmail({ to: assignee.email, subject: `New plan assigned: ${safeTitle}`, body: `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B"><h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B">A plan was assigned to you</h2><p style="font-size:16px"><strong>${safeTitle}</strong>${planDate ? ` on ${formatDate(planDate)}` : ''}${item.start_time ? ` at ${formatTime(item.start_time)}` : ''}.</p><p style="font-size:13px;color:#5A6781">Open the RISE calendar to view details and mark it complete.</p></div>` }); } catch {} }
-    }
-    if (item.completed && !wasCompleted) {
-      const assignerId = prev?.created_by_id || user?.id;
-      const assigner = users.find(u => u.id === assignerId);
-      try { await base44.entities.Notification.create({ engagement_id: planId, engagement_title: planTitle, speaking_date: item.completed_date || planDate, speaking_time: item.start_time, window_label: 'Completed', email_sent: false, read: false }); } catch {}
-      if (assigner?.email) { try { await base44.integrations.Core.SendEmail({ to: assigner.email, subject: `Plan completed: ${safeTitle}`, body: `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B"><h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B">A plan was completed</h2><p style="font-size:16px"><strong>${safeTitle}</strong> has been marked complete.</p></div>` }); } catch {} }
-    }
-    // Remember whether this was a new plan so the form's close handler can
-    // reopen the calendar focused on the new plan's date.
-    if (!item.id) { lastSaveWasNewRef.current = true; lastSaveDateRef.current = saved?.date || item.date || ''; }
-  };
-
   return (
     <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
       <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
-        <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); }}>
-          <AppHeader onAdd={() => setSearchParams({ editEngagement: 'new' })} onInvite={() => setInvite(true)} onCalendar={() => setSearchParams({ calendar: '1' })} isAdmin={isAdmin} isOwner={isOwner} newOpen={!!editEngagement} calendarOpen={calendarOpen} inviteOpen={invite} />
+        <PullToRefresh onRefresh={async () => { await loadEngagements(); }}>
+          <AppHeader onAdd={() => setSearchParams({ editEngagement: 'new' })} onInvite={() => setInvite(true)} isAdmin={isAdmin} isOwner={isOwner} newOpen={!!editEngagement} inviteOpen={invite} />
           <div className="relative sm:max-w-xs">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input className="bg-card pl-9 text-sm h-9 border-border" placeholder="Search place or engagement type…" value={filters.search} onChange={e => setFilters({ ...filters, search: e.target.value })} />
@@ -208,12 +153,10 @@ export default function Home() {
       <EngagementForm open={!!form} item={form === true ? null : form} onClose={closeEditEngagement} onSave={save} />
       <EngagementDetail item={selected} onClose={closeEngagement} onEdit={edit} onDelete={del} isAdmin={isAdmin} trip={engagementTrip} onViewTrip={viewTripFromEng} admins={commentUsers} currentUserId={user?.id} />
       <InviteDialog open={invite} onClose={() => setInvite(false)} />
-      <CalendarDialog open={calendarOpen} onClose={closeCalendar} items={items} events={calEvents} onSelect={e => pushParam(sp => sp.set('engagementId', e.id))} onEventSelect={p => pushParam(sp => sp.set('planId', p.id))} focusDate={calFocus} onAddSlot={(date, time) => { const [h, m] = time.split(':').map(Number); const end = h * 60 + m + 60; const eh = Math.floor(end / 60) % 24, em = end % 60; const f = v => String(v).padStart(2, '0'); pushParam(sp => { sp.set('planId', 'new'); sp.set('planDate', date); sp.set('planStart', time); sp.set('planEnd', `${f(eh)}:${f(em)}`); }); }} />
       <TripListDialog open={tripsOpen} trips={trips} loading={tripsLoading} isAdmin={isAdmin} onClose={closeTrips} onAdd={() => pushParam(sp => sp.set('editTrip', 'new'))} onSelect={t => pushParam(sp => sp.set('tripId', t.id))} />
       <TripForm open={!!tripFormOpen} item={tripFormOpen === true ? null : tripFormOpen} engagements={items} onClose={closeEditTrip} onSave={async t => { await saveTrip(t); }} />
       <TripDetail trip={selectedTrip} onClose={closeTrip} onEdit={() => editTripNav(selectedTrip)} onDelete={() => delTrip(selectedTrip)} isAdmin={isAdmin} />
       <EngagementQuickLook item={quickLook} onClose={closeQuickLook} />
-      <CalendarEventForm open={!!calEventForm} item={calEventForm === true ? null : calEventForm} admins={commentUsers} assignableUsers={assignableUsers} currentUserId={user?.id} onClose={closePlan} onSave={saveCalEventWithNotifs} onDelete={async id => { await removeCalEvent(id); await deleteLinkedConversations(id, 'plan'); }} onDeleteFuture={async (seriesId, afterDate) => { const future = calEvents.filter(e => e.series_id === seriesId && e.date > afterDate); for (const e of future) { await removeCalEvent(e.id); await deleteLinkedConversations(e.id, 'plan'); } }} />
       <ArchiveDialog open={archive} onClose={() => setArchive(false)} items={archived} onSelect={x => { setArchive(false); setSearchParams({ engagementId: x.id }); }} isAdmin={isAdmin} tripPlaces={tripPlaces} onLocate={x => { setArchive(false); locate(x); }} onDuplicate={duplicate} />
       <div className="h-28 lg:hidden" />
     </main>

@@ -11,17 +11,19 @@ const keyOf = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, 
 
 const MODES = ['month', 'week', 'day'];
 
-export default function CalendarView({ items, events, onSelect, onEventSelect, onAddSlot, focusDate }) {
+export default function CalendarView({ items, events, onSelect, onEventSelect, onAddSlot, focusDate, controlledMode, onModeChange, onSelectDay }) {
   const today = new Date();
-  const [mode, setMode] = useState('month');
+  const [internalMode, setInternalMode] = useState('month');
   const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+  const isControlled = controlledMode !== undefined && controlledMode !== null;
+  const mode = isControlled ? controlledMode : internalMode;
 
-  // Jump to the day view for a specific date (e.g. after creating a plan there).
+  // Jump to focus date: when controlled, only move the cursor (don't switch mode).
   useEffect(() => {
     if (!focusDate?.date) return;
-    setMode('day');
     setCursor(new Date(focusDate.date + 'T00:00:00'));
-  }, [focusDate]);
+    if (!isControlled) setInternalMode('day');
+  }, [focusDate, isControlled]);
 
   const step = (dir) => {
     if (mode === 'month') {
@@ -123,7 +125,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                 {week.map((cell, ci) => (
                   <div
                     key={ci}
-                    onClick={() => { if (!cell.muted) { setMode('day'); setCursor(new Date(cell.key + 'T00:00:00')); } }}
+                    onClick={() => { if (!cell.muted) { if (onSelectDay) { onSelectDay(cell.key); } else { setInternalMode('day'); setCursor(new Date(cell.key + 'T00:00:00')); } } }}
                     className={`min-h-[72px] cursor-pointer rounded-md border p-1.5 ${cell.muted ? 'border-transparent bg-[#F0F2F6]/50 text-[#5A6781]' : cell.key === todayKey ? 'border-[#D9A404] bg-[#FBF0D0]/40' : 'border-[#D6DAE3] bg-white'}`}
                   >
                     <p className="text-xs font-medium">{cell.day}</p>
@@ -145,7 +147,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                     })}
                     {cell.entries.length > 3 && (
                       <button
-                        onClick={(e) => { e.stopPropagation(); setMode('day'); setCursor(new Date(cell.key + 'T00:00:00')); }}
+                        onClick={(e) => { e.stopPropagation(); if (onSelectDay) { onSelectDay(cell.key); } else { setInternalMode('day'); setCursor(new Date(cell.key + 'T00:00:00')); } }}
                         className="mt-1 px-1 text-[10px] font-medium text-[#5A6781] transition hover:text-[#D9A404]"
                       >
                         +{cell.entries.length - 3} more
@@ -178,7 +180,8 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
             <button
               key={m}
               onClick={() => {
-                setMode(m);
+                if (isControlled) { onModeChange?.(m); return; }
+                setInternalMode(m);
                 const now = new Date();
                 setCursor(m === 'month' ? new Date(now.getFullYear(), now.getMonth(), 1) : new Date(now.getFullYear(), now.getMonth(), now.getDate()));
               }}
@@ -192,7 +195,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
       <div className="rounded-lg border border-[#D6DAE3] bg-white p-4">
         {mode === 'month'
           ? renderMonth()
-          : <DayPlanner items={items} events={events} mode={mode} cursor={cursor} onSelect={onSelect} onEventSelect={onEventSelect} onAddSlot={onAddSlot} onGoToDate={(d) => { setMode('day'); setCursor(new Date(d)); }} />}
+          : <DayPlanner items={items} events={events} mode={mode} cursor={cursor} onSelect={onSelect} onEventSelect={onEventSelect} onAddSlot={onAddSlot} onGoToDate={(d) => { setInternalMode('day'); setCursor(new Date(d)); }} />}
       </div>
     </div>
   );

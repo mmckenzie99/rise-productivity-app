@@ -16,6 +16,7 @@ const Register = lazy(() => import('@/pages/Register'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
 const Home = lazy(() => import('@/pages/Home'));
+const Calendar = lazy(() => import('@/pages/Calendar'));
 const Trips = lazy(() => import('@/pages/Trips'));
 const UserManagement = lazy(() => import('@/pages/UserManagement'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
@@ -56,6 +57,7 @@ const AuthenticatedApp = () => {
         <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/calendar" element={<Calendar />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/trips" element={<Trips />} />
             <Route path="/users" element={<UserManagement />} />

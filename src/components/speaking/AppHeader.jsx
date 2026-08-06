@@ -11,7 +11,7 @@ const ACTIVE = 'bg-primary text-primary-foreground border-primary hover:bg-prima
 const IDLE = 'border-border bg-card';
 const ITEM_HOVER = 'hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground';
 
-export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, isOwner, newOpen, calendarOpen, inviteOpen }) {
+export default function AppHeader({ onAdd, onInvite, isAdmin, isOwner, newOpen, inviteOpen }) {
   const { pathname } = useLocation();
   return (
     <header className="flex flex-col gap-5 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
@@ -22,7 +22,7 @@ export default function AppHeader({ onAdd, onInvite, onCalendar, isAdmin, isOwne
           <Link to="/dashboard"><Button variant="outline" className={pathname === '/dashboard' ? ACTIVE : IDLE}><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Button></Link>
           <Link to="/chat"><Button variant="outline" className={pathname === '/chat' ? ACTIVE : IDLE}><MessageCircle className="mr-2 h-4 w-4" />Chat</Button></Link>
           <Link to="/trips"><Button variant="outline" className={pathname === '/trips' ? ACTIVE : IDLE}><Plane className="mr-2 h-4 w-4" />Trips</Button></Link>
-          <Button variant="outline" onClick={onCalendar} className={calendarOpen ? ACTIVE : IDLE}><CalendarDays className="mr-2 h-4 w-4" />Calendar</Button>
+          <Link to="/calendar"><Button variant="outline" className={pathname === '/calendar' ? ACTIVE : IDLE}><CalendarDays className="mr-2 h-4 w-4" />Calendar</Button></Link>
           {(isAdmin || isOwner) && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

@@ -32,28 +32,24 @@ export default function ConversationView({ room, user, onBack, onArchive, onUnar
   const backToItem = room.linked_id && itemLabel
     ? room.type === 'engagement' ? `/?engagementId=${room.linked_id}`
       : room.type === 'trip' ? `/?trips=open&tripId=${room.linked_id}`
-      : `/?calendar=open&planId=${room.linked_id}`
+      : `/calendar?planId=${room.linked_id}`
     : null;
 
   // For plan-linked rooms, focus the weekly calendar on that plan's date.
   const goBackToItem = async () => {
     if (!room.linked_id || !itemLabel) return;
-    const sp = new URLSearchParams();
     if (room.type === 'engagement') {
-      sp.set('engagementId', room.linked_id);
+      navigate(`/?engagementId=${room.linked_id}`, { replace: true });
     } else if (room.type === 'trip') {
-      sp.set('trips', 'open');
-      sp.set('tripId', room.linked_id);
+      navigate(`/?trips=open&tripId=${room.linked_id}`, { replace: true });
     } else if (room.type === 'plan') {
       let date = '';
       try { const ev = await base44.entities.CalendarEvent.get(room.linked_id); date = ev?.date || ''; } catch {}
-      sp.set('calendar', 'open');
+      const sp = new URLSearchParams();
       sp.set('planId', room.linked_id);
       if (date) sp.set('calDate', date);
-    } else {
-      return;
+      navigate(`/calendar?${sp.toString()}`, { replace: true });
     }
-    navigate(`/?${sp.toString()}`, { replace: true });
   };
 
   useEffect(() => {

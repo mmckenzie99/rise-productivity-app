@@ -3,6 +3,7 @@ import { Plus, CalendarPlus, UserPlus, Bell, CalendarDays } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { useAppSettings } from '@/hooks/useAppSettings';
 import { isOwner, isAdmin, resolvePlanFlag } from '@/lib/permissions';
+import { calendarUrl, todayStr } from '@/lib/calendarNav';
 import NotificationBell from './NotificationBell';
 
 const BTN = 'flex flex-1 flex-col items-center gap-0.5 py-1 text-[11px] font-medium text-foreground select-none active:opacity-70';
@@ -26,8 +27,8 @@ export default function QuickActionBar() {
 
   const actions = [];
   if (admin) actions.push({ key: 'new', label: 'New', icon: Plus, onClick: () => fire('new', '/?action=new') });
-  if (canPlan) actions.push({ key: 'new-plan', label: 'New Plan', icon: CalendarPlus, onClick: () => fire('new-plan', '/?action=new-plan') });
-  actions.push({ key: 'calendar', label: 'Calendar', icon: CalendarDays, onClick: () => fire('calendar', '/?action=calendar') });
+  if (canPlan) actions.push({ key: 'new-plan', label: 'New Plan', icon: CalendarPlus, onClick: () => navigate(calendarUrl({ planId: 'new', calDate: todayStr() })) });
+  actions.push({ key: 'calendar', label: 'Calendar', icon: CalendarDays, onClick: () => navigate('/calendar') });
   if (owner) actions.push({ key: 'invite', label: 'Invite', icon: UserPlus, onClick: () => fire('invite', '/?action=invite') });
 
   return (
