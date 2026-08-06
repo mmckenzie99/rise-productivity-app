@@ -62,6 +62,18 @@
             }
           }
         },
+        "can_view_reflections": {
+          "type": "object",
+          "description": "Default per role for using the daily meditation / reflection feature. Owner always bypasses; an explicit per-user can_view_reflections override on the User record wins over this default. Oversight of others' reflections is always Owner-only and is not controlled by this flag.",
+          "properties": {
+            "admin": {
+              "type": "boolean"
+            },
+            "user": {
+              "type": "boolean"
+            }
+          }
+        },
         "dashboard_sections": {
           "type": "object",
           "description": "Per-role visibility for each Dashboard section. Missing keys default to visible (true).",

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDate, calEngagementTone, isMultiDayPlan, planCalTone, planMultiTone } from '@/lib/speaking';
 import DayPlanner from './DayPlanner';
@@ -11,7 +11,7 @@ const keyOf = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, 
 
 const MODES = ['month', 'week', 'day'];
 
-export default function CalendarView({ items, events, onSelect, onEventSelect, onAddSlot, focusDate, controlledMode, onModeChange, onSelectDay }) {
+export default function CalendarView({ items, events, onSelect, onEventSelect, onAddSlot, focusDate, controlledMode, onModeChange, onSelectDay, onSelectReflection, canReflect }) {
   const today = new Date();
   const [internalMode, setInternalMode] = useState('month');
   const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
@@ -128,7 +128,18 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                     onClick={() => { if (!cell.muted) { if (onSelectDay) { onSelectDay(cell.key); } else { setInternalMode('day'); setCursor(new Date(cell.key + 'T00:00:00')); } } }}
                     className={`min-h-[72px] cursor-pointer rounded-md border p-1.5 ${cell.muted ? 'border-transparent bg-[#F0F2F6]/50 text-[#5A6781]' : cell.key === todayKey ? 'border-[#D9A404] bg-[#FBF0D0]/40' : 'border-[#D6DAE3] bg-white'}`}
                   >
-                    <p className="text-xs font-medium">{cell.day}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-medium">{cell.day}</p>
+                      {!cell.muted && canReflect && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onSelectReflection?.(cell.key); }}
+                          className="text-[#5A6781] transition hover:text-[#D9A404]"
+                          title="Daily reflection"
+                        >
+                          <BookOpen className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
                     {cell.entries.slice(0, 3).map((x) => {
                       const isEvent = x._kind === 'event';
                       const tone = isEvent ? planCalTone(x) : calEngagementTone;

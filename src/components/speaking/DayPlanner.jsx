@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { Check, BookOpen } from 'lucide-react';
 import { formatTime, calEngagementTone, planCalTone, planMultiTone, planDateKeys, isMultiDayPlan } from '@/lib/speaking';
 import { layoutColumns } from '@/lib/eventLayout';
 import DailyReflection from './DailyReflection';
@@ -33,7 +33,7 @@ const hourLabel = (h) => {
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function DayPlanner({ items, events, mode, cursor, onSelect, onEventSelect, onAddSlot, onGoToDate }) {
+export default function DayPlanner({ items, events, mode, cursor, onSelect, onEventSelect, onAddSlot, onGoToDate, onSelectReflection, canReflect }) {
   const days = [];
   if (mode === 'day') {
     days.push(new Date(cursor));
@@ -122,7 +122,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
   return (
     <div className="overflow-x-auto">
       <div className={mode === 'day' ? 'min-w-[320px]' : 'w-full min-w-0'}>
-        {dayKey && (
+        {dayKey && canReflect && (
           <div className="mb-3">
             <DailyReflection dateKey={dayKey} engagements={items} />
           </div>
@@ -153,7 +153,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
             return (
               <div
                 key={i}
-                className={`flex-1 px-2 py-1.5 text-center ${keyOf(d) === todayKey ? 'bg-[#FBF0D0]/40' : ''}`}
+                className={`relative flex-1 px-2 py-1.5 text-center ${keyOf(d) === todayKey ? 'bg-[#FBF0D0]/40' : ''}`}
               >
                 <div className="text-[10px] uppercase tracking-wider text-[#5A6781]">
                   {DAY_LABELS[d.getDay()]}
@@ -171,6 +171,15 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                   <div className={`text-sm font-semibold ${keyOf(d) === todayKey ? 'text-[#D9A404]' : 'text-[#1B2A4B]'}`}>
                     {dateNum}
                   </div>
+                )}
+                {canReflect && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onSelectReflection?.(keyOf(d)); }}
+                    className="absolute right-1 top-1 text-[#5A6781] transition hover:text-[#D9A404]"
+                    title="Daily reflection"
+                  >
+                    <BookOpen className="h-3 w-3" />
+                  </button>
                 )}
               </div>
             );

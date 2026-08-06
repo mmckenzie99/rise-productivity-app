@@ -4,13 +4,14 @@ import { useAuth } from '@/lib/AuthContext';
 import { base44 } from '@/api/base44Client';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Loader2, MessageSquare, MessageCircle, UserCheck, ShieldCheck, ArrowLeft, CalendarDays, Briefcase, Search, Users as UsersIcon, LayoutDashboard } from 'lucide-react';
+import { Loader2, MessageSquare, MessageCircle, UserCheck, ShieldCheck, ArrowLeft, CalendarDays, Briefcase, Search, Users as UsersIcon, LayoutDashboard, BookOpen } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import Brand from '@/components/speaking/Brand';
 import CollapsibleSection from '@/components/speaking/CollapsibleSection';
 import ResponsiveSelect from '@/components/speaking/ResponsiveSelect';
 import { useAppSettings, DEFAULT_FEATURES } from '@/hooks/useAppSettings';
 import { resolveFeature, resolvePlanFlag, DASHBOARD_SECTIONS } from '@/lib/permissions';
+import ReflectionOversightDialog from '@/components/reflection/ReflectionOversightDialog';
 
 function PermissionToggle({ icon, label, description, checked, disabled, onCheckedChange }) {
   return (
@@ -33,6 +34,7 @@ const FEATURE_META = [
   { key: 'can_create_personal_plans', label: 'Create personal plans', description: 'Family / personal calendar entries', perAdmin: true },
   { key: 'can_create_work_plans', label: 'Create work plans', description: 'Coworker / work calendar entries', perAdmin: true },
   { key: 'can_start_chats', label: 'Start conversations', description: 'Create new chat conversations' },
+  { key: 'can_view_reflections', label: 'Daily reflection', description: 'Use the meditation / reflection journal' },
 ];
 
 function RoleDefaultsCard({ settings, update }) {
@@ -130,6 +132,7 @@ export default function UserManagement() {
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
   const [query, setQuery] = useState('');
+  const [oversightUser, setOversightUser] = useState(null);
   const { settings, update } = useAppSettings();
 
   const matches = (u) => {
@@ -312,13 +315,22 @@ export default function UserManagement() {
                       </div>
                     </div>
                   )}
+                  {!isSelf && (
+                    <div className="mt-2 flex justify-end border-t border-border pt-3">
+                      <Button variant="outline" size="sm" className="border-border" onClick={() => setOversightUser(u)}>
+                        <BookOpen className="mr-1.5 h-3.5 w-3.5" />
+                        Review reflections
+                      </Button>
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
         )}
       </div>
+      <ReflectionOversightDialog open={!!oversightUser} targetUser={oversightUser} onClose={() => setOversightUser(null)} />
       <div className="h-16 lg:hidden" />
-    </main>
+      </main>
   );
 }
