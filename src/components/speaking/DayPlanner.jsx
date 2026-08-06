@@ -137,7 +137,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
         )}
         <div className={mode === 'week' ? 'hidden lg:block' : ''}>
         {/* Day headers */}
-        <div className="flex border-b border-foreground/20" style={{ outline: '3px solid lime', outlineOffset: '-3px' }}>
+        <div className="flex border-b border-foreground/20">
           <div className="w-12 shrink-0" />
           {days.map((d, i) => {
             const dateNum = d.getDate();
@@ -179,7 +179,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
         </div>
 
         {multiBars.length > 0 && (
-          <div className="flex border-b border-[#EDEFF4] bg-[#F7F8FA]">
+          <div className="flex border-b border-foreground/15">
             <div className="w-12 shrink-0" />
             <div className="relative flex-1 px-0.5" style={{ height: ALL_DAY_PX }}>
               {multiBars.map((b, i) => (
@@ -206,7 +206,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
         <div className="flex">
           {/* Hour gutter */}
           <div className="w-12 shrink-0">
-            <div style={{ height: ALL_DAY_PX, outline: '3px solid red', outlineOffset: '-3px' }} className="border-b border-transparent" />
+            <div style={{ height: ALL_DAY_PX }} className="border-b border-transparent" />
             {ROWS.map((h) => (
               <div key={h} className="relative border-b border-foreground/15" style={{ height: HOUR_PX }}>
                 <span className="absolute -top-1.5 right-1 text-[10px] text-muted-foreground">
@@ -238,8 +238,8 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
               <div key={di} className="relative flex-1 border-l border-foreground/15">
                 {/* All-day strip */}
                 <div
-                  className="overflow-hidden border-b border-[#EDEFF4] bg-[#F7F8FA] px-1 py-0.5"
-                  style={{ height: ALL_DAY_PX, outline: '3px solid blue', outlineOffset: '-3px' }}
+                  className="overflow-hidden border-b border-foreground/15 px-1 py-0.5"
+                  style={{ height: ALL_DAY_PX }}
                 >
                   {allDay.map((x) => {
                     const isEvent = x._kind === 'event';
@@ -265,7 +265,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                 {/* Time grid */}
                 <div
                   className="relative"
-                  style={{ height: ROWS.length * HOUR_PX, outline: '3px solid magenta', outlineOffset: '-3px' }}
+                  style={{ height: ROWS.length * HOUR_PX }}
                   onClick={(e) => handleSlotClick(e, key)}
                 >
                   {ROWS.map((h) => (
