@@ -146,7 +146,6 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
               <div
                 key={i}
                 className={`relative flex-1 px-2 py-1.5 text-center ${keyOf(d) === todayKey ? 'bg-[#FBF0D0]/40' : ''}`}
-                style={keyOf(d) === todayKey ? { outline: '3px solid orange', outlineOffset: '-3px' } : undefined}
               >
                 <div className="text-[10px] uppercase tracking-wider text-[#5A6781]">
                   {DAY_LABELS[d.getDay()]}
@@ -236,11 +235,11 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
             });
 
             return (
-              <div key={di} className="relative flex-1 border-l border-foreground/15" style={key === todayKey ? { outline: '3px solid red', outlineOffset: '-3px' } : undefined}>
+              <div key={di} className="relative flex-1 border-l border-foreground/15">
                 {/* All-day strip */}
                 <div
-                  className="overflow-hidden border-b border-foreground/15 px-1 py-0.5"
-                  style={{ height: ALL_DAY_PX, ...(key === todayKey ? { outline: '3px solid blue', outlineOffset: '-3px' } : {}) }}
+                  className="overflow-hidden border-b border-transparent px-1 py-0.5"
+                  style={{ height: ALL_DAY_PX }}
                 >
                   {allDay.map((x) => {
                     const isEvent = x._kind === 'event';
@@ -266,7 +265,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                 {/* Time grid */}
                 <div
                   className="relative"
-                  style={{ height: ROWS.length * HOUR_PX, ...(key === todayKey ? { outline: '3px solid magenta', outlineOffset: '-3px' } : {}) }}
+                  style={{ height: ROWS.length * HOUR_PX }}
                   onClick={(e) => handleSlotClick(e, key)}
                 >
                   {ROWS.map((h) => (
