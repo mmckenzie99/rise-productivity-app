@@ -287,17 +287,15 @@ export default function Chat() {
               <ArchivedRoomList
                 rooms={archivedRooms}
                 onSelect={(room) => navigate(`/chat/${room.id}`)}
-                onUnarchive={handleUnarchive}
-                onDelete={handleDeleteRoom}
+                selectedId={selected?.id}
                 currentUserId={user.id}
-                isOwner={!!user.is_owner}
               />
             )}
           </div>
 
           <div className={`flex-1 flex-col ${selected ? 'flex' : 'hidden lg:flex'}`}>
             {selected ? (
-              <ConversationView room={selected} user={user} onBack={() => navigate('/chat')} onArchive={handleArchive} query={query} />
+              <ConversationView room={selected} user={user} onBack={() => navigate('/chat')} onArchive={handleArchive} onUnarchive={handleUnarchive} onDelete={handleDeleteRoom} query={query} />
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                 Select a conversation

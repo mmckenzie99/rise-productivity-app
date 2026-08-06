@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Send, Paperclip, FileText, Download, X, Archive, UserPlus } from 'lucide-react';
+import { ArrowLeft, Send, Paperclip, FileText, Download, X, Archive, RotateCcw, Trash2, UserPlus } from 'lucide-react';
 import AddParticipantDialog from '@/components/chat/AddParticipantDialog';
 import { useNavigate } from 'react-router-dom';
 import Highlight from '@/components/chat/Highlight';
@@ -8,8 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { format, parseISO } from 'date-fns';
 
-export default function ConversationView({ room, user, onBack, onArchive, query }) {
+export default function ConversationView({ room, user, onBack, onArchive, onUnarchive, onDelete, query }) {
   const navigate = useNavigate();
+  const isArchivedForMe = (room.archived_by || []).includes(user.id);
+  const canDelete = room.started_by_id === user.id || !!user.is_owner;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [input, setInput] = useState('');
@@ -238,13 +240,34 @@ export default function ConversationView({ room, user, onBack, onArchive, query 
             </button>
           )}
         </div>
-        <button
-          onClick={handleArchive}
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
-          title="Archive conversation for yourself"
-        >
-          <Archive className="h-4 w-4" />
-        </button>
+        {isArchivedForMe ? (
+          <>
+            <button
+              onClick={() => onUnarchive?.(room)}
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+              title="Move to Conversations"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </button>
+            {canDelete && (
+              <button
+                onClick={() => onDelete?.(room)}
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                title="Delete permanently"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            )}
+          </>
+        ) : (
+          <button
+            onClick={handleArchive}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+            title="Archive conversation for yourself"
+          >
+            <Archive className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 border-b border-border px-3 py-2">
