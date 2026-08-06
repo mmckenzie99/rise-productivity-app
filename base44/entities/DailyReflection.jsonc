@@ -34,6 +34,19 @@
     "reminder_timezone": {
       "type": "string",
       "description": "IANA timezone the reminder time is interpreted in (e.g. America/Detroit)"
+    },
+    "last_viewed_by_admin_id": {
+      "type": "string",
+      "description": "User id of the last Owner who opened this reflection for oversight review. Written only by the recordReflectionView backend function (service role) \u2014 the only sanctioned writer \u2014 so the stamp is always server-verified from auth context, never client-supplied."
+    },
+    "last_viewed_by_admin_name": {
+      "type": "string",
+      "description": "Cached display name of the last Owner who reviewed this reflection for oversight, parallel to last_viewed_by_admin_id."
+    },
+    "last_viewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO timestamp of the most recent oversight review. Overwrites with the latest reviewer only (not an accumulating history). Surfaces to the entry owner as a passive, in-context transparency note."
     }
   },
   "required": [
@@ -41,7 +54,16 @@
   ],
   "rls": {
     "read": {
-      "created_by_id": "{{user.id}}"
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
     },
     "create": null,
     "update": {
