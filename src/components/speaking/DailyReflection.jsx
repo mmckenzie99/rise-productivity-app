@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { BookOpen, StickyNote, Send, Bell } from 'lucide-react';
+import { BookOpen, StickyNote, Send, Bell, ChevronDown } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 import { Button } from '@/components/ui/button';
 import ResponsiveSelect from './ResponsiveSelect';
@@ -24,6 +24,7 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
   const [synced, setSynced] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -80,6 +81,14 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
     persist({ meditation_reminder_time: val || null, reminder_timezone: userTz });
   };
 
+  const handleToggle = () => {
+    if (expanded) {
+      if (meditation !== (record?.meditation || '')) persist({ meditation });
+      if (reference !== (record?.meditation_reference || '')) persist({ meditation_reference: reference });
+    }
+    setExpanded(v => !v);
+  };
+
   const linkable = (engagements || [])
     .filter((e) => e.status !== 'Completed')
     .sort((a, b) => (a.speaking_date || '').localeCompare(b.speaking_date || ''));
@@ -110,11 +119,19 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
   }
 
   return (
-    <div className="rounded-md border border-[#D6DAE3] bg-white p-3">
-      <div className="mb-2 flex items-center gap-1.5 text-[#1B2A4B]">
-        <BookOpen className="h-3.5 w-3.5 text-[#D9A404]" />
-        <span className="text-xs font-semibold uppercase tracking-wider">Meditation</span>
-      </div>
+    <div className="rounded-md border border-[#D6DAE3] bg-white">
+      <button
+        type="button"
+        onClick={handleToggle}
+        className="flex w-full items-center gap-1.5 p-3 text-left text-[#1B2A4B]"
+      >
+        <BookOpen className="h-3.5 w-3.5 shrink-0 text-[#D9A404]" />
+        <span className="text-xs font-semibold uppercase tracking-wider">Meditation &amp; Notes</span>
+        <span className="ml-1 truncate text-[10px] text-[#5A6781]">{formatDate(dateKey)}</span>
+        <ChevronDown className={`ml-auto h-3.5 w-3.5 shrink-0 text-[#5A6781] transition-transform ${expanded ? 'rotate-180' : ''}`} />
+      </button>
+      {expanded && (
+      <div className="border-t border-[#D6DAE3] p-3">
       <Textarea
         value={meditation}
         onChange={(e) => setMeditation(e.target.value)}
@@ -173,7 +190,9 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
           </Button>
         </div>
       </div>
-      {saving && <p className="mt-2 text-[10px] text-[#5A6781]">Saving…</p>}
+      {saving && <p className="text-[10px] text-[#5A6781]">Saving…</p>}
+      </div>
+      )}
     </div>
   );
 }
