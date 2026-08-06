@@ -10,8 +10,9 @@ import { format, parseISO } from 'date-fns';
 
 export default function ConversationView({ room, user, onBack, onArchive, onUnarchive, onDelete, query }) {
   const navigate = useNavigate();
+  const isParticipant = (room.participant_ids || []).includes(user.id);
   const isArchivedForMe = (room.archived_by || []).includes(user.id);
-  const canDelete = room.started_by_id === user.id || !!user.is_owner;
+  const canDelete = isParticipant && (room.started_by_id === user.id || !!user.is_owner);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [input, setInput] = useState('');
@@ -240,33 +241,35 @@ export default function ConversationView({ room, user, onBack, onArchive, onUnar
             </button>
           )}
         </div>
-        {isArchivedForMe ? (
-          <>
-            <button
-              onClick={() => onUnarchive?.(room)}
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
-              title="Move to Conversations"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </button>
-            {canDelete && (
+        {isParticipant && (
+          isArchivedForMe ? (
+            <>
               <button
-                onClick={() => onDelete?.(room)}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
-                title="Delete permanently"
+                onClick={() => onUnarchive?.(room)}
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+                title="Move to Conversations"
               >
-                <Trash2 className="h-4 w-4" />
+                <RotateCcw className="h-4 w-4" />
               </button>
-            )}
-          </>
-        ) : (
-          <button
-            onClick={handleArchive}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
-            title="Archive conversation for yourself"
-          >
-            <Archive className="h-4 w-4" />
-          </button>
+              {canDelete && (
+                <button
+                  onClick={() => onDelete?.(room)}
+                  className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                  title="Delete permanently"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              )}
+            </>
+          ) : (
+            <button
+              onClick={handleArchive}
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+              title="Archive conversation for yourself"
+            >
+              <Archive className="h-4 w-4" />
+            </button>
+          )
         )}
       </div>
 
