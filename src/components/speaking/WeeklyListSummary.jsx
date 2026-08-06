@@ -17,11 +17,10 @@ export default function WeeklyListSummary({ days, byDate, onSelect, onEventSelec
         const entries = byDate[key] || [];
         const isToday = key === todayKey;
         return (
-          <div key={i} className="overflow-hidden rounded-lg border border-[#D6DAE3] bg-white" style={isToday ? { outline: '3px solid orange', outlineOffset: '-3px' } : undefined}>
+          <div key={i} className="overflow-hidden rounded-lg border border-[#D6DAE3] bg-white">
             <button
               onClick={() => onGoToDate?.(new Date(d))}
               className={`flex w-full items-center justify-between px-3 py-2.5 text-left ${isToday ? 'bg-[#FBF0D0]/40' : 'bg-[#F7F8FA]'}`}
-              style={isToday ? { outline: '3px solid blue', outlineOffset: '-3px' } : undefined}
             >
               <div className="flex items-baseline gap-2">
                 <span className="text-xs font-semibold uppercase tracking-wider text-[#5A6781]">{DAY_LABELS[d.getDay()]}</span>
