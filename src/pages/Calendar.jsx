@@ -182,15 +182,15 @@ export default function Calendar() {
 
         {/* Layer 1: Week/Day overlay (Dialog on top of the month base) */}
         <Dialog open={view === 'week' || view === 'day'} onOpenChange={(v) => !v && closeViewOverlay()}>
-          <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto bg-card">
+          <DialogContent className="max-h-[86svh] sm:max-h-[90dvh] max-w-4xl overflow-y-auto bg-card top-[12svh] sm:top-[50%] translate-y-0 sm:translate-y-[-50%]">
             <DialogHeader className="sticky top-0 z-20 -mx-6 -mt-[calc(1.5rem+env(safe-area-inset-top))] border-b border-border bg-card px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3">
               <div className="flex items-center justify-between">
                 <DialogTitle className="font-display text-xl capitalize">{view} View</DialogTitle>
                 <div className="flex gap-1">
-                  {['week', 'day'].map((m) => (
+                  {['month', 'week', 'day'].map((m) => (
                     <button
                       key={m}
-                      onClick={() => handleOverlayModeChange(m)}
+                      onClick={() => (m === 'month' ? closeViewOverlay() : handleOverlayModeChange(m))}
                       className={`rounded-md px-3 py-1.5 text-sm font-medium capitalize transition ${view === m ? 'bg-[#D9A404] text-white' : 'bg-card text-foreground border border-border'}`}
                     >
                       {m}

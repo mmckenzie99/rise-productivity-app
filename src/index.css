@@ -121,6 +121,11 @@
 .rich-notes .ql-editor { min-height: 120px; padding: 0.75rem; }
 .rich-notes .ql-editor a { color: #D9A404; text-decoration: underline; }
 
+/* Light-surface variant (used inside the Daily Reflection panel, which is bg-white) */
+.rich-notes-light .ql-editor { color: #1B2A4B; }
+.rich-notes-light .ql-editor.ql-blank::before { color: #5A6781; opacity: 1; }
+.rich-notes-light .ql-snow .ql-picker-label { color: #5A6781; }
+
 /* Rich text display (read-only) */
 .rich-notes-display a { color: #D9A404; text-decoration: underline; word-break: break-word; }
 .rich-notes-display ul { list-style: disc; padding-left: 1.25rem; margin: 0.25rem 0; }

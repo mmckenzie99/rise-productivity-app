@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Target, Plus, Trash2, Check, Bell } from 'lucide-react';
+import { Target, Plus, Trash2, Check, Bell, ChevronDown } from 'lucide-react';
 
 const FOCUSES = ['Spiritual', 'Professional', 'Physical', 'Mental', 'Relational', 'Personal'];
 const MAX_GOALS = 4;
@@ -37,6 +37,7 @@ export default function WeeklyGoals({ cursor }) {
   const [loading, setLoading] = useState(true);
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState(() => new Set());
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -122,12 +123,20 @@ export default function WeeklyGoals({ cursor }) {
   }
 
   return (
-    <div className="rounded-md border border-border bg-card p-3">
-      <div className="mb-2 flex items-center gap-1.5 text-foreground">
-        <Target className="h-3.5 w-3.5 text-primary" />
+    <div className="rounded-md border border-border bg-card">
+      <button
+        type="button"
+        onClick={() => setExpanded(v => !v)}
+        className="flex w-full items-center gap-1.5 p-3 text-left text-foreground"
+      >
+        <Target className="h-3.5 w-3.5 shrink-0 text-primary" />
         <span className="text-xs font-semibold uppercase tracking-wider">Goals for the Week</span>
         <span className="text-[11px] text-muted-foreground">{goals.length}/{MAX_GOALS}</span>
-        <div className="ml-auto flex items-center gap-1.5">
+        <ChevronDown className={`ml-auto h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform ${expanded ? 'rotate-180' : ''}`} />
+      </button>
+      {expanded && (
+      <div className="border-t border-border p-3">
+        <div className="mb-2 flex items-center justify-end gap-1.5">
           {goals.length > 0 && (
             <button
               type="button"
@@ -156,7 +165,6 @@ export default function WeeklyGoals({ cursor }) {
             className="h-8 w-[110px] border-border text-xs"
           />
         </div>
-      </div>
 
       {/* Add a goal */}
       {!atCapacity && (
@@ -277,6 +285,8 @@ export default function WeeklyGoals({ cursor }) {
             </Button>
           </div>
         </div>
+      )}
+      </div>
       )}
     </div>
   );

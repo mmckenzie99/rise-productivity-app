@@ -145,7 +145,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
         )}
         <div className={mode === 'week' ? 'hidden lg:block' : ''}>
         {/* Day headers */}
-        <div className="flex border-b border-[#D6DAE3]">
+        <div className="flex border-b border-foreground/20">
           <div className="w-12 shrink-0" />
           {days.map((d, i) => {
             const dateNum = d.getDate();
@@ -216,8 +216,8 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
           <div className="w-12 shrink-0">
             <div style={{ height: ALL_DAY_PX }} className="border-b border-transparent" />
             {ROWS.map((h) => (
-              <div key={h} className="relative border-b border-[#EDEFF4]" style={{ height: HOUR_PX }}>
-                <span className="absolute -top-1.5 right-1 text-[10px] text-[#5A6781]">
+              <div key={h} className="relative border-b border-foreground/15" style={{ height: HOUR_PX }}>
+                <span className="absolute -top-1.5 right-1 text-[10px] text-muted-foreground">
                   {hourLabel(h)}
                 </span>
               </div>
@@ -243,7 +243,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
             });
 
             return (
-              <div key={di} className="relative flex-1 border-l border-[#D6DAE3]">
+              <div key={di} className="relative flex-1 border-l border-foreground/15">
                 {/* All-day strip */}
                 <div
                   className="overflow-hidden border-b border-[#EDEFF4] bg-[#F7F8FA] px-1 py-0.5"
@@ -277,7 +277,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                   onClick={(e) => handleSlotClick(e, key)}
                 >
                   {ROWS.map((h) => (
-                    <div key={h} className="border-b border-[#EDEFF4]" style={{ height: HOUR_PX }} />
+                    <div key={h} className="border-b border-foreground/15" style={{ height: HOUR_PX }} />
                   ))}
                   {layoutColumns(positioned).map(renderBlock)}
                 </div>

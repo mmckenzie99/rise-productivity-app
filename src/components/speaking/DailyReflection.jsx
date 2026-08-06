@@ -131,14 +131,14 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
         <ChevronDown className={`ml-auto h-3.5 w-3.5 shrink-0 text-[#5A6781] transition-transform ${expanded ? 'rotate-180' : ''}`} />
       </button>
       {expanded && (
-      <div className="border-t border-[#D6DAE3] p-3">
+      <div className="border-t border-[#D6DAE3] p-3 text-[#1B2A4B]">
       <Textarea
         value={meditation}
         onChange={(e) => setMeditation(e.target.value)}
         onBlur={onBlurMeditation}
         rows={3}
         placeholder="Bible verse or Spirit of Prophecy statement to meditate on…"
-        className="border-[#D6DAE3]"
+        className="border-[#D6DAE3] placeholder:text-[#5A6781]"
       />
       <div className="mt-2 space-y-1">
         <Label className="text-[11px] text-[#5A6781]">Reference / source</Label>
@@ -147,7 +147,7 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
           onChange={(e) => setReference(e.target.value)}
           onBlur={onBlurReference}
           placeholder="e.g. John 3:16, Desire of Ages p. 123"
-          className="border-[#D6DAE3]"
+          className="border-[#D6DAE3] placeholder:text-[#5A6781]"
         />
       </div>
       <div className="mt-2 flex items-center gap-2">
@@ -165,18 +165,20 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
           <StickyNote className="h-3.5 w-3.5 text-[#D9A404]" />
           <span className="text-xs font-semibold uppercase tracking-wider">Note</span>
         </div>
+        <div className="rich-notes-light">
         <RichTextEditor
           value={note}
           onChange={setNote}
           placeholder="Add a note — bold, italics, underline, highlight, or link…"
         />
+        </div>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <ResponsiveSelect
             value={linkedId}
             onValueChange={onLinkChange}
             options={linkable.map((e) => ({ value: e.id, label: `${e.place || 'No place'} — ${e.title || e.speaker_name || 'Engagement'}` }))}
             placeholder="Link an engagement…"
-            triggerClassName="h-8 w-full min-w-[180px] border-[#D6DAE3] text-xs"
+            triggerClassName="h-8 w-full min-w-[180px] border-[#D6DAE3] text-xs text-[#1B2A4B] data-[placeholder]:text-[#5A6781]"
           />
           <Button
             size="sm"
