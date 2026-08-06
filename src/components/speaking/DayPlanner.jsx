@@ -116,13 +116,11 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
     );
   };
 
-  const dayKey = mode === 'day' ? keyOf(days[0]) : null;
-
   return (
     <div className="overflow-x-auto">
       <div className={mode === 'day' ? 'min-w-[320px]' : 'w-full min-w-0'}>
         {mode === 'week' && (
-          <div className="mb-3">
+          <div className="mb-3 mt-3">
             <WeeklyGoals cursor={cursor} />
           </div>
         )}

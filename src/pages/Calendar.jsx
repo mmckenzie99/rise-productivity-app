@@ -199,7 +199,7 @@ export default function Calendar() {
                 </div>
               </div>
             </DialogHeader>
-            <div className="flex-1 overflow-y-auto overscroll-contain px-6 pt-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+            <div className="min-h-0 overflow-y-auto overscroll-contain px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
             <DayPlanner
               items={items}
               events={calEvents}
