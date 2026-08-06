@@ -23,7 +23,12 @@ export default async function (req: Request): Promise<Response> {
       return Response.json({ error: 'action must be "archive" or "unarchive"' }, { status: 400 });
     }
 
-    const room = await base44.asServiceRole.entities.ChatRoom.get(roomId);
+    let room: any;
+    try {
+      room = await base44.asServiceRole.entities.ChatRoom.get(roomId);
+    } catch {
+      return Response.json({ error: 'Room not found' }, { status: 404 });
+    }
     if (!room) return Response.json({ error: 'Room not found' }, { status: 404 });
     const participants = room.participant_ids || [];
     if (!participants.includes(user.id)) {

@@ -27,7 +27,12 @@ export default async function (req: Request): Promise<Response> {
     const { roomId } = body || {};
     if (!roomId) return Response.json({ error: 'roomId is required' }, { status: 400 });
 
-    const room = await base44.asServiceRole.entities.ChatRoom.get(roomId);
+    let room: any;
+    try {
+      room = await base44.asServiceRole.entities.ChatRoom.get(roomId);
+    } catch {
+      return Response.json({ error: 'Room not found' }, { status: 404 });
+    }
     if (!room) return Response.json({ error: 'Room not found' }, { status: 404 });
 
     const callerIsInitiator = !!room.started_by_id && room.started_by_id === user.id;
