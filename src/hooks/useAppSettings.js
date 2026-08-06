@@ -19,6 +19,7 @@ export const DEFAULT_FEATURES = {
   can_create_personal_plans: { admin: true, user: true },
   can_create_work_plans: { admin: true, user: false },
   can_start_chats: { admin: true, user: true },
+  can_view_reflections: { admin: true, user: true },
   dashboard_sections: { ...DASHBOARD_SECTION_DEFAULTS },
 };
 

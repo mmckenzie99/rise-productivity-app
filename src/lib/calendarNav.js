@@ -2,13 +2,14 @@
 // Only params with truthy values are included, so the result is always clean.
 export const calendarUrl = (params = {}) => {
   const sp = new URLSearchParams();
-  const { view, planId, calDate, planDate, planStart, planEnd } = params;
+  const { view, planId, calDate, planDate, planStart, planEnd, reflectionDate } = params;
   if (view) sp.set('view', view);
   if (planId) sp.set('planId', planId);
   if (calDate) sp.set('calDate', calDate);
   if (planDate) sp.set('planDate', planDate);
   if (planStart) sp.set('planStart', planStart);
   if (planEnd) sp.set('planEnd', planEnd);
+  if (reflectionDate) sp.set('reflectionDate', reflectionDate);
   const qs = sp.toString();
   return qs ? `/calendar?${qs}` : '/calendar';
 };
