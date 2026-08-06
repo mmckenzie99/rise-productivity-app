@@ -182,8 +182,8 @@ export default function Calendar() {
 
         {/* Layer 1: Week/Day overlay (Dialog on top of the month base) */}
         <Dialog open={view === 'week' || view === 'day'} onOpenChange={(v) => !v && closeViewOverlay()}>
-          <DialogContent className="max-h-[86svh] sm:max-h-[90dvh] max-w-4xl overflow-y-auto bg-card top-[12svh] sm:top-[50%] translate-y-0 sm:translate-y-[-50%]">
-            <DialogHeader className="sticky top-0 z-20 -mx-6 -mt-[calc(1.5rem+env(safe-area-inset-top))] border-b border-border bg-card px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3">
+          <DialogContent className="flex max-h-[86svh] sm:max-h-[90dvh] max-w-4xl flex-col overflow-y-hidden gap-0 p-0 bg-card top-[12svh] sm:top-[50%] translate-y-0 sm:translate-y-[-50%]">
+            <DialogHeader className="shrink-0 border-b border-border bg-card px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3">
               <div className="flex items-center justify-between">
                 <DialogTitle className="font-display text-xl capitalize">{view} View</DialogTitle>
                 <div className="flex gap-1">
@@ -199,6 +199,7 @@ export default function Calendar() {
                 </div>
               </div>
             </DialogHeader>
+            <div className="flex-1 overflow-y-auto overscroll-contain px-6 pt-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
             <DayPlanner
               items={items}
               events={calEvents}
@@ -219,6 +220,7 @@ export default function Calendar() {
               onSelectReflection={openReflection}
               canReflect={canReflect}
             />
+            </div>
           </DialogContent>
         </Dialog>
 
