@@ -17,26 +17,26 @@ export default function WeeklyListSummary({ days, byDate, onSelect, onEventSelec
         const entries = byDate[key] || [];
         const isToday = key === todayKey;
         return (
-          <div key={i} className="overflow-hidden rounded-lg border border-[#D6DAE3] bg-white">
+          <div key={i} className="overflow-hidden rounded-lg border border-foreground/15 bg-card">
             <button
               onClick={() => onGoToDate?.(new Date(d))}
-              className={`flex w-full items-center justify-between px-3 py-2.5 text-left ${isToday ? 'bg-[#FBF0D0]/40' : 'bg-[#F7F8FA]'}`}
+              className={`flex w-full items-center justify-between px-3 py-2.5 text-left ${isToday ? 'bg-primary/15' : 'bg-muted/40'}`}
             >
               <div className="flex items-baseline gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#5A6781]">{DAY_LABELS[d.getDay()]}</span>
-                <span className={`text-sm font-semibold ${isToday ? 'text-[#D9A404]' : 'text-[#1B2A4B]'}`}>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{DAY_LABELS[d.getDay()]}</span>
+                <span className={`text-sm font-semibold ${isToday ? 'text-primary' : 'text-foreground'}`}>
                   {MONTHS[d.getMonth()]} {d.getDate()}
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-xs font-medium text-[#5A6781]">
+                <span className="text-xs font-medium text-muted-foreground">
                   {entries.length > 0 ? `${entries.length} ${entries.length === 1 ? 'item' : 'items'}` : '—'}
                 </span>
-                <ChevronRight className="h-4 w-4 text-[#5A6781]" />
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </div>
             </button>
             {entries.length > 0 ? (
-              <div className="divide-y divide-[#EDEFF4]">
+              <div className="divide-y divide-foreground/10">
                 {entries.map((x) => {
                   const isEvent = x._kind === 'event';
                   const tone = isEvent ? planCalTone(x) : calEngagementTone;
@@ -52,18 +52,18 @@ export default function WeeklyListSummary({ days, byDate, onSelect, onEventSelec
                         {isEvent ? (x.category || 'P').slice(0, 1) : 'E'}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-[#1B2A4B]">{label}</p>
-                        {sub && <p className="truncate text-xs text-[#5A6781]">{sub}</p>}
+                        <p className="truncate text-sm font-medium text-foreground">{label}</p>
+                        {sub && <p className="truncate text-xs text-muted-foreground">{sub}</p>}
                       </div>
                       {isEvent && x.completed && (
-                        <Check className="h-3.5 w-3.5 shrink-0 text-[#1E6B3A]" strokeWidth={3} />
+                        <Check className="h-3.5 w-3.5 shrink-0 text-primary" strokeWidth={3} />
                       )}
                     </button>
                   );
                 })}
               </div>
             ) : (
-              <p className="px-3 py-2 text-xs text-[#5A6781]">No plans or engagements</p>
+              <p className="px-3 py-2 text-xs text-muted-foreground">No plans or engagements</p>
             )}
           </div>
         );
