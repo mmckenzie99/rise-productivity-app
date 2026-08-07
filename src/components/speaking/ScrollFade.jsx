@@ -32,7 +32,7 @@ export default function ScrollFade({ children, className = '', fadeFrom = 'from-
 
   return (
     <div className="relative min-h-0 flex-1">
-      <div ref={ref} onScroll={update} className={cn('h-full', className)}>
+      <div ref={ref} onScroll={update} className={cn('h-full overflow-y-auto overflow-x-hidden', className)}>
         {children}
       </div>
       {!atTop && (
