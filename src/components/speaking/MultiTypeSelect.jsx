@@ -15,8 +15,8 @@ export default function MultiTypeSelect({ label, values = [], options, onChange 
   const display = vals.length ? vals.join(', ') : 'Select…';
 
   const renderRow = (opt) => (
-    <button key={opt} type="button" onClick={() => toggle(opt)} className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm hover:bg-accent">
-      <span className={`flex h-4 w-4 items-center justify-center rounded border ${vals.includes(opt) ? 'border-[#D9A404] bg-[#D9A404]' : 'border-[#D6DAE3]'}`}>
+    <button key={opt} type="button" onClick={() => toggle(opt)} className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-foreground hover:bg-accent">
+      <span className={`flex h-4 w-4 items-center justify-center rounded border ${vals.includes(opt) ? 'border-[#D9A404] bg-[#D9A404]' : 'border-border'}`}>
         {vals.includes(opt) && <Check className="h-3 w-3 text-white" />}
       </span>
       {opt}
@@ -25,12 +25,12 @@ export default function MultiTypeSelect({ label, values = [], options, onChange 
 
   return (
     <div>
-      <Label className="text-xs text-[#5A6781]">{label}</Label>
+      <Label className="text-xs text-muted-foreground">{label}</Label>
       {/* Desktop: popover */}
       <div className="hidden sm:block">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" type="button" className="mt-1 w-full justify-between font-normal border-[#D6DAE3] bg-white">
+            <Button variant="outline" type="button" className="mt-1 w-full justify-between font-normal border-border bg-card text-foreground">
               {display}
               <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
@@ -44,7 +44,7 @@ export default function MultiTypeSelect({ label, values = [], options, onChange 
       <div className="mt-1 sm:hidden">
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
-            <Button variant="outline" type="button" className="w-full justify-between font-normal border-[#D6DAE3] bg-white">
+            <Button variant="outline" type="button" className="w-full justify-between font-normal border-border bg-card text-foreground">
               {display}
               <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
