@@ -48,7 +48,7 @@ export default function FormTravel({ form, set }) {
           </div>
 
           {entry.type === 'Flight' && (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 [&>*]:min-w-0">
               <div>
                 <Label className="text-xs text-muted-foreground">Airline</Label>
                 <Input className="mt-1 border-border bg-card" value={entry.airline || ''} onChange={(e) => updateEntry(i, 'airline', e.target.value)} placeholder="e.g. Delta" />
@@ -65,7 +65,7 @@ export default function FormTravel({ form, set }) {
           )}
 
           {entry.type === 'Rental' && (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 [&>*]:min-w-0">
               <div>
                 <Label className="text-xs text-muted-foreground">Rental Company</Label>
                 <Input className="mt-1 border-border bg-card" value={entry.rental_company || ''} onChange={(e) => updateEntry(i, 'rental_company', e.target.value)} placeholder="e.g. Enterprise" />

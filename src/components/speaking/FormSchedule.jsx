@@ -27,13 +27,13 @@ export default function FormSchedule({ form, set }) {
       <h3 className="font-display text-sm font-semibold text-foreground">Schedule</h3>
 
       {/* Engagement Type + Status */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 [&>*]:min-w-0">
         <MultiTypeSelect label="Engagement type" values={form.presentation_type || []} options={TYPES} onChange={v => set('presentation_type', v)} />
         <Picker label="Status" value={form.status} items={STATUSES} onChange={v => set('status', v)} />
       </div>
 
       {/* Times + Timezone */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-3 [&>*]:min-w-0">
         <div>
           <Label className="text-xs text-muted-foreground">Start time</Label>
           <Input type="time" className={inputCls} value={form.start_time || ''} onChange={e => set('start_time', e.target.value)} />
@@ -49,7 +49,7 @@ export default function FormSchedule({ form, set }) {
       </div>
 
       {/* Speaking date + End date */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 [&>*]:min-w-0">
         <div>
           <Label className="text-xs text-muted-foreground">Speaking date</Label>
           <Input type="date" className={inputCls} value={form.speaking_date || ''} onChange={e => set('speaking_date', e.target.value)} />
@@ -61,7 +61,7 @@ export default function FormSchedule({ form, set }) {
       </div>
 
       {/* Creation Start Date + Deploy Date */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 [&>*]:min-w-0">
         <div>
           <Label className="text-xs text-muted-foreground">Creation start date</Label>
           <Input type="date" className={inputCls} value={form.start_date || ''} onChange={e => set('start_date', e.target.value)} />

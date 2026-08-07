@@ -41,7 +41,7 @@ export default function FormLodging({ form, set }) {
             <Input className="mt-1 border-border bg-card" value={entry.name || ''} onChange={(e) => updateEntry(i, 'name', e.target.value)} placeholder="e.g. Chicago Marriott Downtown" />
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 [&>*]:min-w-0">
             <div>
               <Label className="text-xs text-muted-foreground">Check-in</Label>
               <Input type="date" className="mt-1 border-border bg-card" value={entry.check_in_date || ''} onChange={(e) => updateEntry(i, 'check_in_date', e.target.value)} />

@@ -66,7 +66,7 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
           {/* Travel Schedule */}
           <div className="space-y-3 rounded-lg border border-border bg-card p-4">
             <h3 className="font-display text-sm font-semibold text-foreground">Travel Schedule</h3>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 [&>*]:min-w-0">
               <div>
                 <Label className="text-xs text-muted-foreground">Leave Date</Label>
                 <Input type="date" className="mt-1 border-border bg-card" value={form.leave_date || ''} onChange={(e) => set('leave_date', e.target.value)} />
