@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import ResponsiveSelect from './ResponsiveSelect';
+import DatePicker from './DatePicker';
+import TimePicker from './TimePicker';
 import RichTextEditor from './RichTextEditor';
 import { MessageCircle, Check, X, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -110,6 +112,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
     setSaving(true);
     if (form.category === 'Personal' && !canCreatePersonal) { window.alert("You don't have permission to create personal plans."); setSaving(false); return; }
     if (form.category === 'Work' && !canCreateWork) { window.alert("You don't have permission to create work plans."); setSaving(false); return; }
+    if (!form.date) { window.alert('Please pick a date.'); setSaving(false); return; }
     const rule = buildRule(form);
     try {
       if (!item?.id) {
@@ -181,12 +184,11 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="space-y-1.5">
               <Label>Date</Label>
-              <Input
-                type="date"
-                required
-                value={form.date}
-                onChange={(e) => set('date', e.target.value)}
+              <DatePicker
+                value={form.date || ''}
+                onChange={(v) => set('date', v)}
                 className="border-border"
+                label="Date"
               />
             </div>
             <div className="space-y-1.5">
@@ -205,12 +207,12 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
           {form.all_day && (
             <div className="space-y-1.5">
               <Label>End date (optional)</Label>
-              <Input
-                type="date"
+              <DatePicker
                 value={form.end_date || ''}
                 min={form.date || undefined}
-                onChange={(e) => set('end_date', e.target.value)}
+                onChange={(v) => set('end_date', v)}
                 className="border-border"
+                label="End date"
               />
               <p className="text-[11px] text-muted-foreground">Leave blank for a single day. Set a later date to span multiple days.</p>
             </div>
@@ -219,20 +221,20 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label>Start</Label>
-                <Input
-                  type="time"
+                <TimePicker
                   value={form.start_time || ''}
-                  onChange={(e) => set('start_time', e.target.value)}
+                  onChange={(v) => set('start_time', v)}
                   className="border-border"
+                  label="Start"
                 />
               </div>
               <div className="space-y-1.5">
                 <Label>End</Label>
-                <Input
-                  type="time"
+                <TimePicker
                   value={form.end_time || ''}
-                  onChange={(e) => set('end_time', e.target.value)}
+                  onChange={(v) => set('end_time', v)}
                   className="border-border"
+                  label="End"
                 />
               </div>
             </div>

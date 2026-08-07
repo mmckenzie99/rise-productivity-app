@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
 import { defaultLodgingEntry, calcLodgingTotal, formatCurrency } from '@/lib/trips';
 import FileUploadButton from './FileUploadButton';
+import DatePicker from './DatePicker';
 
 export default function FormLodging({ form, set }) {
   const entries = form.lodging_entries || [];
@@ -41,14 +42,14 @@ export default function FormLodging({ form, set }) {
             <Input className="mt-1 border-border bg-card" value={entry.name || ''} onChange={(e) => updateEntry(i, 'name', e.target.value)} placeholder="e.g. Chicago Marriott Downtown" />
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 [&>*]:min-w-0">
-            <div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="min-w-0">
               <Label className="text-xs text-muted-foreground">Check-in</Label>
-              <Input type="date" className="mt-1 border-border bg-card" value={entry.check_in_date || ''} onChange={(e) => updateEntry(i, 'check_in_date', e.target.value)} />
+              <DatePicker value={entry.check_in_date || ''} onChange={(v) => updateEntry(i, 'check_in_date', v)} className="mt-1 border-border bg-card" label="Check-in" />
             </div>
-            <div>
+            <div className="min-w-0">
               <Label className="text-xs text-muted-foreground">Check-out</Label>
-              <Input type="date" className="mt-1 border-border bg-card" value={entry.check_out_date || ''} onChange={(e) => updateEntry(i, 'check_out_date', e.target.value)} />
+              <DatePicker value={entry.check_out_date || ''} onChange={(v) => updateEntry(i, 'check_out_date', v)} className="mt-1 border-border bg-card" min={entry.check_in_date || undefined} label="Check-out" />
             </div>
           </div>
 

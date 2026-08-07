@@ -3,6 +3,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import ResponsiveSelect from './ResponsiveSelect';
+import DatePicker from './DatePicker';
+import TimePicker from './TimePicker';
 import { PROGRESS, STATUSES, TYPES, TIMEZONES, asArray, detectTimezone } from '@/lib/speaking';
 import MultiTypeSelect from './MultiTypeSelect';
 
@@ -36,11 +38,11 @@ export default function FormSchedule({ form, set }) {
       <div className="grid gap-4 sm:grid-cols-3 [&>*]:min-w-0">
         <div>
           <Label className="text-xs text-muted-foreground">Start time</Label>
-          <Input type="time" className={inputCls} value={form.start_time || ''} onChange={e => set('start_time', e.target.value)} />
+          <TimePicker value={form.start_time || ''} onChange={v => set('start_time', v)} className={inputCls} label="Start time" />
         </div>
         <div>
           <Label className="text-xs text-muted-foreground">End time</Label>
-          <Input type="time" className={inputCls} value={form.end_time || ''} onChange={e => set('end_time', e.target.value)} />
+          <TimePicker value={form.end_time || ''} onChange={v => set('end_time', v)} className={inputCls} label="End time" />
         </div>
         <div>
           <Label className="text-xs text-muted-foreground">Time zone</Label>
@@ -52,11 +54,11 @@ export default function FormSchedule({ form, set }) {
       <div className="grid gap-4 sm:grid-cols-2 [&>*]:min-w-0">
         <div>
           <Label className="text-xs text-muted-foreground">Speaking date</Label>
-          <Input type="date" className={inputCls} value={form.speaking_date || ''} onChange={e => set('speaking_date', e.target.value)} />
+          <DatePicker value={form.speaking_date || ''} onChange={v => set('speaking_date', v)} className={inputCls} label="Speaking date" />
         </div>
         <div>
           <Label className="text-xs text-muted-foreground">End date <span className="font-normal">(multi-day)</span></Label>
-          <Input type="date" className={inputCls} value={form.end_date || ''} onChange={e => set('end_date', e.target.value)} />
+          <DatePicker value={form.end_date || ''} onChange={v => set('end_date', v)} className={inputCls} label="End date" />
         </div>
       </div>
 
@@ -64,11 +66,11 @@ export default function FormSchedule({ form, set }) {
       <div className="grid gap-4 sm:grid-cols-2 [&>*]:min-w-0">
         <div>
           <Label className="text-xs text-muted-foreground">Creation start date</Label>
-          <Input type="date" className={inputCls} value={form.start_date || ''} onChange={e => set('start_date', e.target.value)} />
+          <DatePicker value={form.start_date || ''} onChange={v => set('start_date', v)} className={inputCls} label="Creation start date" />
         </div>
         <div>
           <Label className="text-xs text-muted-foreground">Deploy date</Label>
-          <Input type="date" className={inputCls} value={form.deploy_date || ''} onChange={e => set('deploy_date', e.target.value)} />
+          <DatePicker value={form.deploy_date || ''} onChange={v => set('deploy_date', v)} className={inputCls} label="Deploy date" />
         </div>
       </div>
 

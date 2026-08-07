@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, Loader2, BookOpen } from 'lucide-react';
+import DatePicker from '@/components/speaking/DatePicker';
 import RichTextDisplay from '@/components/speaking/RichTextDisplay';
 import { formatDate } from '@/lib/speaking';
 import { format, parseISO } from 'date-fns';
@@ -59,7 +59,7 @@ export default function ReflectionOversightDialog({ open, targetUser, onClose })
         <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 py-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
         <div className="space-y-1">
           <Label className="text-xs text-muted-foreground">Date</Label>
-          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="max-w-[200px]" />
+          <DatePicker value={date} onChange={(v) => setDate(v)} className="max-w-[200px] border-border" label="Date" />
         </div>
         {loading ? (
           <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>

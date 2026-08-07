@@ -1,6 +1,7 @@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import ResponsiveSelect from './ResponsiveSelect';
+import DatePicker from './DatePicker';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { recurrenceSummary } from '@/lib/recurrence';
 
@@ -116,12 +117,12 @@ export default function RecurrenceEditor({ form, set }) {
             <div className="flex items-center gap-2">
               <RadioGroupItem value="until" id="re-until" />
               <Label htmlFor="re-until" className="text-sm font-normal">On</Label>
-              <Input
-                type="date"
-                min={form.date || undefined}
+              <DatePicker
                 value={form.recurrence_end_until || ''}
-                onChange={(e) => set('recurrence_end_until', e.target.value)}
+                min={form.date || undefined}
+                onChange={(v) => set('recurrence_end_until', v)}
                 className="w-40 border-border"
+                label="End date"
                 disabled={form.recurrence_end_mode !== 'until'}
               />
             </div>

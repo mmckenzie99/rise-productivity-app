@@ -8,6 +8,7 @@ import { BookOpen, StickyNote, Send, Bell, ChevronDown } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 import { Button } from '@/components/ui/button';
 import ResponsiveSelect from './ResponsiveSelect';
+import TimePicker from './TimePicker';
 import { formatDate } from '@/lib/speaking';
 
 export default function DailyReflection({ dateKey, engagements = [] }) {
@@ -153,11 +154,11 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
       <div className="mt-2 flex items-center gap-2">
         <Bell className="h-3.5 w-3.5 text-[#D9A404]" />
         <Label className="text-[11px] text-[#5A6781]">Meditation reminder</Label>
-        <Input
-          type="time"
+        <TimePicker
           value={reminderTime}
-          onChange={(e) => saveReminder(e.target.value)}
+          onChange={(v) => saveReminder(v)}
           className="ml-auto h-8 w-[120px] border-[#D6DAE3] text-xs"
+          label="Meditation reminder"
         />
       </div>
       <div className="mt-2 space-y-1">

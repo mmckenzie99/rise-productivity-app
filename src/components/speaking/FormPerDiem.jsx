@@ -2,6 +2,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import ResponsiveSelect from './ResponsiveSelect';
+import DatePicker from './DatePicker';
 import { Plus, Trash2 } from 'lucide-react';
 import { PER_DIEM_TYPES, PER_DIEM_RATES, defaultPerDiemDay, calcPerDiemTotal, formatCurrency } from '@/lib/trips';
 import FileUploadButton from './FileUploadButton';
@@ -30,20 +31,20 @@ export default function FormPerDiem({ form, set }) {
       {days.length === 0 && <p className="text-sm text-muted-foreground">No per diem days added yet.</p>}
 
       {days.map((day, i) => (
-        <div key={i} className="flex flex-wrap items-end gap-2 rounded-md border border-[#E8EAF0] bg-background p-2">
-          <div className="flex-1 min-w-[140px]">
+        <div key={i} className="flex flex-wrap items-end gap-3 rounded-md border border-border bg-background p-3">
+          <div className="flex-1 min-w-[150px]">
             <Label className="text-xs text-muted-foreground">Date</Label>
-            <Input type="date" className="mt-1 border-border bg-card" value={day.date || ''} onChange={(e) => updateDay(i, 'date', e.target.value)} />
+            <DatePicker value={day.date || ''} onChange={(v) => updateDay(i, 'date', v)} className="mt-1 border-border bg-card" label="Date" />
           </div>
-          <div className="w-[130px]">
+          <div className="w-[130px] min-w-0">
             <Label className="text-xs text-muted-foreground">Type</Label>
             <ResponsiveSelect value={day.type} onValueChange={(v) => updateDay(i, 'type', v)} options={PER_DIEM_TYPES.map((t) => ({ value: t, label: t }))} triggerClassName="mt-1 border-border bg-card" />
           </div>
-          <div className="w-[90px]">
+          <div className="w-[100px] min-w-0">
             <Label className="text-xs text-muted-foreground">Amount</Label>
             <div className="relative mt-1">
               <span className="absolute left-2.5 top-2 text-xs text-muted-foreground">$</span>
-              <Input type="number" readOnly className="border-border bg-[#F0F2F6] pl-6" value={day.amount ?? 0} />
+              <Input type="number" readOnly className="border-border bg-card text-foreground pl-6" value={day.amount ?? 0} />
             </div>
           </div>
           <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-red-600" onClick={() => removeDay(i)}>

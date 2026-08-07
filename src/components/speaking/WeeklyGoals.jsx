@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import TimePicker from '@/components/speaking/TimePicker';
 import { Target, Plus, Trash2, Check, Bell, ChevronDown } from 'lucide-react';
 
 const FOCUSES = ['Spiritual', 'Professional', 'Physical', 'Mental', 'Relational', 'Personal'];
@@ -158,11 +159,11 @@ export default function WeeklyGoals({ cursor }) {
             </button>
           )}
           <Bell className="h-3.5 w-3.5 text-primary" />
-          <Input
-            type="time"
+          <TimePicker
             value={reminderTime}
-            onChange={(e) => setReminderTime(e.target.value)}
+            onChange={(v) => setReminderTime(v)}
             className="h-8 w-[110px] border-border text-xs"
+            label="Weekly reminder"
           />
         </div>
 
@@ -250,12 +251,11 @@ export default function WeeklyGoals({ cursor }) {
                   <>
                     <div className="flex shrink-0 items-center gap-1">
                       <Bell className={`h-3.5 w-3.5 ${g.reminder_time ? 'text-primary' : 'text-muted'}`} />
-                      <Input
-                        type="time"
+                      <TimePicker
                         value={g.reminder_time || ''}
-                        onChange={(e) => setGoals((cur) => cur.map((x) => (x.id === g.id ? { ...x, reminder_time: e.target.value || '' } : x)))}
+                        onChange={(v) => setGoals((cur) => cur.map((x) => (x.id === g.id ? { ...x, reminder_time: v || '' } : x)))}
                         className="h-7 w-[100px] border-border text-xs"
-                        title="Daily reminder time for this goal"
+                        label="Daily reminder time"
                       />
                     </div>
                     <button
