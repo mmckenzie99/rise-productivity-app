@@ -26,12 +26,12 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
 
   return (
     <Dialog open={!!trip} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="flex inset-0 max-h-none max-w-none flex-col overflow-hidden gap-0 p-0 bg-card translate-x-0 translate-y-0 rounded-none sm:top-[50%] sm:left-[50%] sm:right-auto sm:bottom-auto sm:max-h-[90dvh] sm:max-w-2xl sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
+        <DialogHeader className="shrink-0 border-b border-border px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3">
           <DialogTitle className="font-display text-xl">Trip Details</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-2">
+        <div className="min-h-0 overflow-y-auto overscroll-contain px-6 py-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] space-y-4">
           {/* Engagement + Department */}
           <div className="rounded-lg border border-border bg-card p-4">
             <Row icon={MapPin} label="Place">{formatPlaces(trip)}</Row>
