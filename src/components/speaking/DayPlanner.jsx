@@ -148,27 +148,27 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                 key={i}
                 className={`relative flex-1 px-2 py-1.5 text-center ${isTodayCol ? 'bg-[#FBF0D0]/40' : ''}`}
               >
-                <div className={`text-[10px] uppercase tracking-wider ${isTodayCol ? 'text-[#3D2E00]' : 'text-[#5A6781]'}`}>
+                <div className={`text-[10px] uppercase tracking-wider ${isTodayCol ? 'text-[#3D2E00]' : 'text-muted-foreground'}`}>
                   {DAY_LABELS[d.getDay()]}
                 </div>
                 {canJump ? (
                   <button
                     type="button"
                     onClick={() => onGoToDate(new Date(d))}
-                    className="text-sm font-semibold text-[#1B2A4B] underline-offset-2 hover:text-[#D9A404] hover:underline focus:text-[#D9A404] focus:underline"
+                    className="text-sm font-semibold text-muted-foreground underline-offset-2 hover:text-[#D9A404] hover:underline focus:text-[#D9A404] focus:underline"
                     title="Open day view"
                   >
                     {dateNum}
                   </button>
                 ) : (
-                  <div className={`text-sm font-semibold ${keyOf(d) === todayKey ? 'text-[#D9A404]' : 'text-[#1B2A4B]'}`}>
+                  <div className={`text-sm font-semibold ${keyOf(d) === todayKey ? 'text-[#D9A404]' : 'text-muted-foreground'}`}>
                     {dateNum}
                   </div>
                 )}
                 {canReflect && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onSelectReflection?.(keyOf(d)); }}
-                    className="absolute right-1 top-1 text-[#5A6781] transition hover:text-[#D9A404]"
+                    className="absolute right-1 top-1 text-muted-foreground transition hover:text-[#D9A404]"
                     title="Daily reflection"
                   >
                     <BookOpen className="h-3 w-3" />
@@ -209,7 +209,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
           <div className="w-12 shrink-0">
             <div style={{ height: ALL_DAY_PX }} className="border-b border-transparent" />
             {ROWS.map((h) => (
-              <div key={h} className="relative border-b border-foreground/15" style={{ height: HOUR_PX }}>
+              <div key={h} className="relative" style={{ height: HOUR_PX }}>
                 <span className="absolute -top-1.5 right-1 text-[10px] text-muted-foreground">
                   {hourLabel(h)}
                 </span>
@@ -270,7 +270,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                   onClick={(e) => handleSlotClick(e, key)}
                 >
                   {ROWS.map((h) => (
-                    <div key={h} className="border-b border-foreground/15" style={{ height: HOUR_PX }} />
+                    <div key={h} style={{ height: HOUR_PX }} />
                   ))}
                   {layoutColumns(positioned).map(renderBlock)}
                 </div>
