@@ -183,7 +183,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
             return (
               <div
                 key={i}
-                className={`relative flex-1 px-2 py-1.5 text-center ${isTodayCol ? 'bg-[#FBF0D0]/40' : ''}`}
+                className={`relative flex-1 px-2 py-1.5 text-center ${isTodayCol ? 'bg-primary/15' : ''}`}
               >
                 <div className="flex items-center justify-center gap-1">
                   {mode === 'day' && (
