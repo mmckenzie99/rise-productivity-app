@@ -8,8 +8,8 @@ import ResponsiveSelect from './ResponsiveSelect';
 import RichTextEditor from './RichTextEditor';
 import { MessageCircle, Check, X, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import RecurrenceEditor from './RecurrenceEditor';
+import ScrollFade from './ScrollFade';
 import { generateOccurrences } from '@/lib/recurrence';
 import { useAuth } from '@/lib/AuthContext';
 import useFeatureFlag, { usePlanFlag } from '@/hooks/useFeatureFlag';
@@ -147,7 +147,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
           <DialogTitle className="font-display text-xl">{item?.id ? 'Edit' : 'New'} plan</DialogTitle>
         </DialogHeader>
         <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
-        <div className="flex-1 min-h-0 space-y-4 overflow-y-auto overscroll-contain px-6 pb-4">
+        <ScrollFade className="space-y-4 overscroll-contain px-6 pb-4">
         {form.category === 'Personal' && (
           <div className="flex items-center gap-2 rounded-md bg-[#EDE3F8] px-3 py-2 text-[#5B2DA0]">
             <span className="h-2 w-2 rounded-full bg-[#5B2DA0]" />
@@ -155,18 +155,17 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
           </div>
         )}
         {isSeriesOccurrence && (
-          <div className="space-y-1.5 rounded-md border border-border bg-background p-3">
-            <Label>Apply changes to</Label>
-            <RadioGroup value={editScope} onValueChange={setEditScope} className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="single" id="es-single" />
-                <Label htmlFor="es-single" className="text-sm font-normal">Only this instance</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="future" id="es-future" />
-                <Label htmlFor="es-future" className="text-sm font-normal">This and all future instances</Label>
-              </div>
-            </RadioGroup>
+          <div className="flex items-center justify-between gap-2 rounded-md border border-border bg-background px-3 py-2">
+            <Label className="shrink-0 text-sm font-medium">Apply changes to</Label>
+            <ResponsiveSelect
+              value={editScope}
+              onValueChange={setEditScope}
+              options={[
+                { value: 'single', label: 'Only this instance' },
+                { value: 'future', label: 'This & all future' },
+              ]}
+              triggerClassName="border-border h-9 min-w-[10rem]"
+            />
           </div>
         )}
           <div className="space-y-1.5">
@@ -279,7 +278,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
               <MessageCircle className="h-4 w-4" />Chat about this plan
             </button>
           )}
-        </div>
+        </ScrollFade>
         <DialogFooter className="shrink-0 flex flex-row items-center justify-end gap-2 border-t border-border bg-card px-6 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3">
             {item?.id && onDelete && (
               <Button
