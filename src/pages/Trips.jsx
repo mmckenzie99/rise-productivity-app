@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import { ArrowLeft, Plus, Building2, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import useTrips from '@/hooks/useTrips';
 import useEngagements from '@/hooks/useEngagements';
 import { formatCurrency, getTripStatus, formatPlaces } from '@/lib/trips';
@@ -68,9 +69,16 @@ export default function Trips() {
             <h1 className="font-display text-3xl font-bold">Trips</h1>
           </div>
           {isAdmin && (
-            <Button onClick={() => setFormOpen(true)} className="bg-[#D9A404] hover:bg-[#B89003]">
-              <Plus className="mr-2 h-4 w-4" />New Trip
-            </Button>
+            <TooltipProvider delayDuration={300}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button onClick={() => setFormOpen(true)} size="icon" aria-label="New Trip" className="bg-[#D9A404] hover:bg-[#B89003]">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>New Trip</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
 
