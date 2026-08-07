@@ -155,7 +155,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                   <button
                     type="button"
                     onClick={() => onGoToDate(new Date(d))}
-                    className="text-sm font-semibold text-muted-foreground underline-offset-2 hover:text-[#D9A404] hover:underline focus:text-[#D9A404] focus:underline"
+                    className={`text-sm font-semibold ${isTodayCol ? 'text-[#D9A404]' : 'text-muted-foreground'} underline-offset-2 hover:text-[#D9A404] hover:underline focus:text-[#D9A404] focus:underline`}
                     title="Open day view"
                   >
                     {dateNum}
