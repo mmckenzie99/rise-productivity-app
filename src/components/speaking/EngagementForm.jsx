@@ -28,7 +28,7 @@ export default function EngagementForm({ open, item, onClose, onSave }) {
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">{item ? 'Edit Engagement Details' : 'New Engagement Details'}</DialogTitle>
         </DialogHeader>

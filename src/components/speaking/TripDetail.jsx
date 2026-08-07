@@ -26,7 +26,7 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
 
   return (
     <Dialog open={!!trip} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-xl">Trip Details</DialogTitle>
         </DialogHeader>

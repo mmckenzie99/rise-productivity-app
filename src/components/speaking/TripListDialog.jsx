@@ -6,7 +6,7 @@ import { formatCurrency, formatPlaces } from '@/lib/trips';
 export default function TripListDialog({ open, trips, loading, isAdmin, onClose, onAdd, onSelect }) {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-xl">Trip Details</DialogTitle>
         </DialogHeader>

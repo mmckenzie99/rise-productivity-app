@@ -122,7 +122,7 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle>New conversation</DialogTitle>
         </DialogHeader>

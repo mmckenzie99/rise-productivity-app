@@ -17,7 +17,7 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
   const isPresentation = asArray(item.presentation_type).includes('Presentation(s)');
   return (
     <Dialog open={!!item} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto bg-card sm:max-w-xl">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto bg-card sm:max-w-xl">
         <DialogHeader className="text-center items-center">
           <DialogTitle className="font-display text-2xl">{item.place || 'Place not set'}</DialogTitle>
           {item.title && <p className="text-sm font-medium text-muted-foreground">{item.title}</p>}

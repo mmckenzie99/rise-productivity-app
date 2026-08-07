@@ -6,7 +6,7 @@ import { Download } from 'lucide-react';
 export default function CalendarDialog({ open, onClose, items, events, onSelect, onEventSelect, onAddSlot, focusDate }) {
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">Calendar</DialogTitle>
         </DialogHeader>

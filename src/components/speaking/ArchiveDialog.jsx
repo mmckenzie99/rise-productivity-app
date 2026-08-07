@@ -14,7 +14,7 @@ export default function ArchiveDialog({ open, onClose, items, onSelect, isAdmin,
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto bg-white sm:max-w-3xl">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 font-display text-2xl"><ArchiveIcon className="h-5 w-5 text-[#D9A404]" />Archive</DialogTitle>
         </DialogHeader>

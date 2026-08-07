@@ -8,7 +8,7 @@ export default function EngagementQuickLook({ item, onClose }) {
   const isRange = item.end_date && item.end_date !== dateForDisplay;
   return (
     <Dialog open={!!item} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto bg-white sm:max-w-xl">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white sm:max-w-xl">
         <DialogHeader className="text-center items-center">
           <DialogTitle className="font-display text-2xl">{item.place || 'Place not set'}</DialogTitle>
           {item.title && <p className="text-sm font-medium text-[#5A6781]">{item.title}</p>}

@@ -49,7 +49,7 @@ export default function ReflectionOversightDialog({ open, targetUser, onClose })
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose?.()}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 font-display text-xl">
             <Eye className="h-5 w-5 text-primary" />
