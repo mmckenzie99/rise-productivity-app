@@ -197,7 +197,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                     </button>
                   )}
                   <div>
-                    <div className={`text-[10px] uppercase tracking-wider ${isTodayCol ? 'text-[#3D2E00]' : 'text-muted-foreground'}`}>
+                    <div className={`text-[10px] uppercase tracking-wider ${isTodayCol ? 'text-white' : 'text-muted-foreground'}`}>
                       {DAY_LABELS[d.getDay()]}
                     </div>
                     {canJump ? (
