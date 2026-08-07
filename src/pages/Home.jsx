@@ -3,11 +3,11 @@ import { useAuth } from '@/lib/AuthContext';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import AppHeader from '@/components/speaking/AppHeader';
-import Dashboard from '@/components/speaking/Dashboard';
+
 import EngagementMap from '@/components/speaking/EngagementMap';
 import Filters from '@/components/speaking/Filters';
 import DraggableLocationGroup from '@/components/speaking/DraggableLocationGroup';
-import KanbanBoard from '@/components/speaking/KanbanBoard';
+
 import EngagementForm from '@/components/speaking/EngagementForm';
 import EngagementDetail from '@/components/speaking/EngagementDetail';
 import InviteDialog from '@/components/speaking/InviteDialog';
@@ -40,7 +40,6 @@ export default function Home() {
     try { const s = sessionStorage.getItem('homeFilters'); if (s) { const p = JSON.parse(s); return { status: p.status || 'all', progress: p.progress || 'all', search: p.search || '' }; } } catch {}
     return { status: 'all', progress: 'all', search: '' };
   });
-  const [view, setView] = useState('grid');
   const [invite, setInvite] = useState(false);
   const [archive, setArchive] = useState(false);
   const [formPrefill, setFormPrefill] = useState(null);
@@ -139,14 +138,9 @@ export default function Home() {
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input className="bg-card pl-9 text-sm h-9 border-border" placeholder="Search place or engagement type…" value={filters.search} onChange={e => setFilters({ ...filters, search: e.target.value })} />
           </div>
-          <Dashboard items={items} onSelect={openQuickLook} />
           <div ref={mapRef}><EngagementMap items={visible} onView={openEngagement} focusItem={mapFocus} /></div>
           <Filters filters={filters} setFilters={setFilters} onArchive={() => setArchive(true)} />
-          <div className="flex justify-end gap-1">
-            <button onClick={() => setView('grid')} className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${view === 'grid' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border'}`}>Grid</button>
-            <button onClick={() => setView('kanban')} className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${view === 'kanban' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border'}`}>Kanban</button>
-          </div>
-          {loading ? <div className="py-14 text-center">Loading engagements…</div> : visible.length ? view === 'kanban' ? <KanbanBoard items={visible} onSave={save} onSelect={openEngagement} isAdmin={isAdmin} /> : <DragDropContext onDragEnd={onDragEnd}><Droppable droppableId="locations">{p => (<div ref={p.innerRef} {...p.droppableProps} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{orderedGroups.map((g, i) => <DraggableLocationGroup key={g.key} id={g.key} index={i} place={g.place} items={g.items} onClick={openEngagement} onDuplicate={duplicate} isAdmin={isAdmin} tripPlaces={tripPlaces} onLocate={locate} />)}{p.placeholder}</div>)}</Droppable></DragDropContext> : <div className="rounded-lg border border-dashed border-primary bg-card/60 py-14 text-center"><h2 className="font-display text-xl font-semibold">{items.length ? 'Nothing matches' : 'No engagements yet'}</h2><p className="mt-2 text-sm text-muted-foreground">{items.length ? 'Try a different filter.' : isAdmin ? 'Add your first speaking engagement to see it mapped here.' : 'Ask an administrator to add one.'}</p></div>}
+          {loading ? <div className="py-14 text-center">Loading engagements…</div> : visible.length ? <DragDropContext onDragEnd={onDragEnd}><Droppable droppableId="locations">{p => (<div ref={p.innerRef} {...p.droppableProps} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{orderedGroups.map((g, i) => <DraggableLocationGroup key={g.key} id={g.key} index={i} place={g.place} items={g.items} onClick={openEngagement} onDuplicate={duplicate} isAdmin={isAdmin} tripPlaces={tripPlaces} onLocate={locate} />)}{p.placeholder}</div>)}</Droppable></DragDropContext> : <div className="rounded-lg border border-dashed border-primary bg-card/60 py-14 text-center"><h2 className="font-display text-xl font-semibold">{items.length ? 'Nothing matches' : 'No engagements yet'}</h2><p className="mt-2 text-sm text-muted-foreground">{items.length ? 'Try a different filter.' : isAdmin ? 'Add your first speaking engagement to see it mapped here.' : 'Ask an administrator to add one.'}</p></div>}
         </PullToRefresh>
       </div>
 
