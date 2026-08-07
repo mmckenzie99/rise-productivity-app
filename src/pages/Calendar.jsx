@@ -182,7 +182,7 @@ export default function Calendar() {
 
         {/* Layer 1: Week/Day overlay (Dialog on top of the month base) */}
         <Dialog open={view === 'week' || view === 'day'} onOpenChange={(v) => !v && closeViewOverlay()}>
-          <DialogContent className="flex h-[100dvh] max-h-[100dvh] sm:h-auto sm:max-h-[90dvh] max-w-4xl flex-col overflow-y-hidden gap-0 p-0 bg-card top-0 sm:top-[50%] translate-y-0 sm:translate-y-[-50%] rounded-none sm:rounded-lg">
+          <DialogContent className="flex inset-0 max-h-none max-w-none flex-col overflow-y-hidden gap-0 p-0 bg-card translate-x-0 translate-y-0 rounded-none sm:top-[50%] sm:left-[50%] sm:right-auto sm:bottom-auto sm:h-auto sm:max-h-[90dvh] sm:max-w-4xl sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
             <DialogHeader className="shrink-0 border-b border-border bg-card px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3">
               <div className="flex items-center justify-between">
                 <DialogTitle className="font-display text-xl capitalize">{view} View</DialogTitle>
