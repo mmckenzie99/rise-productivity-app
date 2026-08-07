@@ -17,11 +17,12 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
   const isPresentation = asArray(item.presentation_type).includes('Presentation(s)');
   return (
     <Dialog open={!!item} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto bg-card sm:max-w-xl">
-        <DialogHeader className="text-center items-center">
+      <DialogContent className="flex inset-0 max-h-none max-w-none flex-col overflow-hidden gap-0 p-0 bg-card translate-x-0 translate-y-0 rounded-none sm:top-[50%] sm:left-[50%] sm:right-auto sm:bottom-auto sm:max-h-[90dvh] sm:max-w-xl sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
+        <DialogHeader className="shrink-0 border-b border-border px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3 text-center items-center">
           <DialogTitle className="font-display text-2xl">{item.place || 'Place not set'}</DialogTitle>
           {item.title && <p className="text-sm font-medium text-muted-foreground">{item.title}</p>}
         </DialogHeader>
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 py-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
         <div className="flex flex-wrap gap-2">
           <span className={`rounded-full px-3 py-1 text-xs ${statusTone[item.status]}`}>{item.status}</span>
           <span className="rounded-full border border-border px-3 py-1 text-xs">{item.progress}</span>
@@ -87,6 +88,7 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
             <Button onClick={() => onEdit(item)} className="bg-[#D9A404] hover:bg-[#B89003]"><Pencil className="mr-2 h-4 w-4" />Edit</Button>
           </div>
         )}
+        </div>
       </DialogContent>
     </Dialog>
   );

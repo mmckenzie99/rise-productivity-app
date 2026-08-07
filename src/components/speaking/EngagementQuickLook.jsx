@@ -8,12 +8,13 @@ export default function EngagementQuickLook({ item, onClose }) {
   const isRange = item.end_date && item.end_date !== dateForDisplay;
   return (
     <Dialog open={!!item} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white sm:max-w-xl">
-        <DialogHeader className="text-center items-center">
+      <DialogContent className="flex inset-0 max-h-none max-w-none flex-col overflow-hidden gap-0 p-0 bg-white translate-x-0 translate-y-0 rounded-none sm:top-[50%] sm:left-[50%] sm:right-auto sm:bottom-auto sm:max-h-[90dvh] sm:max-w-xl sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
+        <DialogHeader className="shrink-0 border-b border-[#D6DAE3] px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3 text-center items-center">
           <DialogTitle className="font-display text-2xl">{item.place || 'Place not set'}</DialogTitle>
           {item.title && <p className="text-sm font-medium text-[#5A6781]">{item.title}</p>}
         </DialogHeader>
 
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 py-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
         {asArray(item.presentation_type).length > 0 && (
           <div className="flex flex-wrap justify-center gap-2">
             {asArray(item.presentation_type).map(t => (
@@ -66,6 +67,7 @@ export default function EngagementQuickLook({ item, onClose }) {
             <p className="text-sm text-[#1B2A4B]">{item.presentation_description}</p>
           </div>
         )}
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -6,11 +6,12 @@ import { formatCurrency, formatPlaces } from '@/lib/trips';
 export default function TripListDialog({ open, trips, loading, isAdmin, onClose, onAdd, onSelect }) {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="flex inset-0 max-h-none max-w-none flex-col overflow-hidden gap-0 p-0 bg-card translate-x-0 translate-y-0 rounded-none sm:top-[50%] sm:left-[50%] sm:right-auto sm:bottom-auto sm:max-h-[90dvh] sm:max-w-2xl sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
+        <DialogHeader className="shrink-0 border-b border-border px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3">
           <DialogTitle className="font-display text-xl">Trip Details</DialogTitle>
         </DialogHeader>
 
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 py-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
         {isAdmin && (
           <Button onClick={onAdd} className="bg-[#D9A404] hover:bg-[#B89003]">
             <Plus className="mr-2 h-4 w-4" />New Trip
@@ -47,6 +48,7 @@ export default function TripListDialog({ open, trips, loading, isAdmin, onClose,
             <p className="mt-1 text-sm text-[#5A6781]">{isAdmin ? 'Create a trip and link it to a place.' : 'No trip details have been added.'}</p>
           </div>
         )}
+        </div>
       </DialogContent>
     </Dialog>
   );

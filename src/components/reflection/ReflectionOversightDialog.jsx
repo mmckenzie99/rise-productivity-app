@@ -49,13 +49,14 @@ export default function ReflectionOversightDialog({ open, targetUser, onClose })
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose?.()}>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-2xl overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="flex inset-0 max-h-none max-w-none flex-col overflow-hidden gap-0 p-0 bg-card translate-x-0 translate-y-0 rounded-none sm:top-[50%] sm:left-[50%] sm:right-auto sm:bottom-auto sm:max-h-[90dvh] sm:max-w-2xl sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
+        <DialogHeader className="shrink-0 border-b border-border px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3">
           <DialogTitle className="flex items-center gap-2 font-display text-xl">
             <Eye className="h-5 w-5 text-primary" />
             Reflection oversight — {targetUser?.full_name || targetUser?.email}
           </DialogTitle>
         </DialogHeader>
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 py-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
         <div className="space-y-1">
           <Label className="text-xs text-muted-foreground">Date</Label>
           <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="max-w-[200px]" />
@@ -95,6 +96,7 @@ export default function ReflectionOversightDialog({ open, targetUser, onClose })
             </div>
           </div>
         )}
+        </div>
       </DialogContent>
     </Dialog>
   );

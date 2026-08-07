@@ -122,11 +122,12 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-md">
-        <DialogHeader>
+      <DialogContent className="flex inset-0 max-h-none max-w-none flex-col overflow-hidden gap-0 p-0 bg-card translate-x-0 translate-y-0 rounded-none sm:top-[50%] sm:left-[50%] sm:right-auto sm:bottom-auto sm:max-h-[90dvh] sm:max-w-md sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
+        <DialogHeader className="shrink-0 border-b border-border px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3">
           <DialogTitle>New conversation</DialogTitle>
         </DialogHeader>
 
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 py-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
         {!canStart ? (
           <p className="text-sm text-muted-foreground">You don't have permission to start conversations. You can still reply to conversations that others add you to.</p>
         ) : (
@@ -186,8 +187,9 @@ export default function NewChatDialog({ open, onClose, onCreated, currentUser, e
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>
         )}
+        </div>
 
-        <DialogFooter>
+        <DialogFooter className="shrink-0 flex-row justify-end gap-2 border-t border-border px-6 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           {canStart && (
             <Button onClick={create} disabled={!canCreate || creating}>
