@@ -1,4 +1,5 @@
-import { CalendarDays, MapPin, Paperclip, Copy, MessageCircle } from 'lucide-react';
+import { CalendarDays, MapPin, Paperclip, Copy, MessageCircle, Navigation } from 'lucide-react';
+import AddressMapsMenu from './AddressMapsMenu';
 import { useNavigate } from 'react-router-dom';
 import { formatDate, formatTime, statusTone, TIMEZONES, asArray } from '@/lib/speaking';
 import CardWrapper from './CardWrapper';
@@ -30,13 +31,20 @@ export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, ha
       </div>
       <div className="my-4 h-px bg-border" />
       <div className="space-y-2 text-xs text-muted-foreground">
-        {item.address && (Number.isFinite(Number(item.latitude)) ? (
-          <button type="button" onClick={e => { e.stopPropagation(); onLocate(item); }} className="flex gap-2 text-left transition hover:text-primary">
-            <MapPin className="h-4 w-4 shrink-0 text-primary" />{item.address}
-          </button>
-        ) : (
-          <p className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 text-primary" />{item.address}</p>
-        ))}
+        {item.address && (
+          <div className="flex items-start gap-1">
+            {Number.isFinite(Number(item.latitude)) ? (
+              <button type="button" onClick={e => { e.stopPropagation(); onLocate(item); }} className="flex flex-1 gap-2 text-left transition hover:text-primary">
+                <MapPin className="h-4 w-4 shrink-0 text-primary" />{item.address}
+              </button>
+            ) : (
+              <p className="flex flex-1 gap-2"><MapPin className="h-4 w-4 shrink-0 text-primary" />{item.address}</p>
+            )}
+            <AddressMapsMenu address={item.address} className="shrink-0 text-muted-foreground hover:text-primary">
+              <Navigation className="h-3.5 w-3.5" />
+            </AddressMapsMenu>
+          </div>
+        )}
         <p className="flex gap-2">
           <CalendarDays className="h-4 w-4" />
           {isRange ? `${formatDate(dateForDisplay)} – ${formatDate(item.end_date)}` : formatDate(dateForDisplay)}

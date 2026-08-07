@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { CalendarDays, MapPin, Clock3, Tags, AlignLeft } from 'lucide-react';
+import { CalendarDays, Clock3, Tags, AlignLeft } from 'lucide-react';
+import AddressMapsMenu from './AddressMapsMenu';
 import { formatDate, formatTime, TIMEZONES, asArray } from '@/lib/speaking';
 
 export default function EngagementQuickLook({ item, onClose }) {
@@ -40,12 +41,7 @@ export default function EngagementQuickLook({ item, onClose }) {
               {item.timezone && ` (${TIMEZONES.find(z => z.value === item.timezone)?.label || item.timezone})`}
             </p>
           )}
-          {item.address && (
-            <p className="flex gap-2">
-              <MapPin className="h-4 w-4 shrink-0 text-[#5A6781]" />
-              {item.address}
-            </p>
-          )}
+          {item.address && <AddressMapsMenu address={item.address} className="text-sm text-[#1B2A4B] hover:text-[#D9A404]" />}
         </div>
 
         {item.description && (

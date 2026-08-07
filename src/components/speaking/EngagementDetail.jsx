@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { CalendarDays, MapPin, Paperclip, Pencil, Trash2, Download, Plane, FileText, MessageCircle } from 'lucide-react';
+import { CalendarDays, Paperclip, Pencil, Trash2, Download, Plane, FileText, MessageCircle } from 'lucide-react';
+import AddressMapsMenu from './AddressMapsMenu';
 import { formatDate, formatTime, statusTone, TIMEZONES, asArray } from '@/lib/speaking';
 import { generateICS, downloadICS } from '@/lib/icsExport';
 import { useNavigate } from 'react-router-dom';
@@ -36,7 +37,7 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
             {item.start_time && ` · ${formatTime(item.start_time)}${item.end_time ? `–${formatTime(item.end_time)}` : ''}`}
             {item.timezone && ` (${TIMEZONES.find(z => z.value === item.timezone)?.label || item.timezone})`}
           </p>
-          {item.address && <p className="flex gap-2"><MapPin className="h-4 w-4" />{item.address}</p>}
+          {item.address && <AddressMapsMenu address={item.address} className="text-sm hover:text-primary" />}
         </div>
         {isPresentation && item.presentation_description && (
           <section>
