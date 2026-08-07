@@ -30,9 +30,9 @@ export default function MultiTypeSelect({ label, values = [], options, onChange 
       <div className="hidden sm:block">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" type="button" className="mt-1 w-full justify-between font-normal border-border bg-card text-foreground">
-              {display}
-              <ChevronDown className="h-4 w-4 opacity-50" />
+            <Button variant="outline" type="button" className="mt-1 w-full justify-between overflow-hidden font-normal border-border bg-card text-foreground">
+              <span className="truncate">{display}</span>
+              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent align="start">
@@ -44,9 +44,9 @@ export default function MultiTypeSelect({ label, values = [], options, onChange 
       <div className="mt-1 sm:hidden">
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
-            <Button variant="outline" type="button" className="w-full justify-between font-normal border-border bg-card text-foreground">
-              {display}
-              <ChevronDown className="h-4 w-4 opacity-50" />
+            <Button variant="outline" type="button" className="w-full justify-between overflow-hidden font-normal border-border bg-card text-foreground">
+              <span className="truncate">{display}</span>
+              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </DrawerTrigger>
           <DrawerContent className="pb-safe">

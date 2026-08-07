@@ -54,7 +54,7 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
           <DialogTitle className="font-display">{item ? 'Edit Trip Details' : 'New Trip Details'}</DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 py-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] space-y-5">
+        <div className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto overscroll-contain px-6 py-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] space-y-5">
           {/* Linked Engagement */}
           <MultiTypeSelect label="Places" values={form.place} options={placeOptions} onChange={(v) => set('place', v)} />
 
