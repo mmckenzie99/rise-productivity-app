@@ -72,7 +72,7 @@ export default function Trips() {
             <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground">
               <ArrowLeft className="h-4 w-4" /> Back to Home
             </Link>
-            <h1 className="font-display text-3xl font-bold">Trips</h1>
+            <h1 className="font-display text-2xl font-semibold">Trips</h1>
           </div>
           {isAdmin && (
             <TooltipProvider delayDuration={300}>

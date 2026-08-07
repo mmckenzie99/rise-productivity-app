@@ -201,7 +201,7 @@ export default function UserManagement() {
           <Link to="/"><Button variant="outline" className="border-border bg-card"><ArrowLeft className="mr-2 h-4 w-4" />Back to Home</Button></Link>
         </div>
         <div>
-          <h1 className="font-display text-3xl font-semibold">User permissions</h1>
+          <h1 className="font-display text-2xl font-semibold">User permissions</h1>
           <p className="mt-1 text-sm text-muted-foreground">Manage everyone's access in one place — see current permissions and toggle commenting or planning for each person.</p>
         </div>
 
