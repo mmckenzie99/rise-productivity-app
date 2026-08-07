@@ -1,10 +1,9 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Plus, CalendarPlus, UserPlus, Bell, CalendarDays } from 'lucide-react';
+import { Plus, CalendarPlus, UserPlus, CalendarDays } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { useAppSettings } from '@/hooks/useAppSettings';
 import { isOwner, isAdmin, resolvePlanFlag } from '@/lib/permissions';
 import { calendarUrl, todayStr } from '@/lib/calendarNav';
-import NotificationBell from './NotificationBell';
 
 const BTN = 'flex flex-1 flex-col items-center gap-0.5 py-1 text-[11px] font-medium text-foreground select-none active:opacity-70';
 
@@ -40,24 +39,6 @@ export default function QuickActionBar() {
             {a.label}
           </button>
         ))}
-        <div className="flex flex-1 justify-center">
-          <NotificationBell
-            side="top"
-            trigger={({ unreadCount }) => (
-              <button type="button" className={BTN} aria-label="Alerts">
-                <span className="relative">
-                  <Bell className="h-5 w-5 text-primary" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -right-2 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
-                  )}
-                </span>
-                Alerts
-              </button>
-            )}
-          />
-        </div>
       </div>
     </div>
   );
