@@ -14,8 +14,8 @@ export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, ha
   return (
     <CardWrapper onClick={() => onClick(item)} className={`group relative cursor-pointer border-l-4 ${ACCENT[item.status]} p-5 text-left transition hover:-translate-y-1 hover:shadow-lg`}>
       {isAdmin && onDuplicate && (
-        <button type="button" onClick={e => { e.stopPropagation(); onDuplicate(item); }} className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-xs font-medium text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:border-primary hover:text-primary">
-          <Copy className="h-3.5 w-3.5" />Duplicate
+        <button type="button" aria-label="Duplicate" title="Duplicate" onClick={e => { e.stopPropagation(); onDuplicate(item); }} className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:border-primary hover:text-primary">
+          <Copy className="h-3.5 w-3.5" />
         </button>
       )}
       <div className="mb-3 flex items-center gap-2">
