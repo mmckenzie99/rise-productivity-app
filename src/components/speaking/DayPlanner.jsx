@@ -1,4 +1,6 @@
-import { Check, BookOpen } from 'lucide-react';
+import { useRef } from 'react';
+import { Check, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { formatTime, calEngagementTone, planCalTone, planMultiTone, planDateKeys, isMultiDayPlan } from '@/lib/speaking';
 import { layoutColumns } from '@/lib/eventLayout';
 import WeeklyGoals from './WeeklyGoals';
@@ -60,6 +62,31 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
     }, {});
 
   const todayKey = keyOf(new Date());
+
+  const touchStart = useRef(null);
+  const swipeDir = useRef(0);
+
+  const shiftDay = (delta) => {
+    const d = new Date(cursor);
+    d.setDate(d.getDate() + delta);
+    swipeDir.current = delta;
+    onGoToDate?.(d);
+  };
+
+  const onTouchStart = (e) => {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+  };
+  const onTouchEnd = (e) => {
+    if (!touchStart.current || mode !== 'day') return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStart.current.x;
+    const dy = t.clientY - touchStart.current.y;
+    touchStart.current = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      shiftDay(dx < 0 ? 1 : -1);
+    }
+  };
 
   const multiDayEvents = (events || []).filter(isMultiDayPlan);
   const multiDayIds = new Set(multiDayEvents.map((e) => e.id));
@@ -135,7 +162,17 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
             />
           </div>
         )}
-        <div className={mode === 'week' ? 'hidden lg:block' : ''}>
+        <div
+          className={mode === 'week' ? 'hidden lg:block' : ''}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+        <motion.div
+          key={mode === 'day' ? keyOf(cursor) : 'week'}
+          initial={mode === 'day' ? { x: swipeDir.current > 0 ? 48 : -48, opacity: 0 } : false}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.18, ease: 'easeOut' }}
+        >
         {/* Day headers */}
         <div className="flex border-b border-foreground/20">
           <div className="w-12 shrink-0" />
@@ -148,23 +185,47 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                 key={i}
                 className={`relative flex-1 px-2 py-1.5 text-center ${isTodayCol ? 'bg-[#FBF0D0]/40' : ''}`}
               >
-                <div className={`text-[10px] uppercase tracking-wider ${isTodayCol ? 'text-[#3D2E00]' : 'text-muted-foreground'}`}>
-                  {DAY_LABELS[d.getDay()]}
-                </div>
-                {canJump ? (
-                  <button
-                    type="button"
-                    onClick={() => onGoToDate(new Date(d))}
-                    className={`text-sm font-semibold ${isTodayCol ? 'text-primary' : 'text-muted-foreground'} underline-offset-2 hover:text-primary hover:underline focus:text-primary focus:underline`}
-                    title="Open day view"
-                  >
-                    {dateNum}
-                  </button>
-                ) : (
-                  <div className={`text-sm font-semibold ${keyOf(d) === todayKey ? 'text-primary' : 'text-muted-foreground'}`}>
-                    {dateNum}
+                <div className="flex items-center justify-center gap-1">
+                  {mode === 'day' && (
+                    <button
+                      type="button"
+                      onClick={() => shiftDay(-1)}
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-foreground/15 bg-card text-foreground transition hover:bg-foreground/10"
+                      title="Previous day"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+                  )}
+                  <div>
+                    <div className={`text-[10px] uppercase tracking-wider ${isTodayCol ? 'text-[#3D2E00]' : 'text-muted-foreground'}`}>
+                      {DAY_LABELS[d.getDay()]}
+                    </div>
+                    {canJump ? (
+                      <button
+                        type="button"
+                        onClick={() => onGoToDate(new Date(d))}
+                        className={`text-sm font-semibold ${isTodayCol ? 'text-primary' : 'text-muted-foreground'} underline-offset-2 hover:text-primary hover:underline focus:text-primary focus:underline`}
+                        title="Open day view"
+                      >
+                        {dateNum}
+                      </button>
+                    ) : (
+                      <div className={`text-sm font-semibold ${keyOf(d) === todayKey ? 'text-primary' : 'text-muted-foreground'}`}>
+                        {dateNum}
+                      </div>
+                    )}
                   </div>
-                )}
+                  {mode === 'day' && (
+                    <button
+                      type="button"
+                      onClick={() => shiftDay(1)}
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-foreground/15 bg-card text-foreground transition hover:bg-foreground/10"
+                      title="Next day"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
                 {canReflect && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onSelectReflection?.(keyOf(d)); }}
@@ -284,6 +345,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
             Click an empty time slot to add a personal or work plan.
           </p>
         )}
+        </motion.div>
         </div>
       </div>
     </div>
