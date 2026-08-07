@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, GripVertical } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import EngagementCard from './EngagementCard';
 import CardWrapper from './CardWrapper';
 import CountdownBadge from './CountdownBadge';
@@ -7,7 +7,7 @@ import { daysUntil } from '@/lib/speaking';
 
 const GRID = 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3';
 
-export default function LocationGroup({ place, items, onClick, onDuplicate, isAdmin, tripPlaces, onLocate, dragHandleProps }) {
+export default function LocationGroup({ place, items, onClick, onDuplicate, isAdmin, tripPlaces, onLocate }) {
   const [expanded, setExpanded] = useState(false);
 
   if (items.length <= 1) {
@@ -15,11 +15,6 @@ export default function LocationGroup({ place, items, onClick, onDuplicate, isAd
     if (!item) return null;
     return (
       <div>
-        {dragHandleProps && (
-          <div {...dragHandleProps} className="flex justify-center pb-1 cursor-grab active:cursor-grabbing">
-            <GripVertical className="h-3.5 w-3.5 text-muted-foreground" />
-          </div>
-        )}
         <EngagementCard key={item.id} item={item} onClick={onClick} onDuplicate={onDuplicate} isAdmin={isAdmin} hasTrip={tripPlaces?.has((item.place||'').trim().toLowerCase())} onLocate={onLocate} />
       </div>
     );
@@ -34,11 +29,6 @@ export default function LocationGroup({ place, items, onClick, onDuplicate, isAd
   return (
     <CardWrapper className="sm:col-span-2 lg:col-span-3 p-4">
       <div className="flex items-center gap-2">
-        {dragHandleProps && (
-          <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing shrink-0" title="Drag to reorder">
-            <GripVertical className="h-4 w-4 text-muted-foreground" />
-          </div>
-        )}
         <button onClick={() => setExpanded(!expanded)} className="flex flex-1 items-center justify-between gap-2 text-left">
           <div className="flex flex-wrap items-center gap-2">
             <img src="https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/9f7bd64d0_Icon.png" alt="" className="h-5 w-5" />
@@ -53,11 +43,7 @@ export default function LocationGroup({ place, items, onClick, onDuplicate, isAd
       </div>
       {expanded && (
         <div className={`mt-4 ${GRID}`}>
-          {[...items].sort((a, b) => {
-            const t = (a.start_time || '99:99').localeCompare(b.start_time || '99:99');
-            if (t !== 0) return t;
-            return (a.deploy_date || '').localeCompare(b.deploy_date || '');
-          }).map(x => (
+          {[...items].sort((a, b) => (a.speaking_date || '9999-12-31').localeCompare(b.speaking_date || '9999-12-31')).map(x => (
             <EngagementCard key={x.id} item={x} onClick={onClick} onDuplicate={onDuplicate} isAdmin={isAdmin} hasTrip={tripPlaces?.has((x.place||'').trim().toLowerCase())} onLocate={onLocate} />
           ))}
         </div>

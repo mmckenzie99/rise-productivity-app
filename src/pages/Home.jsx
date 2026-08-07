@@ -6,7 +6,7 @@ import AppHeader from '@/components/speaking/AppHeader';
 
 import EngagementMap from '@/components/speaking/EngagementMap';
 import Filters from '@/components/speaking/Filters';
-import DraggableLocationGroup from '@/components/speaking/DraggableLocationGroup';
+import LocationGroup from '@/components/speaking/LocationGroup';
 
 import EngagementForm from '@/components/speaking/EngagementForm';
 import EngagementDetail from '@/components/speaking/EngagementDetail';
@@ -18,7 +18,6 @@ import TripDetail from '@/components/speaking/TripDetail';
 import TripListDialog from '@/components/speaking/TripListDialog';
 import ArchiveDialog from '@/components/speaking/ArchiveDialog';
 import EngagementQuickLook from '@/components/speaking/EngagementQuickLook';
-import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { tripPlaceKeys, tripHasPlace } from '@/lib/trips';
 import { base44 } from '@/api/base44Client';
 import { useAppSettings } from '@/hooks/useAppSettings';
@@ -44,7 +43,6 @@ export default function Home() {
   const [archive, setArchive] = useState(false);
   const [formPrefill, setFormPrefill] = useState(null);
   const [users, setUsers] = useState([]);
-  const [placeOrder, setPlaceOrder] = useState(() => { try { return JSON.parse(localStorage.getItem('placeOrder')) || []; } catch { return []; } });
   const mapRef = useRef(null);
   const [mapFocus, setMapFocus] = useState(null);
 
@@ -126,8 +124,7 @@ export default function Home() {
   const visible = useMemo(() => items.filter(x => x.status !== 'Completed' && (filters.status === 'all' || x.status === filters.status) && (filters.progress === 'all' || x.progress === filters.progress) && `${x.place || ''} ${x.title || ''} ${Array.isArray(x.presentation_type) ? x.presentation_type.join(' ') : x.presentation_type || ''}`.toLowerCase().includes(filters.search.toLowerCase())), [items, filters]);
   const archived = useMemo(() => items.filter(x => x.status === 'Completed'), [items]);
   const locationGroups = useMemo(() => { const m = {}; visible.forEach(x => { const k = x.place ? x.place.trim().toLowerCase() : `__n${x.id}`; if (!m[k]) m[k] = { place: x.place, items: [] }; m[k].items.push(x); }); return Object.values(m); }, [visible]);
-  const orderedGroups = useMemo(() => { const groups = locationGroups.map(g => ({ ...g, key: g.place ? g.place.trim().toLowerCase() : `__n${g.items[0].id}` })); if (placeOrder.length) { const orderMap = new Map(placeOrder.map((k, i) => [k, i])); groups.sort((a, b) => { const ai = orderMap.get(a.key); const bi = orderMap.get(b.key); if (ai !== undefined && bi !== undefined) return ai - bi; if (ai !== undefined) return -1; if (bi !== undefined) return 1; return 0; }); } return groups; }, [locationGroups, placeOrder]);
-  const onDragEnd = r => { if (!r.destination) return; const arr = [...orderedGroups]; const [moved] = arr.splice(r.source.index, 1); arr.splice(r.destination.index, 0, moved); const keys = arr.map(g => g.key); setPlaceOrder(keys); try { localStorage.setItem('placeOrder', JSON.stringify(keys)); } catch {} };
+  const orderedGroups = useMemo(() => { const groups = locationGroups.map(g => { const items = [...g.items].sort((a, b) => (a.speaking_date || '9999-12-31').localeCompare(b.speaking_date || '9999-12-31')); const nearest = items[0]?.speaking_date || '9999-12-31'; return { place: g.place, items, key: g.place ? g.place.trim().toLowerCase() : `__n${g.items[0].id}`, nearest }; }); groups.sort((a, b) => a.nearest.localeCompare(b.nearest)); return groups; }, [locationGroups]);
 
   return (
     <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
@@ -141,7 +138,7 @@ export default function Home() {
           </div>
           <div ref={mapRef}><EngagementMap items={visible} onView={openEngagement} focusItem={mapFocus} /></div>
           <Filters filters={filters} setFilters={setFilters} onArchive={() => setArchive(true)} />
-          {loading ? <div className="py-14 text-center">Loading engagements…</div> : visible.length ? <DragDropContext onDragEnd={onDragEnd}><Droppable droppableId="locations">{p => (<div ref={p.innerRef} {...p.droppableProps} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{orderedGroups.map((g, i) => <DraggableLocationGroup key={g.key} id={g.key} index={i} place={g.place} items={g.items} onClick={openEngagement} onDuplicate={duplicate} isAdmin={isAdmin} tripPlaces={tripPlaces} onLocate={locate} />)}{p.placeholder}</div>)}</Droppable></DragDropContext> : <div className="rounded-lg border border-dashed border-primary bg-card/60 py-14 text-center"><h2 className="font-display text-xl font-semibold">{items.length ? 'Nothing matches' : 'No engagements yet'}</h2><p className="mt-2 text-sm text-muted-foreground">{items.length ? 'Try a different filter.' : isAdmin ? 'Add your first speaking engagement to see it mapped here.' : 'Ask an administrator to add one.'}</p></div>}
+          {loading ? <div className="py-14 text-center">Loading engagements…</div> : visible.length ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{orderedGroups.map((g, i) => <LocationGroup key={g.key} place={g.place} items={g.items} onClick={openEngagement} onDuplicate={duplicate} isAdmin={isAdmin} tripPlaces={tripPlaces} onLocate={locate} />)}</div> : <div className="rounded-lg border border-dashed border-primary bg-card/60 py-14 text-center"><h2 className="font-display text-xl font-semibold">{items.length ? 'Nothing matches' : 'No engagements yet'}</h2><p className="mt-2 text-sm text-muted-foreground">{items.length ? 'Try a different filter.' : isAdmin ? 'Add your first speaking engagement to see it mapped here.' : 'Ask an administrator to add one.'}</p></div>}
          </div>
         </PullToRefresh>
       </div>
