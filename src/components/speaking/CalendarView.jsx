@@ -176,13 +176,13 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#D6DAE3] bg-white p-4">
+      <div className="flex flex-wrap items-center justify-center gap-2 rounded-lg border border-[#D6DAE3] bg-white p-4 sm:justify-between">
         <div className="flex min-w-0 items-center gap-2">
-          <Button variant="outline" size="icon" onClick={() => step(-1)} className="shrink-0 border-[#D6DAE3] bg-white">
+          <Button variant="outline" size="icon" onClick={() => step(-1)} className="shrink-0 border-[#D6DAE3] bg-white text-[#1B2A4B]">
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <h3 className="min-w-0 flex-1 truncate text-center font-display text-base font-semibold text-[#1B2A4B] sm:text-xl">{headerLabel()}</h3>
-          <Button variant="outline" size="icon" onClick={() => step(1)} className="shrink-0 border-[#D6DAE3] bg-white">
+          <Button variant="outline" size="icon" onClick={() => step(1)} className="shrink-0 border-[#D6DAE3] bg-white text-[#1B2A4B]">
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
