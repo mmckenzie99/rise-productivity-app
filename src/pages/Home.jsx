@@ -127,10 +127,11 @@ export default function Home() {
   const orderedGroups = useMemo(() => {
     const today = todayStr();
     const FAR = new Date(8640000000000000);
+    const dateOf = x => x.speaking_date || x.deploy_date;
     const groups = locationGroups.map(g => {
-      const items = [...g.items].sort((a, b) => (a.speaking_date || '9999-12-31').localeCompare(b.speaking_date || '9999-12-31'));
-      const upcoming = items.filter(x => x.speaking_date && x.speaking_date >= today);
-      const nearest = upcoming.length ? new Date(upcoming[0].speaking_date + 'T00:00:00') : FAR;
+      const items = [...g.items].sort((a, b) => (dateOf(a) || '9999-12-31').localeCompare(dateOf(b) || '9999-12-31'));
+      const upcoming = items.filter(x => dateOf(x) && dateOf(x) >= today);
+      const nearest = upcoming.length ? new Date(upcoming[0].speaking_date || upcoming[0].deploy_date) : FAR;
       return { place: g.place, items, key: g.place ? g.place.trim().toLowerCase() : `__n${g.items[0].id}`, nearest };
     });
     groups.sort((a, b) => a.nearest - b.nearest);
