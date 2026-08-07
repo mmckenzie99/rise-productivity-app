@@ -133,6 +133,7 @@ export default function Home() {
     <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
       <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={async () => { await loadEngagements(); }}>
+         <div className="space-y-6">
           <AppHeader onAdd={() => setSearchParams({ editEngagement: 'new' })} onInvite={() => setInvite(true)} isAdmin={isAdmin} isOwner={isOwner} newOpen={!!editEngagement} inviteOpen={invite} />
           <div className="relative sm:max-w-xs">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -141,6 +142,7 @@ export default function Home() {
           <div ref={mapRef}><EngagementMap items={visible} onView={openEngagement} focusItem={mapFocus} /></div>
           <Filters filters={filters} setFilters={setFilters} onArchive={() => setArchive(true)} />
           {loading ? <div className="py-14 text-center">Loading engagements…</div> : visible.length ? <DragDropContext onDragEnd={onDragEnd}><Droppable droppableId="locations">{p => (<div ref={p.innerRef} {...p.droppableProps} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{orderedGroups.map((g, i) => <DraggableLocationGroup key={g.key} id={g.key} index={i} place={g.place} items={g.items} onClick={openEngagement} onDuplicate={duplicate} isAdmin={isAdmin} tripPlaces={tripPlaces} onLocate={locate} />)}{p.placeholder}</div>)}</Droppable></DragDropContext> : <div className="rounded-lg border border-dashed border-primary bg-card/60 py-14 text-center"><h2 className="font-display text-xl font-semibold">{items.length ? 'Nothing matches' : 'No engagements yet'}</h2><p className="mt-2 text-sm text-muted-foreground">{items.length ? 'Try a different filter.' : isAdmin ? 'Add your first speaking engagement to see it mapped here.' : 'Ask an administrator to add one.'}</p></div>}
+         </div>
         </PullToRefresh>
       </div>
 
