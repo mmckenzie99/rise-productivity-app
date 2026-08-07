@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import ResponsiveSelect from './ResponsiveSelect';
 import RichTextEditor from './RichTextEditor';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Check, X, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import RecurrenceEditor from './RecurrenceEditor';
@@ -142,10 +142,12 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-h-[90vh] w-[calc(100vw-1.5rem)] overflow-y-auto bg-card sm:max-w-md">
-        <DialogHeader>
+      <DialogContent className="flex max-h-[90vh] w-[calc(100vw-1.5rem)] flex-col overflow-hidden bg-card p-0 sm:max-w-md">
+        <DialogHeader className="shrink-0 border-b border-border px-6 pb-3 pt-[calc(1.5rem+env(safe-area-inset-top))] sm:border-0">
           <DialogTitle className="font-display text-xl">{item?.id ? 'Edit' : 'New'} plan</DialogTitle>
         </DialogHeader>
+        <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
+        <div className="flex-1 min-h-0 space-y-4 overflow-y-auto overscroll-contain px-6 pb-4">
         {form.category === 'Personal' && (
           <div className="flex items-center gap-2 rounded-md bg-[#EDE3F8] px-3 py-2 text-[#5B2DA0]">
             <span className="h-2 w-2 rounded-full bg-[#5B2DA0]" />
@@ -167,7 +169,6 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
             </RadioGroup>
           </div>
         )}
-        <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
             <Label>Title</Label>
             <Input
@@ -278,26 +279,31 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
               <MessageCircle className="h-4 w-4" />Chat about this plan
             </button>
           )}
-          <DialogFooter>
+        </div>
+        <DialogFooter className="shrink-0 flex flex-row items-center justify-end gap-2 border-t border-border bg-card px-6 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3">
             {item?.id && onDelete && (
               <Button
                 type="button"
                 variant="destructive"
+                size="icon"
+                aria-label="Delete"
+                title="Delete"
                 onClick={async () => {
                   if (window.confirm('Delete this plan?')) {
                     setSaving(true);
                     try { await onDelete(item.id); } finally { setSaving(false); onClose(); }
                   }
                 }}
+                className="h-11 w-11 p-0 [&_svg]:size-5"
               >
-                Delete
+                <Trash2 />
               </Button>
             )}
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
+            <Button type="button" variant="outline" size="icon" aria-label="Cancel" title="Cancel" onClick={onClose} className="h-11 w-11 p-0 [&_svg]:size-5">
+              <X />
             </Button>
-            <Button disabled={saving} className="bg-[#D9A404] hover:bg-[#B89003]">
-              {saving ? 'Saving…' : 'Save plan'}
+            <Button type="submit" size="icon" disabled={saving} aria-label="Save plan" title="Save plan" className="h-11 w-11 p-0 [&_svg]:size-5 bg-[#D9A404] hover:bg-[#B89003]">
+              <Check />
             </Button>
           </DialogFooter>
         </form>
