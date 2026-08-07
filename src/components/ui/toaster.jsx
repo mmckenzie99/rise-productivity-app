@@ -18,7 +18,7 @@ export function Toaster() {
   const count = toasts.length;
 
   return (
-    <div className="fixed bottom-4 right-4 z-40 sm:bottom-6 sm:right-6">
+    <div className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] right-4 z-40 lg:bottom-6 lg:right-6">
       <Popover>
         <PopoverTrigger asChild>
           <button
