@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
-import { ArrowLeft, Plus, Building2, CalendarDays } from 'lucide-react';
+import { ArrowLeft, Plus, Building2, CalendarDays, LayoutGrid, CalendarClock, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import useTrips from '@/hooks/useTrips';
@@ -12,6 +12,12 @@ import TripDetail from '@/components/speaking/TripDetail';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
 
 const FILTERS = ['all', 'upcoming', 'completed'];
+
+const FILTER_ICONS = {
+  all: LayoutGrid,
+  upcoming: CalendarClock,
+  completed: CheckCircle2,
+};
 
 export default function Trips() {
   const { user } = useAuth();
@@ -83,16 +89,20 @@ export default function Trips() {
         </div>
 
         {/* Filters */}
-        <div className="flex gap-2">
-          {FILTERS.map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`rounded-md px-4 py-1.5 text-sm font-medium capitalize transition ${filter === f ? 'bg-[#1B2A4B] text-white' : 'bg-card text-foreground border border-border'}`}
-            >
-              {f} ({counts[f]})
-            </button>
-          ))}
+        <div className="flex gap-2 mb-6">
+          {FILTERS.map(f => {
+            const Icon = FILTER_ICONS[f];
+            return (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`inline-flex items-center gap-1.5 rounded-md px-4 py-1.5 text-sm font-medium capitalize transition ${filter === f ? 'bg-[#1B2A4B] text-white' : 'bg-card text-foreground border border-border'}`}
+              >
+                {Icon && <Icon className="h-3.5 w-3.5" />}
+                {f} ({counts[f]})
+              </button>
+            );
+          })}
         </div>
 
         {/* Trip list */}
