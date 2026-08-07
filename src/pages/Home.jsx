@@ -124,7 +124,18 @@ export default function Home() {
   const visible = useMemo(() => items.filter(x => x.status !== 'Completed' && (filters.status === 'all' || x.status === filters.status) && (filters.progress === 'all' || x.progress === filters.progress) && `${x.place || ''} ${x.title || ''} ${Array.isArray(x.presentation_type) ? x.presentation_type.join(' ') : x.presentation_type || ''}`.toLowerCase().includes(filters.search.toLowerCase())), [items, filters]);
   const archived = useMemo(() => items.filter(x => x.status === 'Completed'), [items]);
   const locationGroups = useMemo(() => { const m = {}; visible.forEach(x => { const k = x.place ? x.place.trim().toLowerCase() : `__n${x.id}`; if (!m[k]) m[k] = { place: x.place, items: [] }; m[k].items.push(x); }); return Object.values(m); }, [visible]);
-  const orderedGroups = useMemo(() => { const groups = locationGroups.map(g => { const items = [...g.items].sort((a, b) => (a.speaking_date || '9999-12-31').localeCompare(b.speaking_date || '9999-12-31')); const nearest = items[0]?.speaking_date || '9999-12-31'; return { place: g.place, items, key: g.place ? g.place.trim().toLowerCase() : `__n${g.items[0].id}`, nearest }; }); groups.sort((a, b) => a.nearest.localeCompare(b.nearest)); return groups; }, [locationGroups]);
+  const orderedGroups = useMemo(() => {
+    const today = todayStr();
+    const FAR = new Date(8640000000000000);
+    const groups = locationGroups.map(g => {
+      const items = [...g.items].sort((a, b) => (a.speaking_date || '9999-12-31').localeCompare(b.speaking_date || '9999-12-31'));
+      const upcoming = items.filter(x => x.speaking_date && x.speaking_date >= today);
+      const nearest = upcoming.length ? new Date(upcoming[0].speaking_date + 'T00:00:00') : FAR;
+      return { place: g.place, items, key: g.place ? g.place.trim().toLowerCase() : `__n${g.items[0].id}`, nearest };
+    });
+    groups.sort((a, b) => a.nearest - b.nearest);
+    return groups;
+  }, [locationGroups]);
 
   return (
     <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
