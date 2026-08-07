@@ -142,7 +142,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.5rem)] flex-col overflow-hidden bg-card p-0 sm:max-w-md">
+      <DialogContent className="flex h-[calc(100dvh-2rem)] max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.5rem)] flex-col overflow-hidden bg-card p-0 sm:max-w-md">
         <DialogHeader className="shrink-0 border-b border-border px-6 pb-3 pt-[calc(1.5rem+env(safe-area-inset-top))] sm:border-0">
           <DialogTitle className="font-display text-xl">{item?.id ? 'Edit' : 'New'} plan</DialogTitle>
         </DialogHeader>
