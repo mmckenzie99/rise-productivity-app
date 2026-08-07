@@ -142,12 +142,13 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
           {days.map((d, i) => {
             const dateNum = d.getDate();
             const canJump = mode === 'week' && onGoToDate;
+            const isTodayCol = keyOf(d) === todayKey;
             return (
               <div
                 key={i}
-                className={`relative flex-1 px-2 py-1.5 text-center ${keyOf(d) === todayKey ? 'bg-[#FBF0D0]/40' : ''}`}
+                className={`relative flex-1 px-2 py-1.5 text-center ${isTodayCol ? 'bg-[#FBF0D0]/40' : ''}`}
               >
-                <div className="text-[10px] uppercase tracking-wider text-[#5A6781]">
+                <div className={`text-[10px] uppercase tracking-wider ${isTodayCol ? 'text-[#3D2E00]' : 'text-[#5A6781]'}`}>
                   {DAY_LABELS[d.getDay()]}
                 </div>
                 {canJump ? (
