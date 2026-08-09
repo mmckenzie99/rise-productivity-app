@@ -57,7 +57,7 @@ export default function Tasks() {
       <div className="mx-auto max-w-2xl space-y-5 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={loadTasks}>
         <div className="flex items-center justify-between gap-3">
-          <Link to="/" className="hidden lg:inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground">
+          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground">
             <ArrowLeft className="h-4 w-4" /> Back to Home
           </Link>
           <h1 className="font-display text-2xl font-semibold">Tasks</h1>

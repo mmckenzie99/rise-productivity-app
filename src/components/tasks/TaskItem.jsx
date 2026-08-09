@@ -61,7 +61,7 @@ export default function TaskItem({ task, onToggle, onEdit, onSchedule, onDelete,
           onClick={() => onSchedule(task)}
           aria-label="Schedule as plan"
           title="Schedule as plan"
-          className="shrink-0 rounded p-1.5 text-muted-foreground transition hover:bg-accent hover:text-primary"
+          className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded text-muted-foreground transition hover:bg-accent hover:text-primary"
         >
           <CalendarPlus className="h-3.5 w-3.5" />
         </button>
@@ -72,7 +72,7 @@ export default function TaskItem({ task, onToggle, onEdit, onSchedule, onDelete,
           type="button"
           onClick={() => onEdit(task)}
           aria-label="Edit task"
-          className="shrink-0 rounded p-1.5 text-muted-foreground transition hover:bg-accent hover:text-foreground"
+          className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded text-muted-foreground transition hover:bg-accent hover:text-foreground"
         >
           <Pencil className="h-3.5 w-3.5" />
         </button>
@@ -84,7 +84,7 @@ export default function TaskItem({ task, onToggle, onEdit, onSchedule, onDelete,
             <button
               type="button"
               aria-label="Delete task"
-              className="shrink-0 rounded p-1.5 text-destructive transition hover:bg-destructive/10"
+              className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded text-destructive transition hover:bg-destructive/10"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>

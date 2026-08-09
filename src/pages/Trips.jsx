@@ -69,7 +69,7 @@ export default function Trips() {
         <PullToRefresh onRefresh={load}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <Link to="/" className="hidden lg:inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground">
+            <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground">
               <ArrowLeft className="h-4 w-4" /> Back to Home
             </Link>
             <h1 className="font-display text-2xl font-semibold">Trips</h1>
