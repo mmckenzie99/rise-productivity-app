@@ -24,9 +24,22 @@ export default function useInboxItems() {
 
   const save = async (item) => {
     const { id, created_date, updated_date, created_by_id, ...fields } = item;
-    if (id) await base44.entities.InboxItem.update(id, fields);
-    else await base44.entities.InboxItem.create(fields);
-    await load();
+    if (id) {
+      setItems((prev) => prev.map((t) => (t.id === id ? { ...t, ...fields } : t)));
+      try {
+        await base44.entities.InboxItem.update(id, fields);
+      } catch (e) {
+        console.error('Failed to save inbox item', e);
+        await load();
+      }
+    } else {
+      try {
+        const created = await base44.entities.InboxItem.create(fields);
+        setItems((prev) => [created, ...prev]);
+      } catch (e) {
+        console.error('Failed to create inbox item', e);
+      }
+    }
   };
 
 const remove = async (id) => { const prevItems = items; setItems((prev) => prev.filter((t) => t.id !== id)); try { await base44.entities.InboxItem.delete(id); } catch (e) { console.error('Failed to delete inbox item', e); setItems(prevItems); } };

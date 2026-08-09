@@ -18,12 +18,13 @@ import EngagementForm from '@/components/speaking/EngagementForm';
 import TripForm from '@/components/speaking/TripForm';
 import CalendarEventForm from '@/components/speaking/CalendarEventForm';
 import TaskForm from '@/components/tasks/TaskForm';
+import PullToRefresh from '@/components/speaking/PullToRefresh';
 
 export default function Inbox() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { items, loading, save, remove } = useInboxItems();
+  const { items, loading, save, remove, load: loadInbox } = useInboxItems();
   const { items: engagements, save: saveEngagement } = useEngagements();
   const { save: saveTrip } = useTrips();
   const { save: saveCalEvent } = useCalendarEvents();
@@ -119,8 +120,9 @@ export default function Inbox() {
   return (
     <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
       <div className="mx-auto max-w-3xl space-y-5 px-4 py-6 sm:px-6 sm:py-9">
+        <PullToRefresh onRefresh={loadInbox}>
         <div className="flex items-center justify-between gap-3">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground">
+          <Link to="/" className="hidden lg:inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground">
             <ArrowLeft className="h-4 w-4" /> Back to Home
           </Link>
           <h1 className="font-display text-2xl font-semibold">Inbox</h1>
@@ -157,6 +159,7 @@ export default function Inbox() {
         )}
 
         <div className="h-28 lg:hidden" />
+        </PullToRefresh>
       </div>
 
       <InboxCaptureForm open={captureOpen} onClose={() => setCaptureOpen(false)} onSave={handleSave} />

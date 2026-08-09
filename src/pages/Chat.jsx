@@ -223,7 +223,7 @@ export default function Chat() {
         <div className="flex items-center gap-3 py-4">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+            className="hidden lg:inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" /> Back to Home
           </Link>

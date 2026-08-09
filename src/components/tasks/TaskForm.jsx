@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import ResponsiveSelect from '@/components/speaking/ResponsiveSelect';
 import DatePicker from '@/components/speaking/DatePicker';
 import TimePicker from '@/components/speaking/TimePicker';
 import { localDate, localTime, fromLocalInput } from '@/lib/inbox';
@@ -85,18 +85,14 @@ export default function TaskForm({ open, item, plans, onClose, onSave, onSchedul
                 <Label>
                   Linked plan <span className="font-normal text-muted-foreground">(optional)</span>
                 </Label>
-                <Select value={linkedPlanId} onValueChange={setLinkedPlanId}>
-                  <SelectTrigger className="border-border bg-card">
-                    <SelectValue placeholder="None" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {plans.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.title}{p.date ? ` · ${p.date}` : ''}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <ResponsiveSelect
+                  value={linkedPlanId}
+                  onValueChange={setLinkedPlanId}
+                  options={plans.map((p) => ({ value: p.id, label: `${p.title}${p.date ? ` · ${p.date}` : ''}` }))}
+                  placeholder="None"
+                  triggerClassName="border-border bg-card"
+                  label="Linked plan"
+                />
               </div>
             )}
 

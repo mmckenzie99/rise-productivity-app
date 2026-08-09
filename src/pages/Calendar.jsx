@@ -16,6 +16,7 @@ import CalendarEventForm from '@/components/speaking/CalendarEventForm';
 import DailyReflectionOverlay from '@/components/reflection/DailyReflectionOverlay';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { todayStr } from '@/lib/calendarNav';
+import PullToRefresh from '@/components/speaking/PullToRefresh';
 
 const pad2 = (v) => String(v).padStart(2, '0');
 
@@ -24,7 +25,7 @@ export default function Calendar() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { items, loading, load: loadEngagements } = useEngagements();
-  const { items: calEvents, loading: calEventsLoading, save: saveCalEvent, remove: removeCalEvent } = useCalendarEvents();
+  const { items: calEvents, loading: calEventsLoading, save: saveCalEvent, remove: removeCalEvent, load: loadCalEvents } = useCalendarEvents();
   const { settings } = useAppSettings();
   const [users, setUsers] = useState([]);
   const lastSaveWasNewRef = useRef(false);
@@ -152,6 +153,7 @@ export default function Calendar() {
   return (
     <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
       <div className="mx-auto max-w-6xl space-y-5 px-4 py-6 sm:px-6 sm:py-9">
+        <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); }}>
         <div className="flex items-center justify-between gap-3">
           <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground">
             <ArrowLeft className="h-4 w-4" /> Back to Home
@@ -246,6 +248,7 @@ export default function Calendar() {
         />
 
         <div className="h-28 lg:hidden" />
+        </PullToRefresh>
       </div>
     </main>
   );

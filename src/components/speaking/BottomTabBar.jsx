@@ -39,10 +39,15 @@ export default function BottomTabBar() {
     const open = modalCount();
     if (isCurrent) {
       // Already on this tab: pop any open modals/sheets back to the tab root
-      // (native iOS "tap selected tab to go home"), then scroll up and reset.
+      // (native iOS "tap selected tab to go home"). If we're deeper in the
+      // tab's stack (e.g. /chat/:roomId), reset to the tab root page.
       e.preventDefault();
       if (open > 0) {
         window.dispatchEvent(new CustomEvent('b44:dismiss-modals'));
+      }
+      if (pathname !== to) {
+        navigate(to);
+        return;
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
       window.dispatchEvent(new CustomEvent('b44:reset-filters'));

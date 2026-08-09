@@ -24,7 +24,7 @@ import { useAppSettings } from '@/hooks/useAppSettings';
 import { resolveFeature } from '@/lib/permissions';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
-import { useCloseModal } from '@/hooks/useCloseModal';
+import { useHistoryBack } from '@/hooks/useHistoryBack';
 import { deleteLinkedConversations } from '@/lib/chat';
 import TasksOverview from '@/components/speaking/TasksOverview';
 
@@ -76,12 +76,12 @@ export default function Home() {
   useEffect(() => { if (!editEngagement) setFormPrefill(null); }, [editEngagement]);
 
   // --- close handlers (history-aware with idx fallback) ---
-  const closeEngagement = useCloseModal('engagementId');
-  const closeEditEngagement = useCloseModal('editEngagement');
-  const closeQuickLook = useCloseModal('quickLook');
-  const closeTrip = useCloseModal('tripId');
-  const closeEditTrip = useCloseModal('editTrip');
-  const closeTrips = useCloseModal('trips');
+  const closeEngagement = useHistoryBack('engagementId');
+  const closeEditEngagement = useHistoryBack('editEngagement');
+  const closeQuickLook = useHistoryBack('quickLook');
+  const closeTrip = useHistoryBack('tripId');
+  const closeEditTrip = useHistoryBack('editTrip');
+  const closeTrips = useHistoryBack('trips');
 
   const clearParam = useCallback((name) => setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete(name); return sp; }, { replace: true }), [setSearchParams]);
   const pushParam = useCallback((fn) => setSearchParams(prev => { const sp = new URLSearchParams(prev); fn(sp); return sp; }), [setSearchParams]);
@@ -112,8 +112,8 @@ export default function Home() {
   const tripPlaces = useMemo(() => tripPlaceKeys(trips), [trips]);
   const engagementTrip = selected ? trips.find(t => tripHasPlace(t, selected.place)) : null;
 
-  const edit = x => setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete('engagementId'); sp.set('editEngagement', x.id); return sp; }, { replace: true });
-  const editTripNav = x => setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete('tripId'); sp.set('editTrip', x.id); return sp; }, { replace: true });
+  const edit = x => setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete('engagementId'); sp.set('editEngagement', x.id); return sp; });
+  const editTripNav = x => setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete('tripId'); sp.set('editTrip', x.id); return sp; });
   const viewTripFromEng = () => { if (engagementTrip) setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete('engagementId'); sp.set('tripId', engagementTrip.id); return sp; }, { replace: true }); };
   const duplicate = x => { const { id, created_date, updated_date, created_by_id, ...fields } = x; setFormPrefill({ ...fields, title: `${x.title} (Copy)` }); setSearchParams({ editEngagement: 'new' }); };
   const del = async x => { if (window.confirm(`Delete "${x.title}"?`)) { await remove(x.id); await deleteLinkedConversations(x.id, 'engagement'); return true; } return false; };

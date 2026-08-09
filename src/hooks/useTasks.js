@@ -24,9 +24,22 @@ export default function useTasks() {
 
   const save = async (item) => {
     const { id, created_date, updated_date, created_by_id, ...fields } = item;
-    if (id) await base44.entities.Task.update(id, fields);
-    else await base44.entities.Task.create(fields);
-    await load();
+    if (id) {
+      setItems((prev) => prev.map((t) => (t.id === id ? { ...t, ...fields } : t)));
+      try {
+        await base44.entities.Task.update(id, fields);
+      } catch (e) {
+        console.error('Failed to save task', e);
+        await load();
+      }
+    } else {
+      try {
+        const created = await base44.entities.Task.create(fields);
+        setItems((prev) => [created, ...prev]);
+      } catch (e) {
+        console.error('Failed to create task', e);
+      }
+    }
   };
 
 const toggle = async (task) => { setItems((prev) => prev.map((t) => (t.id === task.id ? { ...t, is_done: !task.is_done } : t))); try { await base44.entities.Task.update(task.id, { is_done: !task.is_done }); } catch (e) { console.error('Failed to toggle task', e); setItems((prev) => prev.map((t) => (t.id === task.id ? { ...t, is_done: task.is_done } : t))); } };
