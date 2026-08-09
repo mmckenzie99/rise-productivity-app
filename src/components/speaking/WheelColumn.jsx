@@ -40,7 +40,7 @@ export default function WheelColumn({ items, value, onChange, formatLabel, class
       ref={ref}
       onScroll={handleScroll}
       style={{ height: ITEM_H * VISIBLE }}
-      className={cn('no-scrollbar snap-y snap-mandatory overflow-y-auto', className)}
+      className={cn('relative z-10 no-scrollbar snap-y snap-mandatory overflow-y-auto', className)}
     >
       {padded.map((it, i) => (
         <div key={i} style={{ height: ITEM_H }} className="flex snap-start items-center justify-center">
