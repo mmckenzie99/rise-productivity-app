@@ -12,6 +12,7 @@ import { MessageCircle, Check, X, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import RecurrenceEditor from './RecurrenceEditor';
 import ScrollFade from './ScrollFade';
+import LinkedTasksSection from '@/components/tasks/LinkedTasksSection';
 import { generateOccurrences } from '@/lib/recurrence';
 import { useAuth } from '@/lib/AuthContext';
 import useFeatureFlag, { usePlanFlag } from '@/hooks/useFeatureFlag';
@@ -270,6 +271,8 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
               placeholder="Add notes — use the link button to insert a clickable link…"
             />
           </div>
+
+          {item?.id && <LinkedTasksSection planId={item.id} />}
 
           {item?.id && canStart && (
             <button

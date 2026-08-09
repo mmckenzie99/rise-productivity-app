@@ -105,6 +105,7 @@ export default function Tasks() {
                 onEdit={openEdit}
                 onSchedule={openSchedule}
                 onDelete={remove}
+                linkedPlanTitle={plans.find((p) => p.id === t.linked_plan_id)?.title}
               />
             ))}
           </div>

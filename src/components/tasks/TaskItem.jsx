@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Pencil, Trash2, CalendarPlus } from 'lucide-react';
+import { Pencil, Trash2, CalendarPlus, CalendarDays } from 'lucide-react';
 import { formatDateTime } from '@/lib/inbox';
 
 const isOverdue = (iso) => {
@@ -21,7 +21,7 @@ const isOverdue = (iso) => {
   return !isNaN(d.getTime()) && d.getTime() < Date.now();
 };
 
-export default function TaskItem({ task, onToggle, onEdit, onSchedule, onDelete, compact }) {
+export default function TaskItem({ task, onToggle, onEdit, onSchedule, onDelete, compact, linkedPlanTitle }) {
   const overdue = !task.is_done && isOverdue(task.due_date);
   return (
     <div
@@ -42,6 +42,12 @@ export default function TaskItem({ task, onToggle, onEdit, onSchedule, onDelete,
         {task.due_date && (
           <p className={cn('mt-0.5 text-xs', overdue ? 'font-medium text-primary' : 'text-muted-foreground')}>
             {formatDateTime(task.due_date)}
+          </p>
+        )}
+        {task.linked_plan_id && linkedPlanTitle && (
+          <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <CalendarDays className="h-3 w-3" />
+            Linked to: {linkedPlanTitle}
           </p>
         )}
         {!compact && task.notes && (

@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
 import { ListTodo, ChevronRight } from 'lucide-react';
 import useTasks from '@/hooks/useTasks';
+import useCalendarEvents from '@/hooks/useCalendarEvents';
 import TaskItem from '@/components/tasks/TaskItem';
 
 export default function TasksOverview() {
   const { items, loading, toggle } = useTasks();
+  const { items: plans } = useCalendarEvents();
   const outstanding = items
     .filter((t) => !t.is_done)
     .sort((a, b) => (a.due_date || '9999').localeCompare(b.due_date || '9999'))
@@ -33,7 +35,13 @@ export default function TasksOverview() {
       ) : (
         <div className="space-y-2">
           {outstanding.map((t) => (
-            <TaskItem key={t.id} task={t} onToggle={toggle} compact />
+            <TaskItem
+              key={t.id}
+              task={t}
+              onToggle={toggle}
+              compact
+              linkedPlanTitle={plans.find((p) => p.id === t.linked_plan_id)?.title}
+            />
           ))}
         </div>
       )}
