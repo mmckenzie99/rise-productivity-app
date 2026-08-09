@@ -31,8 +31,7 @@ export default function BottomTabBar() {
   }, [pathname]);
 
   const modalCount = () => {
-    const s = window.history.state?.b44_modal;
-    return s ? s.split('|').length : 0;
+    return document.querySelectorAll('[role="dialog"][data-state="open"]').length;
   };
 
   const handleTap = (e, to) => {
