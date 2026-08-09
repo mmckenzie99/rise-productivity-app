@@ -100,7 +100,7 @@ export default function TaskItem({ task, onToggle, onEdit, onSchedule, onDelete,
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 className={cn(buttonVariants({ variant: 'destructive' }))}
-                onClick={() => onDelete(task)}
+                onClick={() => onDelete(task.id)}
               >
                 Delete
               </AlertDialogAction>
