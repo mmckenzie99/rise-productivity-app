@@ -46,16 +46,19 @@ export default function NotificationBell({ trigger, side }) {
                   if (n.window_label === 'New Message' && n.engagement_id) {
                     navigate(`/chat/${n.engagement_id}`);
                     if (!n.read) keepForReview(n.id);
+                  } else if (n.window_label === 'Inbox Reminder') {
+                    navigate('/inbox');
+                    if (!n.read) keepForReview(n.id);
                   }
                 }}
-                className={`flex items-start gap-2 border-b border-[#D6DAE3] p-3 last:border-0 ${!n.read ? 'bg-[#D9A404]/5' : ''} ${n.window_label === 'New Message' ? 'cursor-pointer hover:bg-[#F0F2F6]' : ''}`}
+                className={`flex items-start gap-2 border-b border-[#D6DAE3] p-3 last:border-0 ${!n.read ? 'bg-[#D9A404]/5' : ''} ${(n.window_label === 'New Message' || n.window_label === 'Inbox Reminder') ? 'cursor-pointer hover:bg-[#F0F2F6]' : ''}`}
               >
                 <div className="flex-1">
                   <p className="line-clamp-2 break-words text-sm font-medium leading-tight text-[#1B2A4B]">{n.engagement_title}</p>
                   <p className="mt-0.5 text-xs text-[#5A6781]">
                     {n.window_label === 'New Message'
                       ? 'New Conversation'
-                      : (n.window_label === 'Assigned to you' || n.window_label === 'Completed'
+                      : (n.window_label === 'Assigned to you' || n.window_label === 'Completed' || n.window_label === 'Inbox Reminder'
                           ? n.window_label
                           : `${n.window_label} reminder`)}
                     {n.speaking_date && ` · ${formatDate(n.speaking_date)}`}

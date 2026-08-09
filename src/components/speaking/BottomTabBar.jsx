@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Home, LayoutDashboard, Plane, MessageCircle } from 'lucide-react';
+import { Home, LayoutDashboard, Plane, MessageCircle, Inbox as InboxIcon } from 'lucide-react';
 import QuickActionBar from './QuickActionBar';
 
 const TABS = [
   { to: '/', label: 'Home', icon: Home, end: true },
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/trips', label: 'Trips', icon: Plane },
+  { to: '/inbox', label: 'Inbox', icon: InboxIcon },
   { to: '/chat', label: 'Chat', icon: MessageCircle },
 ];
 

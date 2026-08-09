@@ -1,4 +1,4 @@
-import { LogOut, Users, CalendarDays, Plane, LayoutDashboard, Menu, MessageCircle, Plus } from 'lucide-react';
+import { LogOut, Users, CalendarDays, Plane, LayoutDashboard, Menu, MessageCircle, Plus, Inbox as InboxIcon } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
@@ -22,6 +22,7 @@ export default function AppHeader({ onAdd, onInvite, isAdmin, isOwner, newOpen, 
           <Link to="/dashboard"><Button variant="outline" className={pathname === '/dashboard' ? ACTIVE : IDLE}><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Button></Link>
           <Link to="/chat"><Button variant="outline" className={pathname === '/chat' ? ACTIVE : IDLE}><MessageCircle className="mr-2 h-4 w-4" />Chat</Button></Link>
           <Link to="/trips"><Button variant="outline" className={pathname === '/trips' ? ACTIVE : IDLE}><Plane className="mr-2 h-4 w-4" />Trips</Button></Link>
+          <Link to="/inbox"><Button variant="outline" className={pathname === '/inbox' ? ACTIVE : IDLE}><InboxIcon className="mr-2 h-4 w-4" />Inbox</Button></Link>
           <Link to="/calendar"><Button variant="outline" className={pathname === '/calendar' ? ACTIVE : IDLE}><CalendarDays className="mr-2 h-4 w-4" />Calendar</Button></Link>
           {(isAdmin || isOwner) && (
             <DropdownMenu>

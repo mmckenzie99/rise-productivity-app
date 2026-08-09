@@ -18,6 +18,7 @@ const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
 const Home = lazy(() => import('@/pages/Home'));
 const Calendar = lazy(() => import('@/pages/Calendar'));
 const Trips = lazy(() => import('@/pages/Trips'));
+const Inbox = lazy(() => import('@/pages/Inbox'));
 const UserManagement = lazy(() => import('@/pages/UserManagement'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Chat = lazy(() => import('@/pages/Chat'));
@@ -60,6 +61,7 @@ const AuthenticatedApp = () => {
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/trips" element={<Trips />} />
+            <Route path="/inbox" element={<Inbox />} />
             <Route path="/users" element={<UserManagement />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/chat/:roomId" element={<Chat />} />
