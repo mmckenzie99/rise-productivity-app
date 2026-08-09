@@ -29,17 +29,9 @@ export default function useTasks() {
     await load();
   };
 
-  const toggle = async (task) => {
-    await base44.entities.Task.update(task.id, { is_done: !task.is_done });
-    await load();
-  };
+const toggle = async (task) => { setItems((prev) => prev.map((t) => (t.id === task.id ? { ...t, is_done: !task.is_done } : t))); try { await base44.entities.Task.update(task.id, { is_done: !task.is_done }); } catch (e) { console.error('Failed to toggle task', e); setItems((prev) => prev.map((t) => (t.id === task.id ? { ...t, is_done: task.is_done } : t))); } };
 
-  const remove = async (taskOrId) => {
-    const id = typeof taskOrId === 'object' ? taskOrId?.id : taskOrId;
-    if (!id) return;
-    await base44.entities.Task.delete(id);
-    await load();
-  };
+const remove = async (taskOrId) => { const id = typeof taskOrId === 'object' ? taskOrId?.id : taskOrId; if (!id) return; const prevItems = items; setItems((prev) => prev.filter((t) => t.id !== id)); try { await base44.entities.Task.delete(id); } catch (e) { console.error('Failed to delete task', e); setItems(prevItems); } };
 
   return { items, loading, save, remove, toggle, load };
 }
