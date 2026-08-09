@@ -76,7 +76,7 @@ export default function InboxCaptureForm({ open, onClose, onSave }) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="flex left-0 right-0 top-0 max-h-[calc(100dvh_-_7.5rem_-_env(safe-area-inset-bottom))] max-w-none translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden rounded-none p-0 sm:left-[50%] sm:top-[50%] sm:max-h-[calc(100dvh-2rem)] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
+<DialogContent className="flex !inset-x-0 !top-0 max-h-[calc(100dvh_-_7.5rem_-_env(safe-area-inset-bottom))] max-w-none !translate-x-0 !translate-y-0 flex-col gap-0 overflow-hidden rounded-none p-0 sm:!left-[50%] sm:!top-[50%] sm:max-h-[calc(100dvh-2rem)] sm:max-w-lg sm:!translate-x-[-50%] sm:!translate-y-[-50%] sm:rounded-lg">
         <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
           <DialogHeader className="shrink-0 border-b border-border px-6 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-3">
             <DialogTitle className="font-display text-xl">Quick Capture</DialogTitle>
