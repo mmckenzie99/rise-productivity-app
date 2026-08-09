@@ -17,6 +17,7 @@ import DailyReflectionOverlay from '@/components/reflection/DailyReflectionOverl
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { todayStr } from '@/lib/calendarNav';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
+import PageHeader from '@/components/speaking/PageHeader';
 
 const pad2 = (v) => String(v).padStart(2, '0');
 
@@ -151,23 +152,18 @@ export default function Calendar() {
   const overlayCursor = calDate ? new Date(calDate + 'T00:00:00') : new Date();
 
   return (
-    <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
+    <main className="min-h-screen bg-background text-foreground pb-safe">
+      <PageHeader title="Calendar" actions={
+        <button
+          onClick={() => downloadICS(generateICSBatch(items), 'all-engagements.ics')}
+          disabled={!items.length}
+          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-primary hover:text-primary disabled:opacity-40"
+        >
+          <Download className="h-3.5 w-3.5" />Export all
+        </button>
+      } />
       <div className="mx-auto max-w-6xl space-y-5 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); }}>
-        <div className="flex items-center justify-between gap-3">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" /> Back to Home
-          </Link>
-          <h1 className="font-display text-2xl font-semibold">Calendar</h1>
-          <button
-            onClick={() => downloadICS(generateICSBatch(items), 'all-engagements.ics')}
-            disabled={!items.length}
-            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-primary hover:text-primary disabled:opacity-40"
-          >
-            <Download className="h-3.5 w-3.5" />Export all
-          </button>
-        </div>
-
         {/* Base: Month view (always rendered) */}
         <CalendarView
           items={items}

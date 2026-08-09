@@ -11,6 +11,7 @@ import { buildPlanPrefillFromTask } from '@/lib/tasks';
 import { toast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
+import PageHeader from '@/components/speaking/PageHeader';
 
 const FILTERS = ['outstanding', 'done'];
 
@@ -53,22 +54,17 @@ export default function Tasks() {
   const planPrefill = scheduleTask ? buildPlanPrefillFromTask(scheduleTask) : null;
 
   return (
-    <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
+    <main className="min-h-screen bg-background text-foreground pb-safe">
+      <PageHeader title="Tasks" actions={
+        <button
+          onClick={openNew}
+          className="inline-flex items-center gap-1.5 rounded-md bg-[#D9A404] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#B89003]"
+        >
+          <Plus className="h-4 w-4" />New
+        </button>
+      } />
       <div className="mx-auto max-w-2xl space-y-5 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={loadTasks}>
-        <div className="flex items-center justify-between gap-3">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" /> Back to Home
-          </Link>
-          <h1 className="font-display text-2xl font-semibold">Tasks</h1>
-          <button
-            onClick={openNew}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#D9A404] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#B89003]"
-          >
-            <Plus className="h-4 w-4" />New
-          </button>
-        </div>
-
         <div className="flex gap-2">
           {FILTERS.map((f) => (
             <button

@@ -12,6 +12,7 @@ import ResponsiveSelect from '@/components/speaking/ResponsiveSelect';
 import { useAppSettings, DEFAULT_FEATURES } from '@/hooks/useAppSettings';
 import { resolveFeature, resolvePlanFlag, DASHBOARD_SECTIONS } from '@/lib/permissions';
 import ReflectionOversightDialog from '@/components/reflection/ReflectionOversightDialog';
+import PageHeader from '@/components/speaking/PageHeader';
 
 function PermissionToggle({ icon, label, description, checked, disabled, onCheckedChange }) {
   return (
@@ -194,16 +195,10 @@ export default function UserManagement() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
+    <main className="min-h-screen bg-background text-foreground pb-safe">
+      <PageHeader title="User permissions" />
       <div className="mx-auto max-w-4xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
-        <div className="flex items-center justify-between border-b border-border pb-5">
-          <Brand />
-          <Link to="/"><Button variant="outline" className="border-border bg-card"><ArrowLeft className="mr-2 h-4 w-4" />Back to Home</Button></Link>
-        </div>
-        <div>
-          <h1 className="font-display text-2xl font-semibold">User permissions</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Manage everyone's access in one place — see current permissions and toggle commenting or planning for each person.</p>
-        </div>
+        <p className="text-sm text-muted-foreground">Manage everyone's access in one place — see current permissions and toggle commenting or planning for each person.</p>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded-lg border border-border bg-card p-3">

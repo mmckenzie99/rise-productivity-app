@@ -19,6 +19,7 @@ import TripForm from '@/components/speaking/TripForm';
 import CalendarEventForm from '@/components/speaking/CalendarEventForm';
 import TaskForm from '@/components/tasks/TaskForm';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
+import PageHeader from '@/components/speaking/PageHeader';
 
 export default function Inbox() {
   const { user } = useAuth();
@@ -118,22 +119,17 @@ export default function Inbox() {
   const tripPrefill = convertItem ? buildTripPrefill(convertItem) : null;
 
   return (
-    <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
+    <main className="min-h-screen bg-background text-foreground pb-safe">
+      <PageHeader title="Inbox" actions={
+        <button
+          onClick={() => setCaptureOpen(true)}
+          className="inline-flex items-center gap-1.5 rounded-md bg-[#D9A404] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#B89003]"
+        >
+          <Plus className="h-4 w-4" />Capture
+        </button>
+      } />
       <div className="mx-auto max-w-3xl space-y-5 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={loadInbox}>
-        <div className="flex items-center justify-between gap-3">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" /> Back to Home
-          </Link>
-          <h1 className="font-display text-2xl font-semibold">Inbox</h1>
-          <button
-            onClick={() => setCaptureOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#D9A404] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#B89003]"
-          >
-            <Plus className="h-4 w-4" />Capture
-          </button>
-        </div>
-
         {loading ? (
           <div className="py-14 text-center text-sm text-muted-foreground">Loading inbox…</div>
         ) : sorted.length === 0 ? (

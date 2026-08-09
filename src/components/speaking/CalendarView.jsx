@@ -99,7 +99,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
       <div className="space-y-1">
         <div className="grid grid-cols-7 gap-1 border-b border-[#D6DAE3] pb-1">
           {DAYS.map((d) => (
-            <div key={d} className="pb-1 text-center text-[11px] font-semibold uppercase tracking-wider text-[#5A6781]">{d}</div>
+            <div key={d} className="select-none pb-1 text-center text-[11px] font-semibold uppercase tracking-wider text-[#5A6781]">{d}</div>
           ))}
         </div>
         {weeks.map((week, wi) => {
@@ -181,7 +181,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
           <Button variant="outline" size="icon" onClick={() => step(-1)} className="shrink-0 border-[#D6DAE3] bg-white text-[#1B2A4B]">
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <h3 className="min-w-0 flex-1 truncate text-center font-display text-base font-semibold text-[#1B2A4B] sm:text-xl">{headerLabel()}</h3>
+          <h3 className="min-w-0 flex-1 select-none truncate text-center font-display text-base font-semibold text-[#1B2A4B] sm:text-xl">{headerLabel()}</h3>
           <Button variant="outline" size="icon" onClick={() => step(1)} className="shrink-0 border-[#D6DAE3] bg-white text-[#1B2A4B]">
             <ChevronRight className="h-4 w-4" />
           </Button>

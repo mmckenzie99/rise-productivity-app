@@ -17,24 +17,24 @@
 
 @layer base {
   :root {
-    --background: 0 0% 12%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 15%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 15%;
-    --popover-foreground: 0 0% 98%;
+    --background: 0 0% 98%;
+    --foreground: 0 0% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 12%;
     --primary: 45 96% 43%;
     --primary-foreground: 0 0% 12%;
-    --secondary: 0 0% 22%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 22%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 0 0% 22%;
-    --accent-foreground: 0 0% 98%;
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 12%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 95%;
+    --accent-foreground: 0 0% 12%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 25%;
-    --input: 0 0% 25%;
+    --border: 0 0% 89%;
+    --input: 0 0% 89%;
     --ring: 45 96% 43%;
     --chart-1: 45 96% 43%;
     --chart-2: 0 0% 20%;
@@ -46,13 +46,13 @@
     --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-display: 'Fraunces', Georgia, serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 0 0% 96%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 12%;
     --sidebar-primary: 45 96% 43%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 18%;
     --sidebar-accent-foreground: 0 0% 96%;
-    --sidebar-border: 0 0% 18%;
+    --sidebar-border: 0 0% 89%;
     --sidebar-ring: 45 96% 43%;
   }
 
@@ -142,4 +142,7 @@
 }
 
 body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
-button, [role="button"] { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+button, [role="button"], nav, header, [role="tablist"], [role="tab"], .no-select { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+
+/* Keep real content and form fields selectable */
+input, textarea, select, [contenteditable="true"], [role="textbox"], .ql-editor, .rich-notes-display, .selectable { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }

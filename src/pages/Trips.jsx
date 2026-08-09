@@ -10,6 +10,7 @@ import { formatCurrency, getTripStatus, formatPlaces } from '@/lib/trips';
 import TripForm from '@/components/speaking/TripForm';
 import TripDetail from '@/components/speaking/TripDetail';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
+import PageHeader from '@/components/speaking/PageHeader';
 
 const FILTERS = ['all', 'upcoming', 'completed'];
 
@@ -64,30 +65,21 @@ export default function Trips() {
   };
 
   return (
-    <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
+    <main className="min-h-screen bg-background text-foreground pb-safe">
+      <PageHeader title="Trips" actions={isAdmin && (
+        <TooltipProvider delayDuration={300}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={() => setFormOpen(true)} size="icon" aria-label="New Trip" className="bg-[#D9A404] hover:bg-[#B89003]">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>New Trip</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )} />
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={load}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground">
-              <ArrowLeft className="h-4 w-4" /> Back to Home
-            </Link>
-            <h1 className="font-display text-2xl font-semibold">Trips</h1>
-          </div>
-          {isAdmin && (
-            <TooltipProvider delayDuration={300}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button onClick={() => setFormOpen(true)} size="icon" aria-label="New Trip" className="bg-[#D9A404] hover:bg-[#B89003]">
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>New Trip</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
-
         {/* Filters */}
         <div className="flex gap-2 mb-6">
           {FILTERS.map(f => {

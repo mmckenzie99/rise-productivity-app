@@ -14,6 +14,7 @@ import { setOpenChatRoom } from '@/lib/chatSession';
 import { archiveChatRoom, deleteSingleConversation, listMyRooms, unarchiveChatRoom } from '@/lib/chat';
 import { ToastAction } from '@/components/ui/toast';
 import { toast } from '@/components/ui/use-toast';
+import PageHeader from '@/components/speaking/PageHeader';
 
 export default function Chat() {
   const { user } = useAuth();
@@ -218,20 +219,9 @@ export default function Chat() {
   }
 
   return (
-    <main className="flex h-screen flex-col bg-background text-foreground pt-safe">
-      <div className="mx-auto flex h-full w-full max-w-5xl flex-col px-4 sm:px-6">
-        <div className="flex items-center gap-3 py-4">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to Home
-          </Link>
-          <div className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5 text-primary" />
-            <h1 className="font-display text-2xl font-semibold">Chat</h1>
-          </div>
-        </div>
+    <main className="flex h-screen flex-col bg-background text-foreground">
+      <PageHeader title="Chat" />
+      <div className="mx-auto flex w-full max-w-5xl flex-1 min-h-0 flex-col px-4 sm:px-6">
 
         <div className="relative mb-3">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
