@@ -6,9 +6,24 @@
       "type": "string",
       "description": "The pasted message body captured for later follow-up"
     },
-    "sender": {
+    "sender_name": {
       "type": "string",
-      "description": "Phone number or contact name the message came from (manual entry)"
+      "description": "Contact name the message came from (manual entry, optional)"
+    },
+    "sender_number": {
+      "type": "string",
+      "description": "Phone number the message came from (manual entry, optional)"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "Task",
+        "Engagement",
+        "Trip",
+        "None"
+      ],
+      "default": "None",
+      "description": "Which entity type this captured message relates to, chosen at capture time. 'None' means uncategorized."
     },
     "message_date": {
       "type": "string",

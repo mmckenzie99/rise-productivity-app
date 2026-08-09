@@ -55,7 +55,13 @@ export const firstLine = (text) => {
 // Build a context note capturing the original message provenance.
 const contextNote = (item) => {
   const parts = [];
-  if (item.sender) parts.push(`From: ${item.sender}`);
+  if (item.sender_name || item.sender_number) {
+    const who = [item.sender_name, item.sender_number].filter(Boolean).join(' · ');
+    parts.push(`From: ${who}`);
+  } else if (item.sender) {
+    parts.push(`From: ${item.sender}`);
+  }
+  if (item.entity_type && item.entity_type !== 'None') parts.push(`Type: ${item.entity_type}`);
   if (item.message_date) parts.push(`Received: ${formatDateTime(item.message_date)}`);
   parts.push(String(item.message_text || ''));
   return parts.join('\n\n');
