@@ -34,8 +34,10 @@ export default function useTasks() {
     await load();
   };
 
-  const remove = async (task) => {
-    await base44.entities.Task.delete(task.id || task);
+  const remove = async (taskOrId) => {
+    const id = typeof taskOrId === 'object' ? taskOrId?.id : taskOrId;
+    if (!id) return;
+    await base44.entities.Task.delete(id);
     await load();
   };
 
