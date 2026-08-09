@@ -14,6 +14,10 @@
       "type": "string",
       "description": "Phone number the message came from (manual entry, optional)"
     },
+    "organization_entity": {
+      "type": "string",
+      "description": "Organizational entity level selected for this captured message (e.g. General Conference, Division, Union, Conference, Church, School, Ministry), or 'None'."
+    },
     "entity_type": {
       "type": "string",
       "enum": [
@@ -23,7 +27,7 @@
         "None"
       ],
       "default": "None",
-      "description": "Which entity type this captured message relates to, chosen at capture time. 'None' means uncategorized."
+      "description": "Which category this captured message relates to, chosen at capture time. 'None' means uncategorized."
     },
     "message_date": {
       "type": "string",

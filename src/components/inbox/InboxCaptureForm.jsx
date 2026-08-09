@@ -4,12 +4,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import DatePicker from '@/components/speaking/DatePicker';
 import TimePicker from '@/components/speaking/TimePicker';
+import OptionWheelPicker from '@/components/speaking/OptionWheelPicker';
 import { nowISO, toLocalInput, fromLocalInput } from '@/lib/inbox';
 
 const ENTITY_OPTIONS = [
+  { value: 'None', label: 'None' },
+  { value: 'General Conference', label: 'General Conference' },
+  { value: 'Division', label: 'Division' },
+  { value: 'Union', label: 'Union' },
+  { value: 'Conference', label: 'Conference' },
+  { value: 'Church', label: 'Church' },
+  { value: 'School', label: 'School' },
+  { value: 'Ministry', label: 'Ministry' },
+];
+
+const CATEGORY_OPTIONS = [
   { value: 'None', label: 'None / Uncategorized' },
   { value: 'Task', label: 'Task' },
   { value: 'Engagement', label: 'Engagement' },
@@ -20,7 +31,8 @@ export default function InboxCaptureForm({ open, onClose, onSave }) {
   const [messageText, setMessageText] = useState('');
   const [senderName, setSenderName] = useState('');
   const [senderNumber, setSenderNumber] = useState('');
-  const [entityType, setEntityType] = useState('None');
+  const [organizationEntity, setOrganizationEntity] = useState('None');
+  const [category, setCategory] = useState('None');
   const [messageDate, setMessageDate] = useState('');
   const [reminderDate, setReminderDate] = useState('');
   const [reminderTime, setReminderTime] = useState('');
@@ -31,7 +43,8 @@ export default function InboxCaptureForm({ open, onClose, onSave }) {
       setMessageText('');
       setSenderName('');
       setSenderNumber('');
-      setEntityType('None');
+      setOrganizationEntity('None');
+      setCategory('None');
       setMessageDate(toLocalInput(nowISO()));
       setReminderDate('');
       setReminderTime('');
@@ -50,7 +63,8 @@ export default function InboxCaptureForm({ open, onClose, onSave }) {
         message_text: messageText.trim(),
         sender_name: senderName.trim(),
         sender_number: senderNumber.trim(),
-        entity_type: entityType,
+        organization_entity: organizationEntity,
+        entity_type: category,
         message_date: fromLocalInput(messageDate),
         reminder_at: reminderAt,
       });
@@ -62,7 +76,7 @@ export default function InboxCaptureForm({ open, onClose, onSave }) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="flex max-h-[calc(100dvh-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg">
+      <DialogContent className="flex left-0 right-0 top-0 max-h-[calc(100dvh_-_7.5rem_-_env(safe-area-inset-bottom))] max-w-none translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden rounded-none p-0 sm:left-[50%] sm:top-[50%] sm:max-h-[calc(100dvh-2rem)] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
         <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
           <DialogHeader className="shrink-0 border-b border-border px-6 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-3">
             <DialogTitle className="font-display text-xl">Quick Capture</DialogTitle>
@@ -107,16 +121,26 @@ export default function InboxCaptureForm({ open, onClose, onSave }) {
 
             <div className="space-y-1.5">
               <Label>Entity</Label>
-              <Select value={entityType} onValueChange={setEntityType}>
-                <SelectTrigger className="border-border bg-card">
-                  <SelectValue placeholder="Pick a type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ENTITY_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <OptionWheelPicker
+                options={ENTITY_OPTIONS}
+                value={organizationEntity}
+                onChange={setOrganizationEntity}
+                label="Entity"
+                placeholder="Pick an entity"
+                className="border-border bg-card"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Category</Label>
+              <OptionWheelPicker
+                options={CATEGORY_OPTIONS}
+                value={category}
+                onChange={setCategory}
+                label="Category"
+                placeholder="Pick a category"
+                className="border-border bg-card"
+              />
             </div>
 
             <div className="space-y-1.5">
