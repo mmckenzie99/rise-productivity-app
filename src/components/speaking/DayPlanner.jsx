@@ -3,8 +3,10 @@ import { Check, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { formatTime, calEngagementTone, planCalTone, planMultiTone, planDateKeys, isMultiDayPlan } from '@/lib/speaking';
 import { layoutColumns } from '@/lib/eventLayout';
+import { extractZoomUrl } from '@/lib/links';
 import WeeklyGoals from './WeeklyGoals';
 import WeeklyListSummary from './WeeklyListSummary';
+import ZoomBadge from './ZoomBadge';
 
 const START_HOUR = 6;
 const END_HOUR = 23; // grid spans 6:00 → 23:00
@@ -118,6 +120,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
   const renderBlock = (x) => {
     const isEvent = x._kind === 'event';
     const tone = isEvent ? planCalTone(x) : calEngagementTone;
+    const zoom = isEvent ? extractZoomUrl(x.notes) : null;
     const onClick = (e) => {
       e.stopPropagation();
       isEvent ? onEventSelect?.(x) : onSelect?.(x);
@@ -137,7 +140,10 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
             <Check className="h-2.5 w-2.5" strokeWidth={3} />
           </span>
         )}
-        <div className="truncate font-semibold">{label}</div>
+        <div className="flex items-center gap-1">
+          <span className="truncate font-semibold">{label}</span>
+          {zoom && <ZoomBadge url={zoom} className="h-3.5 w-3.5" />}
+        </div>
         <div className="opacity-70">{sub}</div>
       </button>
     );
@@ -244,22 +250,26 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
           <div className="flex border-b border-foreground/15">
             <div className="w-12 shrink-0" />
             <div className="relative flex-1 px-0.5" style={{ height: ALL_DAY_PX }}>
-              {multiBars.map((b, i) => (
+              {multiBars.map((b, i) => {
+                const zoom = extractZoomUrl(b.ev.notes);
+                return (
                 <button
                   key={i}
                   onClick={() => onEventSelect?.(b.ev)}
                   title={b.ev.title}
-                  className={`absolute top-0.5 bottom-0.5 flex items-center truncate rounded px-1 py-0.5 text-left text-[10px] font-medium ${b.ev.completed ? 'bg-[#E5E7EB] text-[#9CA3AF] line-through' : planMultiTone(b.ev)}`}
+                  className={`absolute top-0.5 bottom-0.5 flex items-center gap-1 truncate rounded px-1 py-0.5 text-left text-[10px] font-medium ${b.ev.completed ? 'bg-[#E5E7EB] text-[#9CA3AF] line-through' : planMultiTone(b.ev)}`}
                   style={{ left: `calc(${(b.startIdx / days.length) * 100}% + 2px)`, width: `calc(${((b.endIdx - b.startIdx + 1) / days.length) * 100}% - 4px)` }}
                 >
-                  {b.extendsLeft ? '‹ ' : ''}{b.ev.title}{b.extendsRight ? ' ›' : ''}
+                  <span className="truncate">{b.extendsLeft ? '‹ ' : ''}{b.ev.title}{b.extendsRight ? ' ›' : ''}</span>
+                  {zoom && <ZoomBadge url={zoom} className="h-3.5 w-3.5 shrink-0" />}
                   {b.ev.completed && (
                     <span className="absolute right-0.5 top-0.5 z-10 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white/90 text-[#1B2A4B] shadow-sm">
                       <Check className="h-2.5 w-2.5" strokeWidth={3} />
                     </span>
                   )}
                 </button>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -306,14 +316,16 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                   {allDay.map((x) => {
                     const isEvent = x._kind === 'event';
                     const tone = isEvent ? planCalTone(x) : calEngagementTone;
+                    const zoom = isEvent ? extractZoomUrl(x.notes) : null;
                     return (
                       <button
                         key={x.id}
                         onClick={() => (isEvent ? onEventSelect?.(x) : onSelect?.(x))}
                         title={x.title}
-                        className={`relative mb-0.5 block w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-medium ${tone} ${isEvent && x.completed ? 'opacity-60' : ''}`}
+                        className={`relative mb-0.5 flex w-full items-center gap-1 rounded px-1 py-0.5 text-left text-[10px] font-medium ${tone} ${isEvent && x.completed ? 'opacity-60' : ''}`}
                       >
-                        {isEvent ? x.title : (x.place || x.title || 'Engagement')}
+                        <span className="truncate">{isEvent ? x.title : (x.place || x.title || 'Engagement')}</span>
+                        {zoom && <ZoomBadge url={zoom} className="h-3.5 w-3.5 shrink-0" />}
                         {isEvent && x.completed && (
                           <span className="absolute right-0.5 top-0.5 z-10 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white/90 text-[#1B2A4B] shadow-sm">
                             <Check className="h-2.5 w-2.5" strokeWidth={3} />

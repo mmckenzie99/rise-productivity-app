@@ -268,7 +268,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
             <RichTextEditor
               value={form.notes || ''}
               onChange={(v) => set('notes', v)}
-              placeholder="Add notes — use the link button to insert a clickable link…"
+              placeholder="Add notes — URLs become clickable links automatically"
             />
           </div>
 

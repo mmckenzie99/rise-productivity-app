@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDate, calEngagementTone, isMultiDayPlan, planCalTone, planMultiTone } from '@/lib/speaking';
+import { extractZoomUrl } from '@/lib/links';
 import DayPlanner from './DayPlanner';
+import ZoomBadge from './ZoomBadge';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -108,17 +110,21 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
             <div key={wi}>
               {bars.length > 0 && (
                 <div className="mb-0.5 grid grid-cols-7 gap-1">
-                  {bars.map((b, i) => (
+                  {bars.map((b, i) => {
+                    const zoom = extractZoomUrl(b.ev.notes);
+                    return (
                     <button
                       key={i}
                       style={{ gridColumn: `${b.colStart + 1} / span ${b.colEnd - b.colStart + 1}` }}
                       onClick={() => onEventSelect?.(b.ev)}
                       title={b.ev.title}
-                      className={`flex h-5 items-center truncate rounded px-1 text-[10px] font-medium ${b.ev.completed ? 'bg-[#E5E7EB] text-[#9CA3AF] line-through' : planMultiTone(b.ev)}`}
+                      className={`flex h-5 items-center gap-1 truncate rounded px-1 text-[10px] font-medium ${b.ev.completed ? 'bg-[#E5E7EB] text-[#9CA3AF] line-through' : planMultiTone(b.ev)}`}
                     >
-                      {b.extendsLeft ? '‹ ' : ''}{b.ev.title}{b.extendsRight ? ' ›' : ''}
+                      <span className="truncate">{b.extendsLeft ? '‹ ' : ''}{b.ev.title}{b.extendsRight ? ' ›' : ''}</span>
+                      {zoom && <ZoomBadge url={zoom} className="h-3.5 w-3.5 shrink-0" />}
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
               <div className="grid grid-cols-7 gap-1">
@@ -143,15 +149,17 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                     {cell.entries.slice(0, 3).map((x) => {
                       const isEvent = x._kind === 'event';
                       const tone = isEvent ? planCalTone(x) : calEngagementTone;
+                      const zoom = isEvent ? extractZoomUrl(x.notes) : null;
                       return (
                         <button
                           key={x.id}
                           onClick={(e) => { e.stopPropagation(); isEvent ? onEventSelect?.(x) : onSelect?.(x); }}
-                          className="mt-1 block w-full truncate rounded px-1 py-0.5 text-left text-[11px] font-medium"
+                          className="mt-1 block w-full rounded px-1 py-0.5 text-left text-[11px] font-medium"
                           title={x.title}
                         >
-                          <span className={`rounded px-1 ${isEvent && x.completed ? 'bg-[#E5E7EB] text-[#9CA3AF] line-through' : tone}`}>
-                            {isEvent ? x.title : (x.place || 'Engagement')}
+                          <span className={`inline-flex w-full items-center gap-1 rounded px-1 ${isEvent && x.completed ? 'bg-[#E5E7EB] text-[#9CA3AF] line-through' : tone}`}>
+                            <span className="truncate">{isEvent ? x.title : (x.place || 'Engagement')}</span>
+                            {zoom && <ZoomBadge url={zoom} className="h-3.5 w-3.5 shrink-0" />}
                           </span>
                         </button>
                       );
