@@ -13,7 +13,6 @@ import useCalendarEvents from '@/hooks/useCalendarEvents';
 import { isDue, buildTaskPrefill, buildEngagementPrefill, buildTripPrefill } from '@/lib/inbox';
 import InboxCaptureForm from '@/components/inbox/InboxCaptureForm';
 import InboxItemCard from '@/components/inbox/InboxItemCard';
-import DeleteInboxItemDialog from '@/components/inbox/DeleteInboxItemDialog';
 import EngagementForm from '@/components/speaking/EngagementForm';
 import TripForm from '@/components/speaking/TripForm';
 import CalendarEventForm from '@/components/speaking/CalendarEventForm';
@@ -31,7 +30,6 @@ export default function Inbox() {
 
   const [captureOpen, setCaptureOpen] = useState(false);
   const [convert, setConvert] = useState(null); // { type, item }
-  const [pendingDelete, setPendingDelete] = useState(null);
 
   const admin = isAdmin(user);
 
@@ -76,12 +74,7 @@ export default function Inbox() {
     toast({ title: 'Captured', description: 'Saved to your inbox.' });
   };
 
-  const handleDelete = (item) => setPendingDelete(item);
-
-  const confirmDelete = async () => {
-    const item = pendingDelete;
-    if (!item) return;
-    setPendingDelete(null);
+  const handleDelete = async (item) => {
     try {
       await remove(item.id);
       toast({ title: 'Deleted' });
@@ -164,13 +157,6 @@ export default function Inbox() {
       </div>
 
       <InboxCaptureForm open={captureOpen} onClose={() => setCaptureOpen(false)} onSave={handleSave} />
-
-      <DeleteInboxItemDialog
-        open={!!pendingDelete}
-        item={pendingDelete}
-        onClose={() => setPendingDelete(null)}
-        onConfirm={confirmDelete}
-      />
 
       <CalendarEventForm
         open={convert?.type === 'task'}

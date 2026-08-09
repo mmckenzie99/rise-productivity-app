@@ -1,3 +1,16 @@
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { Bell, Trash2, ListTodo, Presentation, Plane } from 'lucide-react';
 import { formatDateTime, isDue } from '@/lib/inbox';
 
@@ -49,14 +62,40 @@ export default function InboxItemCard({ item, onConvert, onDelete, canManageTrip
             </button>
           </>
         )}
-        <button
-          type="button"
-          className="ml-auto inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-destructive transition hover:bg-destructive/10"
-          onClick={() => onDelete(item)}
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-          Delete
-        </button>
+
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button
+              type="button"
+              className="ml-auto inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-destructive transition hover:bg-destructive/10"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete this item?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This captured message will be permanently removed. This cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            {item.message_text ? (
+              <p className="line-clamp-3 rounded-md border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
+                {item.message_text}
+              </p>
+            ) : null}
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className={cn(buttonVariants({ variant: 'destructive' }))}
+                onClick={() => onDelete(item)}
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
