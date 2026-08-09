@@ -62,92 +62,95 @@ export default function InboxCaptureForm({ open, onClose, onSave }) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="font-display text-xl">Quick Capture</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>Message</Label>
-            <Textarea
-              required
-              value={messageText}
-              onChange={(e) => setMessageText(e.target.value)}
-              placeholder="Paste the message here…"
-              className="min-h-[120px] border-border bg-card"
-            />
-          </div>
+      <DialogContent className="flex max-h-[calc(100dvh-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg">
+        <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
+          <DialogHeader className="shrink-0 border-b border-border px-6 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-3">
+            <DialogTitle className="font-display text-xl">Quick Capture</DialogTitle>
+          </DialogHeader>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-6 py-4">
             <div className="space-y-1.5">
-              <Label>
-                Name <span className="font-normal text-muted-foreground">(optional)</span>
-              </Label>
-              <Input
-                value={senderName}
-                onChange={(e) => setSenderName(e.target.value)}
-                placeholder="Contact name"
-                className="border-border bg-card"
+              <Label>Message</Label>
+              <Textarea
+                required
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                placeholder="Paste the message here…"
+                className="min-h-[120px] border-border bg-card"
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>
-                Number <span className="font-normal text-muted-foreground">(optional)</span>
-              </Label>
-              <Input
-                value={senderNumber}
-                onChange={(e) => setSenderNumber(e.target.value)}
-                placeholder="Phone number"
-                className="border-border bg-card"
-              />
-            </div>
-          </div>
 
-          <div className="space-y-1.5">
-            <Label>Entity</Label>
-            <Select value={entityType} onValueChange={setEntityType}>
-              <SelectTrigger className="border-border bg-card">
-                <SelectValue placeholder="Pick a type" />
-              </SelectTrigger>
-              <SelectContent>
-                {ENTITY_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>
-              Received <span className="font-normal text-muted-foreground">(when the message arrived)</span>
-            </Label>
-            <Input
-              type="datetime-local"
-              value={messageDate}
-              onChange={(e) => setMessageDate(e.target.value)}
-              className="border-border bg-card"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>
-              Remind me on <span className="font-normal text-muted-foreground">(optional)</span>
-            </Label>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <DatePicker
-                value={reminderDate}
-                onChange={setReminderDate}
-                placeholder="Pick a date"
+              <div className="space-y-1.5">
+                <Label>
+                  Name <span className="font-normal text-muted-foreground">(optional)</span>
+                </Label>
+                <Input
+                  value={senderName}
+                  onChange={(e) => setSenderName(e.target.value)}
+                  placeholder="Contact name"
+                  className="border-border bg-card"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>
+                  Number <span className="font-normal text-muted-foreground">(optional)</span>
+                </Label>
+                <Input
+                  value={senderNumber}
+                  onChange={(e) => setSenderNumber(e.target.value)}
+                  placeholder="Phone number"
+                  className="border-border bg-card"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Entity</Label>
+              <Select value={entityType} onValueChange={setEntityType}>
+                <SelectTrigger className="border-border bg-card">
+                  <SelectValue placeholder="Pick a type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ENTITY_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>
+                Received <span className="font-normal text-muted-foreground">(when the message arrived)</span>
+              </Label>
+              <Input
+                type="datetime-local"
+                value={messageDate}
+                onChange={(e) => setMessageDate(e.target.value)}
+                className="border-border bg-card"
               />
-              <TimePicker
-                value={reminderTime}
-                onChange={setReminderTime}
-                placeholder="Pick a time"
-              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>
+                Remind me on <span className="font-normal text-muted-foreground">(optional)</span>
+              </Label>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <DatePicker
+                  value={reminderDate}
+                  onChange={setReminderDate}
+                  placeholder="Pick a date"
+                />
+                <TimePicker
+                  value={reminderTime}
+                  onChange={setReminderTime}
+                  placeholder="Pick a time"
+                />
+              </div>
             </div>
           </div>
 
-          <DialogFooter className="flex-row justify-end gap-2">
+          <DialogFooter className="shrink-0 flex-row justify-end gap-2 border-t border-border bg-background px-6 pt-3 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
             <Button type="button" variant="outline" onClick={onClose} className="border-border bg-card">
               Cancel
             </Button>

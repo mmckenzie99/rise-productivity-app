@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Home, LayoutDashboard, Plane, MessageCircle, Inbox as InboxIcon } from 'lucide-react';
+import { Home, LayoutDashboard, Plane, MessageCircle, Inbox as InboxIcon, Plus } from 'lucide-react';
 import QuickActionBar from './QuickActionBar';
 
 const TABS = [
@@ -90,7 +90,16 @@ export default function BottomTabBar() {
               }`
             }
           >
-            <t.icon className="h-5 w-5" />
+            {t.to === '/inbox' ? (
+              <span className="relative">
+                <t.icon className="h-5 w-5" />
+                <span className="absolute -right-2 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-primary-foreground ring-2 ring-card">
+                  <Plus className="h-2.5 w-2.5" strokeWidth={3} />
+                </span>
+              </span>
+            ) : (
+              <t.icon className="h-5 w-5" />
+            )}
             {t.label}
           </NavLink>
         ))}

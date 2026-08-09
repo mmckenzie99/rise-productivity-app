@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Plus, CalendarPlus, UserPlus, CalendarDays, Inbox as InboxIcon } from 'lucide-react';
+import { Plus, CalendarPlus, UserPlus, CalendarDays } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { useAppSettings } from '@/hooks/useAppSettings';
 import { isOwner, isAdmin, resolvePlanFlag } from '@/lib/permissions';
@@ -28,7 +28,6 @@ export default function QuickActionBar() {
   if (admin) actions.push({ key: 'new', label: 'New', icon: Plus, onClick: () => fire('new', '/?action=new') });
   if (canPlan) actions.push({ key: 'new-plan', label: 'New Plan', icon: CalendarPlus, onClick: () => navigate(calendarUrl({ planId: 'new', calDate: todayStr() })) });
   actions.push({ key: 'calendar', label: 'Calendar', icon: CalendarDays, onClick: () => navigate('/calendar') });
-  actions.push({ key: 'capture', label: 'Capture', icon: InboxIcon, onClick: () => navigate('/inbox?capture=1') });
   if (owner) actions.push({ key: 'invite', label: 'Invite', icon: UserPlus, onClick: () => fire('invite', '/?action=invite') });
 
   return (
