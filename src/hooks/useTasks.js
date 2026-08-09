@@ -34,8 +34,8 @@ export default function useTasks() {
     await load();
   };
 
-  const remove = async (id) => {
-    await base44.entities.Task.delete(id);
+  const remove = async (task) => {
+    await base44.entities.Task.delete(task.id || task);
     await load();
   };
 
