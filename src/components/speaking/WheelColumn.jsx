@@ -19,7 +19,12 @@ export default function WheelColumn({ items, value, onChange, formatLabel, class
   useEffect(() => {
     const idx = items.findIndex((it) => it.value === value);
     if (idx >= 0 && ref.current) {
-      ref.current.scrollTop = (idx + pad) * ITEM_H;
+      // Center the selected item under the highlight bar (which sits at the
+      // viewport's vertical middle). With `pad` spacers above the items, the
+      // centered item index == round(scrollTop / ITEM_H), so scrollTop must be
+      // idx * ITEM_H — NOT (idx + pad), which would park the value on the TOP
+      // visible row instead of the centered one.
+      ref.current.scrollTop = idx * ITEM_H;
     }
   }, [value, items, pad]);
 
@@ -28,7 +33,7 @@ export default function WheelColumn({ items, value, onChange, formatLabel, class
     clearTimeout(snapTimer.current);
     snapTimer.current = setTimeout(() => {
       const raw = ref.current.scrollTop;
-      const idx = Math.round(raw / ITEM_H) - pad;
+      const idx = Math.round(raw / ITEM_H);
       const clamped = Math.max(0, Math.min(items.length - 1, idx));
       const item = items[clamped];
       if (item && item.value !== value) onChange(item.value);
