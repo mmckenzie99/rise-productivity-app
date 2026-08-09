@@ -22,6 +22,7 @@ const Inbox = lazy(() => import('@/pages/Inbox'));
 const UserManagement = lazy(() => import('@/pages/UserManagement'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Chat = lazy(() => import('@/pages/Chat'));
+const Tasks = lazy(() => import('@/pages/Tasks'));
 import useSystemDarkMode from '@/hooks/useSystemDarkMode';
 
 const AuthenticatedApp = () => {
@@ -65,6 +66,7 @@ const AuthenticatedApp = () => {
             <Route path="/users" element={<UserManagement />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/chat/:roomId" element={<Chat />} />
+            <Route path="/tasks" element={<Tasks />} />
           </Route>
         </Route>
         <Route path="*" element={<PageNotFound />} />

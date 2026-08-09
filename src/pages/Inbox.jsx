@@ -10,12 +10,14 @@ import useInboxItems from '@/hooks/useInboxItems';
 import useEngagements from '@/hooks/useEngagements';
 import useTrips from '@/hooks/useTrips';
 import useCalendarEvents from '@/hooks/useCalendarEvents';
+import useTasks from '@/hooks/useTasks';
 import { isDue, buildTaskPrefill, buildEngagementPrefill, buildTripPrefill } from '@/lib/inbox';
 import InboxCaptureForm from '@/components/inbox/InboxCaptureForm';
 import InboxItemCard from '@/components/inbox/InboxItemCard';
 import EngagementForm from '@/components/speaking/EngagementForm';
 import TripForm from '@/components/speaking/TripForm';
 import CalendarEventForm from '@/components/speaking/CalendarEventForm';
+import TaskForm from '@/components/tasks/TaskForm';
 
 export default function Inbox() {
   const { user } = useAuth();
@@ -25,6 +27,7 @@ export default function Inbox() {
   const { items: engagements, save: saveEngagement } = useEngagements();
   const { save: saveTrip } = useTrips();
   const { save: saveCalEvent } = useCalendarEvents();
+  const { save: saveTask } = useTasks();
   const { settings } = useAppSettings();
   const [users, setUsers] = useState([]);
 
@@ -90,9 +93,9 @@ export default function Inbox() {
     const type = convert?.type;
     try {
       if (type === 'task') {
-        await saveCalEvent(data);
-        toast({ title: 'Converted to task', description: 'Saved to your Calendar.' });
-        navigate('/calendar');
+        await saveTask(data);
+        toast({ title: 'Converted to task', description: 'Saved to your Tasks.' });
+        navigate('/tasks');
       } else if (type === 'engagement') {
         await saveEngagement(data);
         toast({ title: 'Converted to engagement', description: 'Saved to Home.' });
@@ -158,12 +161,9 @@ export default function Inbox() {
 
       <InboxCaptureForm open={captureOpen} onClose={() => setCaptureOpen(false)} onSave={handleSave} />
 
-      <CalendarEventForm
+      <TaskForm
         open={convert?.type === 'task'}
         item={taskPrefill}
-        admins={commentUsers}
-        assignableUsers={assignableUsers}
-        currentUserId={user?.id}
         onClose={closeConvert}
         onSave={handleConvertSave}
       />

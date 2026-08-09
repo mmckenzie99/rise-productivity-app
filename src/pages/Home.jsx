@@ -26,6 +26,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
 import { useCloseModal } from '@/hooks/useCloseModal';
 import { deleteLinkedConversations } from '@/lib/chat';
+import TasksOverview from '@/components/speaking/TasksOverview';
 
 export default function Home() {
   const { user } = useAuth();
@@ -150,6 +151,7 @@ export default function Home() {
           </div>
           <div ref={mapRef}><EngagementMap items={visible} onView={openEngagement} focusItem={mapFocus} /></div>
           <Filters filters={filters} setFilters={setFilters} onArchive={() => setArchive(true)} />
+          <TasksOverview />
           {loading ? <div className="py-14 text-center">Loading engagements…</div> : visible.length ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{orderedGroups.map((g, i) => <LocationGroup key={g.key} place={g.place} items={g.items} onClick={openEngagement} onDuplicate={duplicate} isAdmin={isAdmin} tripPlaces={tripPlaces} onLocate={locate} />)}</div> : <div className="rounded-lg border border-dashed border-primary bg-card/60 py-14 text-center"><h2 className="font-display text-xl font-semibold">{items.length ? 'Nothing matches' : 'No engagements yet'}</h2><p className="mt-2 text-sm text-muted-foreground">{items.length ? 'Try a different filter.' : isAdmin ? 'Add your first speaking engagement to see it mapped here.' : 'Ask an administrator to add one.'}</p></div>}
          </div>
         </PullToRefresh>

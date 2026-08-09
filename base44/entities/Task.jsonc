@@ -1,0 +1,47 @@
+{
+  "name": "Task",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "What needs doing"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional due date and time"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional freeform details"
+    },
+    "is_done": {
+      "type": "boolean",
+      "default": false,
+      "description": "True once the task is complete"
+    },
+    "linked_plan_id": {
+      "type": "string",
+      "description": "Optional id of an existing CalendarEvent/Plan this task relates to"
+    },
+    "converted_to_plan_id": {
+      "type": "string",
+      "description": "Set when this task is later scheduled as its own CalendarEvent/Plan (id of the created plan)"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": null,
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

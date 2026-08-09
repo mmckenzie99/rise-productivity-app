@@ -71,18 +71,9 @@ const contextNote = (item) => {
 // from the captured message/sender/date are populated; the rest stay default.
 export const buildTaskPrefill = (item) => ({
   title: firstLine(item.message_text) || 'Follow up',
-  date: localDate(item.message_date) || localDate(nowISO()),
-  all_day: false,
-  end_date: '',
-  start_time: localTime(item.message_date) || '',
-  end_time: '',
-  category: 'Personal',
-  location_type: 'In-person',
+  due_date: item.message_date || '',
   notes: contextNote(item),
-  assignee_id: '',
-  assignee_name: '',
-  completed: false,
-  completed_date: '',
+  is_done: false,
 });
 
 export const buildEngagementPrefill = (item) => ({
