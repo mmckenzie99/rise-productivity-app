@@ -29,10 +29,7 @@ export default function useInboxItems() {
     await load();
   };
 
-  const remove = async (id) => {
-    await base44.entities.InboxItem.delete(id);
-    await load();
-  };
+const remove = async (id) => { const prevItems = items; setItems((prev) => prev.filter((t) => t.id !== id)); try { await base44.entities.InboxItem.delete(id); } catch (e) { console.error('Failed to delete inbox item', e); setItems(prevItems); } };
 
   return { items, loading, save, remove, load };
 }
