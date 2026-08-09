@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, CalendarPlus } from 'lucide-react';
 import { formatDateTime } from '@/lib/inbox';
 
 const isOverdue = (iso) => {
@@ -21,7 +21,7 @@ const isOverdue = (iso) => {
   return !isNaN(d.getTime()) && d.getTime() < Date.now();
 };
 
-export default function TaskItem({ task, onToggle, onEdit, onDelete, compact }) {
+export default function TaskItem({ task, onToggle, onEdit, onSchedule, onDelete, compact }) {
   const overdue = !task.is_done && isOverdue(task.due_date);
   return (
     <div
@@ -48,6 +48,18 @@ export default function TaskItem({ task, onToggle, onEdit, onDelete, compact }) 
           <p className="mt-1 line-clamp-2 whitespace-pre-wrap text-xs text-muted-foreground">{task.notes}</p>
         )}
       </div>
+
+      {!compact && onSchedule && !task.is_done && !task.converted_to_plan_id && (
+        <button
+          type="button"
+          onClick={() => onSchedule(task)}
+          aria-label="Schedule as plan"
+          title="Schedule as plan"
+          className="shrink-0 rounded p-1.5 text-muted-foreground transition hover:bg-accent hover:text-primary"
+        >
+          <CalendarPlus className="h-3.5 w-3.5" />
+        </button>
+      )}
 
       {!compact && onEdit && (
         <button

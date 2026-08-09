@@ -8,8 +8,9 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import DatePicker from '@/components/speaking/DatePicker';
 import TimePicker from '@/components/speaking/TimePicker';
 import { localDate, localTime, fromLocalInput } from '@/lib/inbox';
+import { CalendarPlus } from 'lucide-react';
 
-export default function TaskForm({ open, item, plans, onClose, onSave }) {
+export default function TaskForm({ open, item, plans, onClose, onSave, onSchedule }) {
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [dueTime, setDueTime] = useState('');
@@ -112,7 +113,18 @@ export default function TaskForm({ open, item, plans, onClose, onSave }) {
             </div>
           </div>
 
-          <DialogFooter className="shrink-0 flex-row justify-end gap-2 border-t border-border bg-background px-6 pt-3 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
+          <DialogFooter className="shrink-0 flex-row items-center justify-end gap-2 border-t border-border bg-background px-6 pt-3 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
+            {onSchedule && item?.id && !item.is_done && !item.converted_to_plan_id && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onSchedule(item)}
+                className="mr-auto border-border bg-card hover:border-primary hover:text-primary"
+              >
+                <CalendarPlus className="h-4 w-4" />
+                Schedule as Plan
+              </Button>
+            )}
             <Button type="button" variant="outline" onClick={onClose} className="border-border bg-card">
               Cancel
             </Button>

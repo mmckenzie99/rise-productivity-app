@@ -1,20 +1,25 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Plus } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import useTasks from '@/hooks/useTasks';
 import useCalendarEvents from '@/hooks/useCalendarEvents';
 import TaskItem from '@/components/tasks/TaskItem';
 import TaskForm from '@/components/tasks/TaskForm';
+import CalendarEventForm from '@/components/speaking/CalendarEventForm';
+import { buildPlanPrefillFromTask } from '@/lib/tasks';
+import { toast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 
 const FILTERS = ['outstanding', 'done'];
 
 export default function Tasks() {
-  const { items, loading, save, remove, toggle } = useTasks();
-  const { items: plans } = useCalendarEvents();
+  const { items, loading, save, remove, toggle, load: loadTasks } = useTasks();
+  const { items: plans, save: saveCalEvent } = useCalendarEvents();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [filter, setFilter] = useState('outstanding');
+  const [scheduleTask, setScheduleTask] = useState(null);
 
   const outstanding = useMemo(
     () =>
@@ -31,6 +36,20 @@ export default function Tasks() {
 
   const openNew = () => { setEditing(null); setFormOpen(true); };
   const openEdit = (t) => { setEditing(t); setFormOpen(true); };
+
+  const openSchedule = (t) => setScheduleTask(t);
+  const closeSchedule = () => setScheduleTask(null);
+  const handleScheduleSave = async (planItem) => {
+    const saved = await saveCalEvent(planItem);
+    if (scheduleTask?.id && saved?.id) {
+      await base44.entities.Task.update(scheduleTask.id, { converted_to_plan_id: saved.id, is_done: true });
+      await loadTasks();
+      toast({ title: 'Scheduled as plan', description: 'Task marked done and linked.' });
+    }
+    setScheduleTask(null);
+    setFormOpen(false);
+  };
+  const planPrefill = scheduleTask ? buildPlanPrefillFromTask(scheduleTask) : null;
 
   return (
     <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
@@ -84,6 +103,7 @@ export default function Tasks() {
                 task={t}
                 onToggle={toggle}
                 onEdit={openEdit}
+                onSchedule={openSchedule}
                 onDelete={remove}
               />
             ))}
@@ -93,7 +113,22 @@ export default function Tasks() {
         <div className="h-28 lg:hidden" />
       </div>
 
-      <TaskForm open={formOpen} item={editing} plans={plans} onClose={() => setFormOpen(false)} onSave={save} />
+      <TaskForm
+        open={formOpen}
+        item={editing}
+        plans={plans}
+        onClose={() => setFormOpen(false)}
+        onSave={save}
+        onSchedule={openSchedule}
+      />
+      <CalendarEventForm
+        open={!!scheduleTask}
+        item={planPrefill}
+        admins={[]}
+        assignableUsers={[]}
+        onClose={closeSchedule}
+        onSave={handleScheduleSave}
+      />
     </main>
   );
 }
