@@ -32,7 +32,7 @@ function MobileTimeWheel({ value, onChange }) {
 
   return (
     <div className="relative flex">
-      <div className="pointer-events-none absolute inset-y-0 left-3 right-3 top-1/2 h-10 -translate-y-1/2 rounded-md bg-accent" />
+      <div className="pointer-events-none absolute inset-y-0 left-3 right-3 top-1/2 h-10 -translate-y-1/2 rounded-md bg-primary/10 ring-1 ring-inset ring-primary/30" />
       <WheelColumn className="flex-1" items={hours} value={hour12} onChange={(hh) => commit(hh, minute, ampm)} />
       <WheelColumn className="w-20" items={minutes} value={minute} onChange={(mm) => commit(hour12, mm, ampm)} />
       <WheelColumn className="w-20" items={ampms} value={ampm} onChange={(ap) => commit(hour12, minute, ap)} />

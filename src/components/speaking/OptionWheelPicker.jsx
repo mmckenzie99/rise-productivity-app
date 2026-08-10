@@ -36,7 +36,7 @@ export default function OptionWheelPicker({ options, value, onChange, label, pla
   return (
     <WheelSheet open={open} onOpenChange={setOpen} label={label} trigger={triggerEl}>
       <div className="relative flex">
-        <div className="pointer-events-none absolute inset-y-0 left-3 right-3 top-1/2 h-10 -translate-y-1/2 rounded-md bg-accent" />
+        <div className="pointer-events-none absolute inset-y-0 left-3 right-3 top-1/2 h-10 -translate-y-1/2 rounded-md bg-primary/10 ring-1 ring-inset ring-primary/30" />
         <WheelColumn
           className="flex-1"
           items={options}

@@ -39,7 +39,7 @@ function MobileDateWheel({ value, onChange, min, max }) {
 
   return (
     <div className="relative flex">
-      <div className="pointer-events-none absolute inset-y-0 left-3 right-3 top-1/2 h-10 -translate-y-1/2 rounded-md bg-accent" />
+      <div className="pointer-events-none absolute inset-y-0 left-3 right-3 top-1/2 h-10 -translate-y-1/2 rounded-md bg-primary/10 ring-1 ring-inset ring-primary/30" />
       <WheelColumn className="flex-1" items={months} value={month} onChange={(m) => commit(year, m, day)} />
       <WheelColumn className="flex-1" items={days} value={day} onChange={(dd) => commit(year, month, dd)} />
       <WheelColumn className="flex-1" items={years} value={year} onChange={(y) => commit(y, month, day)} />
