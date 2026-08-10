@@ -34,6 +34,7 @@ export default function InboxCaptureForm({ open, onClose, onSave }) {
   const [organizationEntity, setOrganizationEntity] = useState('None');
   const [category, setCategory] = useState('None');
   const [messageDate, setMessageDate] = useState('');
+  const [messageTime, setMessageTime] = useState('');
   const [reminderDate, setReminderDate] = useState('');
   const [reminderTime, setReminderTime] = useState('');
   const [saving, setSaving] = useState(false);
@@ -45,7 +46,9 @@ export default function InboxCaptureForm({ open, onClose, onSave }) {
       setSenderNumber('');
       setOrganizationEntity('None');
       setCategory('None');
-      setMessageDate(toLocalInput(nowISO()));
+      const nowLocal = toLocalInput(nowISO());
+      setMessageDate(nowLocal.slice(0, 10));
+      setMessageTime(nowLocal.slice(11, 16));
       setReminderDate('');
       setReminderTime('');
     }
@@ -65,7 +68,7 @@ export default function InboxCaptureForm({ open, onClose, onSave }) {
         sender_number: senderNumber.trim(),
         organization_entity: organizationEntity,
         entity_type: category,
-        message_date: fromLocalInput(messageDate),
+        message_date: fromLocalInput(`${messageDate}T${messageTime || '09:00'}`),
         reminder_at: reminderAt,
       });
       onClose();
@@ -147,12 +150,20 @@ export default function InboxCaptureForm({ open, onClose, onSave }) {
               <Label>
                 Received <span className="font-normal text-muted-foreground">(when the message arrived)</span>
               </Label>
-              <Input
-                type="datetime-local"
-                value={messageDate}
-                onChange={(e) => setMessageDate(e.target.value)}
-                className="border-border bg-card"
-              />
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <DatePicker
+                  value={messageDate}
+                  onChange={setMessageDate}
+                  placeholder="Pick a date"
+                  label="Received date"
+                />
+                <TimePicker
+                  value={messageTime}
+                  onChange={setMessageTime}
+                  placeholder="Pick a time"
+                  label="Received time"
+                />
+              </div>
             </div>
 
             <div className="space-y-1.5">

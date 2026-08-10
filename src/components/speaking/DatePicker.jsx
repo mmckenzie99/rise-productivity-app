@@ -1,15 +1,16 @@
+// IMPORTANT: The rolling-wheel date picker (Month/Day/Year WheelColumn rendered
+// in a bottom sheet on mobile / a centered dialog on desktop) is the
+// INTENTIONAL, universal implementation for EVERY viewport. It must NOT be
+// replaced with a native <input type="date">, a react-day-picker calendar grid,
+// or a plain <select> in any future mobile / App Store optimisation pass.
+// Always render MobileDateWheel via WheelSheet; never branch on viewport width.
 import { useState } from 'react';
 import { Calendar as CalendarIcon } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Drawer, DrawerContent, DrawerTrigger, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
-import { Calendar } from '@/components/ui/calendar';
-import { Button } from '@/components/ui/button';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/speaking';
 import WheelColumn from './WheelColumn';
+import WheelSheet from './WheelSheet';
 
-const toDate = (s) => (s ? new Date(`${s}T00:00:00`) : undefined);
 const toISO = (d) => (d ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` : '');
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -47,14 +48,12 @@ function MobileDateWheel({ value, onChange, min, max }) {
 }
 
 /**
- * Hybrid date picker. Mobile → single Vaul bottom sheet with rolling wheel
- * columns (Month/Day/Year). Desktop → Radix Popover with react-day-picker grid.
- * Only ONE instance is rendered per viewport (useIsMobile), so no duplicate-UI
- * bug. Value/onChange use YYYY-MM-DD.
+ * Date picker. Value/onChange use YYYY-MM-DD. The rolling wheel (Month/Day/Year)
+ * is always the picker on every viewport; min/max clamping and the disabled
+ * state are preserved. Same trigger button, label, and props as before.
  */
 export default function DatePicker({ value, onChange, className, label, placeholder = 'Pick a date', min, max, disabled: isDisabled = false }) {
   const [open, setOpen] = useState(false);
-  const isMobile = useIsMobile();
   const display = value ? formatDate(value) : placeholder;
   const triggerCls = cn(
     'flex h-9 w-full min-w-0 max-w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 text-sm shadow-sm box-border',
@@ -63,58 +62,18 @@ export default function DatePicker({ value, onChange, className, label, placehol
     className
   );
 
-  const disabled = {};
-  if (min) disabled.before = toDate(min);
-  if (max) disabled.after = toDate(max);
-
-  const handleSelect = (d) => {
-    onChange(toISO(d));
-    setOpen(false);
-  };
-
   const triggerEl = (
-    <button type="button" className={triggerCls}>
+    <button type="button" className={triggerCls} disabled={isDisabled}>
       <span className="truncate">{display}</span>
       <CalendarIcon className="h-4 w-4 shrink-0 opacity-50" />
     </button>
   );
 
-  if (isDisabled) {
-    return <button type="button" disabled className={triggerCls}>
-      <span className="truncate">{display}</span>
-      <CalendarIcon className="h-4 w-4 shrink-0 opacity-50" />
-    </button>;
-  }
-
-  if (isMobile) {
-    return (
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger asChild>{triggerEl}</DrawerTrigger>
-        <DrawerContent className="pb-safe">
-          {label && (
-            <DrawerHeader className="text-left">
-              <DrawerTitle>{label}</DrawerTitle>
-            </DrawerHeader>
-          )}
-          <div className="px-4 pb-2">
-            <MobileDateWheel value={value || toISO(new Date())} onChange={onChange} min={min} max={max} />
-          </div>
-          <DrawerFooter className="flex-row justify-end gap-2">
-            <DrawerClose asChild>
-              <Button variant="outline" size="sm">Done</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    );
-  }
+  if (isDisabled) return triggerEl;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>{triggerEl}</PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <Calendar mode="single" selected={toDate(value)} onSelect={handleSelect} disabled={disabled} initialFocus />
-      </PopoverContent>
-    </Popover>
+    <WheelSheet open={open} onOpenChange={setOpen} label={label} trigger={triggerEl}>
+      <MobileDateWheel value={value || toISO(new Date())} onChange={onChange} min={min} max={max} />
+    </WheelSheet>
   );
 }

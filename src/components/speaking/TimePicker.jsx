@@ -1,12 +1,15 @@
+// IMPORTANT: The rolling-wheel time picker (Hour/Minute/AM-PM WheelColumn,
+// 15-minute increments, in a bottom sheet on mobile / a centered dialog on
+// desktop) is the INTENTIONAL, universal implementation for EVERY viewport. It
+// must NOT be replaced with a native <input type="time">, a 15-minute time grid,
+// or a plain <select> in any future mobile / App Store optimisation pass.
+// Always render MobileTimeWheel via WheelSheet; never branch on viewport width.
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Drawer, DrawerContent, DrawerTrigger, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { formatTime } from '@/lib/speaking';
 import WheelColumn from './WheelColumn';
+import WheelSheet from './WheelSheet';
 
 const MINUTES = [0, 15, 30, 45];
 
@@ -38,14 +41,12 @@ function MobileTimeWheel({ value, onChange }) {
 }
 
 /**
- * Hybrid time picker. Mobile → single Vaul bottom sheet with rolling wheel
- * columns (Hour/Minute/AM-PM, 15-min increments). Desktop → Radix Popover with
- * a 15-min time grid. Only ONE instance is rendered per viewport (useIsMobile).
- * Value/onChange use HH:MM (24h).
+ * Time picker. Value/onChange use HH:MM (24h). The rolling wheel
+ * (Hour/Minute/AM-PM, 15-min increments) is always the picker on every viewport.
+ * Same trigger button, label, and props as before.
  */
 export default function TimePicker({ value, onChange, className, label, placeholder = 'Pick a time' }) {
   const [open, setOpen] = useState(false);
-  const isMobile = useIsMobile();
   const display = value ? formatTime(value) : placeholder;
   const triggerCls = cn(
     'flex h-9 w-full min-w-0 max-w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 text-sm shadow-sm box-border',
@@ -60,57 +61,9 @@ export default function TimePicker({ value, onChange, className, label, placehol
     </button>
   );
 
-  if (isMobile) {
-    return (
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger asChild>{triggerEl}</DrawerTrigger>
-        <DrawerContent className="pb-safe">
-          {label && (
-            <DrawerHeader className="text-left">
-              <DrawerTitle>{label}</DrawerTitle>
-            </DrawerHeader>
-          )}
-          <div className="px-4 pb-2">
-            <MobileTimeWheel value={value} onChange={onChange} />
-          </div>
-          <DrawerFooter className="flex-row justify-end gap-2">
-            <DrawerClose asChild>
-              <Button variant="outline" size="sm">Done</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    );
-  }
-
-  // Desktop: 15-minute grid
-  const TIMES = Array.from({ length: 96 }, (_, i) => {
-    const hh = Math.floor(i / 4);
-    const mm = (i % 4) * 15;
-    return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
-  });
-  const handlePick = (t) => { onChange(t); setOpen(false); };
-
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>{triggerEl}</PopoverTrigger>
-      <PopoverContent className="w-64 p-1" align="start">
-        <div className="grid max-h-[280px] grid-cols-4 gap-1 overflow-y-auto p-1">
-          {TIMES.map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => handlePick(t)}
-              className={cn(
-                'rounded-md px-2 py-2 text-center text-sm transition',
-                t === value ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
-              )}
-            >
-              {formatTime(t)}
-            </button>
-          ))}
-        </div>
-      </PopoverContent>
-    </Popover>
+    <WheelSheet open={open} onOpenChange={setOpen} label={label} trigger={triggerEl}>
+      <MobileTimeWheel value={value} onChange={onChange} />
+    </WheelSheet>
   );
 }
