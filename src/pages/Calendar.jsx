@@ -148,6 +148,10 @@ export default function Calendar() {
     const future = calEvents.filter((e) => e.series_id === seriesId && e.date > afterDate);
     for (const e of future) { await removeCalEvent(e.id); await deleteLinkedConversations(e.id, 'plan'); }
   };
+  const handleDeleteSeries = async (seriesId) => {
+    const all = calEvents.filter((e) => e.series_id === seriesId);
+    for (const e of all) { await removeCalEvent(e.id); await deleteLinkedConversations(e.id, 'plan'); }
+  };
 
   const overlayCursor = calDate ? new Date(calDate + 'T00:00:00') : new Date();
 
@@ -233,6 +237,7 @@ export default function Calendar() {
           onSave={saveCalEventWithNotifs}
           onDelete={handleDeletePlan}
           onDeleteFuture={handleDeleteFuture}
+          onDeleteSeries={handleDeleteSeries}
         />
 
         {/* Layer 3: Reflection overlay (personal editor + transparency stamp) */}

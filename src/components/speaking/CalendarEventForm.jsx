@@ -8,8 +8,9 @@ import ResponsiveSelect from './ResponsiveSelect';
 import DatePicker from './DatePicker';
 import TimePicker from './TimePicker';
 import RichTextEditor from './RichTextEditor';
-import { MessageCircle, Check, X, Trash2 } from 'lucide-react';
+import { MessageCircle, Check, X, Trash2, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from '@/components/ui/alert-dialog';
 import RecurrenceEditor from './RecurrenceEditor';
 import ScrollFade from './ScrollFade';
 import LinkedTasksSection from '@/components/tasks/LinkedTasksSection';
@@ -76,11 +77,14 @@ const prefillFromRule = (base, ruleStr) => {
   }
 };
 
-export default function CalendarEventForm({ open, item, admins, assignableUsers, currentUserId, onClose, onSave, onDelete, onDeleteFuture }) {
+export default function CalendarEventForm({ open, item, admins, assignableUsers, currentUserId, onClose, onSave, onDelete, onDeleteFuture, onDeleteSeries }) {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
   const [editScope, setEditScope] = useState('single');
+  const [dateError, setDateError] = useState('');
+  const [categoryError, setCategoryError] = useState('');
+  const [deleting, setDeleting] = useState(false);
   const { user } = useAuth();
   const userCanComment = useFeatureFlag('can_comment');
   const canCreatePersonal = usePlanFlag('can_create_personal_plans');
@@ -108,12 +112,34 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
     setForm((f) => ({ ...f, assignee_id: v === 'none' ? '' : v, assignee_name: assignee ? assignee.full_name || assignee.email : '' }));
   };
 
+  // Delete scope handler. The AlertDialog auto-closes on Action tap; this runs
+  // the actual deletion, then closes the plan form so the existing
+  // subscribe/load refreshes month/week/day views.
+  const runDelete = async (scope) => {
+    setDeleting(true);
+    try {
+      if (scope === 'single') {
+        await onDelete?.(item.id);
+      } else if (scope === 'future') {
+        // "This & all future": remove future occurrences (handleDeleteFuture)
+        // then the current occurrence (onDelete) — both clean linked chats.
+        if (onDeleteFuture) await onDeleteFuture(item.series_id, item.date);
+        await onDelete?.(item.id);
+      } else if (scope === 'series') {
+        if (onDeleteSeries) await onDeleteSeries(item.series_id);
+      }
+    } finally {
+      setDeleting(false);
+      onClose();
+    }
+  };
+
   const submit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    if (form.category === 'Personal' && !canCreatePersonal) { window.alert("You don't have permission to create personal plans."); setSaving(false); return; }
-    if (form.category === 'Work' && !canCreateWork) { window.alert("You don't have permission to create work plans."); setSaving(false); return; }
-    if (!form.date) { window.alert('Please pick a date.'); setSaving(false); return; }
+    if (form.category === 'Personal' && !canCreatePersonal) { setCategoryError("You don't have permission to create personal plans."); setSaving(false); return; }
+    if (form.category === 'Work' && !canCreateWork) { setCategoryError("You don't have permission to create work plans."); setSaving(false); return; }
+    if (!form.date) { setDateError('Please pick a date.'); setSaving(false); return; }
     const rule = buildRule(form);
     try {
       if (!item?.id) {
@@ -187,14 +213,16 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
               <Label>Date</Label>
               <DatePicker
                 value={form.date || ''}
-                onChange={(v) => set('date', v)}
+                onChange={(v) => { set('date', v); setDateError(''); }}
                 className="border-border"
                 label="Date"
               />
+              {dateError && <p className="text-xs font-medium text-destructive">{dateError}</p>}
             </div>
             <div className="space-y-1.5">
               <Label>Category</Label>
-              <ResponsiveSelect value={form.category} onValueChange={(v) => set('category', v)} options={[{ value: 'Personal', label: 'Personal', disabled: !canCreatePersonal }, { value: 'Work', label: 'Work', disabled: !canCreateWork }]} triggerClassName="border-border" />
+              <ResponsiveSelect value={form.category} onValueChange={(v) => { set('category', v); setCategoryError(''); }} options={[{ value: 'Personal', label: 'Personal', disabled: !canCreatePersonal }, { value: 'Work', label: 'Work', disabled: !canCreateWork }]} triggerClassName="border-border" />
+              {categoryError && <p className="text-xs font-medium text-destructive">{categoryError}</p>}
             </div>
             <div className="space-y-1.5">
               <Label>Location</Label>
@@ -286,22 +314,46 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
         </ScrollFade>
         <DialogFooter className="shrink-0 flex flex-row items-center justify-end gap-2 border-t border-border bg-card px-6 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3">
             {item?.id && onDelete && (
-              <Button
-                type="button"
-                variant="destructive"
-                size="icon"
-                aria-label="Delete"
-                title="Delete"
-                onClick={async () => {
-                  if (window.confirm('Delete this plan?')) {
-                    setSaving(true);
-                    try { await onDelete(item.id); } finally { setSaving(false); onClose(); }
-                  }
-                }}
-                className="h-11 w-11 p-0 [&_svg]:size-5"
-              >
-                <Trash2 />
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    aria-label="Delete plan"
+                    title="Delete"
+                    disabled={deleting || saving}
+                    className="h-11 w-11 p-0 [&_svg]:size-5"
+                  >
+                    <Trash2 />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="z-[60] flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.5rem)] max-w-md flex-col gap-0 overflow-hidden rounded-none p-0 sm:rounded-lg">
+                  <AlertDialogHeader className="shrink-0 gap-1 border-b border-border px-5 pb-3 pt-[calc(1.25rem+env(safe-area-inset-top))]">
+                    <AlertDialogTitle className="flex items-center gap-2 font-display text-lg">
+                      <AlertTriangle className="h-5 w-5 text-destructive" />
+                      Delete plan
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {isSeriesOccurrence
+                        ? 'This plan is part of a recurring series. Choose what to delete.'
+                        : 'Delete this plan?'} This can't be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain px-5 pt-5 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:overflow-visible">
+                    {isSeriesOccurrence ? (
+                      <>
+                        <AlertDialogAction onClick={() => runDelete('single')} className="h-11 w-full md:h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:w-auto sm:flex-1">Only this occurrence</AlertDialogAction>
+                        <AlertDialogAction onClick={() => runDelete('future')} className="h-11 w-full md:h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:w-auto sm:flex-1">This & all future</AlertDialogAction>
+                        <AlertDialogAction onClick={() => runDelete('series')} className="h-11 w-full md:h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:w-auto sm:flex-1">All occurrences</AlertDialogAction>
+                      </>
+                    ) : (
+                      <AlertDialogAction onClick={() => runDelete('single')} className="h-11 w-full md:h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:w-auto">Delete</AlertDialogAction>
+                    )}
+                    <AlertDialogCancel autoFocus className="mt-0 h-11 w-full md:h-11 border-border bg-card text-foreground hover:bg-accent sm:w-auto">Cancel</AlertDialogCancel>
+                  </div>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
             <Button type="button" variant="outline" size="icon" aria-label="Cancel" title="Cancel" onClick={onClose} className="h-11 w-11 p-0 [&_svg]:size-5">
               <X />
