@@ -8,9 +8,11 @@ import ResponsiveSelect from './ResponsiveSelect';
 import DatePicker from './DatePicker';
 import TimePicker from './TimePicker';
 import RichTextEditor from './RichTextEditor';
-import { MessageCircle, Check, X, Trash2, AlertTriangle } from 'lucide-react';
+import { MessageCircle, Check, X, Trash2, AlertTriangle, CalendarRange, Repeat } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from '@/components/ui/alert-dialog';
+import { cn } from '@/lib/utils';
+import useIsDarkMode from '@/hooks/useIsDarkMode';
 import RecurrenceEditor from './RecurrenceEditor';
 import ScrollFade from './ScrollFade';
 import LinkedTasksSection from '@/components/tasks/LinkedTasksSection';
@@ -85,6 +87,8 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
   const [dateError, setDateError] = useState('');
   const [categoryError, setCategoryError] = useState('');
   const [deleting, setDeleting] = useState(false);
+  const isDark = useIsDarkMode();
+  const themeCls = isDark ? 'dark' : '';
   const { user } = useAuth();
   const userCanComment = useFeatureFlag('can_comment');
   const canCreatePersonal = usePlanFlag('can_create_personal_plans');
@@ -328,7 +332,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
                     <Trash2 />
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="z-[60] flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.5rem)] max-w-md flex-col gap-0 overflow-hidden rounded-none p-0 sm:rounded-lg">
+                <AlertDialogContent className={cn('z-[60] flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.5rem)] max-w-md flex-col gap-0 overflow-hidden rounded-none p-0 sm:rounded-lg', themeCls)}>
                   <AlertDialogHeader className="shrink-0 gap-1 border-b border-border px-5 pb-3 pt-[calc(1.25rem+env(safe-area-inset-top))]">
                     <AlertDialogTitle className="flex items-center gap-2 font-display text-lg">
                       <AlertTriangle className="h-5 w-5 text-destructive" />
@@ -340,17 +344,29 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
                         : 'Delete this plan?'} This can't be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
-                  <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain px-5 pt-5 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:flex-row sm:flex-wrap sm:items-center sm:justify-end sm:overflow-visible">
+                  <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain px-5 pt-5 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
                     {isSeriesOccurrence ? (
                       <>
-                        <AlertDialogAction onClick={() => runDelete('single')} className="h-11 w-full md:h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:w-auto sm:flex-1">Only this occurrence</AlertDialogAction>
-                        <AlertDialogAction onClick={() => runDelete('future')} className="h-11 w-full md:h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:w-auto sm:flex-1">This & all future</AlertDialogAction>
-                        <AlertDialogAction onClick={() => runDelete('series')} className="h-11 w-full md:h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:w-auto sm:flex-1">All occurrences</AlertDialogAction>
+                        <AlertDialogAction onClick={() => runDelete('single')} aria-label="Delete only this occurrence" className="inline-flex h-11 md:h-11 w-full items-center justify-center gap-2 whitespace-nowrap bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                          <Trash2 className="h-4 w-4" />This event
+                        </AlertDialogAction>
+                        <AlertDialogAction onClick={() => runDelete('future')} aria-label="Delete this and all future occurrences" className="inline-flex h-11 md:h-11 w-full items-center justify-center gap-2 whitespace-nowrap bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                          <CalendarRange className="h-4 w-4" />This & future
+                        </AlertDialogAction>
+                        <AlertDialogAction onClick={() => runDelete('series')} aria-label="Delete all occurrences in this series" className="inline-flex h-11 md:h-11 w-full items-center justify-center gap-2 whitespace-nowrap bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                          <Repeat className="h-4 w-4" />All events
+                        </AlertDialogAction>
                       </>
                     ) : (
-                      <AlertDialogAction onClick={() => runDelete('single')} className="h-11 w-full md:h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:w-auto">Delete</AlertDialogAction>
+                      <AlertDialogAction onClick={() => runDelete('single')} aria-label="Delete plan" className="inline-flex h-11 md:h-11 w-full items-center justify-center gap-2 whitespace-nowrap bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        <Trash2 className="h-4 w-4" />Delete
+                      </AlertDialogAction>
                     )}
-                    <AlertDialogCancel autoFocus className="mt-0 h-11 w-full md:h-11 border-border bg-card text-foreground hover:bg-accent sm:w-auto">Cancel</AlertDialogCancel>
+                    <div className="mt-1 border-t border-border pt-3">
+                      <AlertDialogCancel autoFocus aria-label="Cancel" className="mt-0 inline-flex h-11 md:h-11 w-full items-center justify-center gap-2 whitespace-nowrap border border-border bg-card text-foreground hover:bg-accent">
+                        <X className="h-4 w-4" />Cancel
+                      </AlertDialogCancel>
+                    </div>
                   </div>
                 </AlertDialogContent>
               </AlertDialog>
