@@ -52,6 +52,19 @@ export default async function (req: Request): Promise<Response> {
       return Response.json({ deleted: { rooms: 0, messages: 0 } });
     }
 
+    // (2b) Authorization — only an admin or an actual participant/initiator of
+    // every linked room may cascade-delete these conversations. Stops a
+    // non-participant from wiping other users' private chats by supplying a
+    // linkedId whose owner entity is already gone.
+    if (user.role !== 'admin') {
+      const forbidden = (rooms || []).some((r: any) =>
+        !(r.participant_ids || []).includes(user.id) && r.started_by_id !== user.id
+      );
+      if (forbidden) {
+        return Response.json({ error: 'Forbidden: not a participant of all linked conversations' }, { status: 403 });
+      }
+    }
+
     // (4) Delete messages then rooms. Let errors throw to the outer catch —
     // never swallow, so failures are logged and surfaced.
     await base44.asServiceRole.entities.ChatMessage.deleteMany({ room_id: { $in: roomIds } });
