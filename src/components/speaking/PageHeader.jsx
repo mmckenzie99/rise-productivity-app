@@ -2,7 +2,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
-export default function PageHeader({ title, onBack, backTo, actions, className }) {
+export default function PageHeader({ title, onBack, backTo, actions, className, isRootTab = false }) {
   const navigate = useNavigate();
   const handleBack = () => {
     if (onBack) return onBack();
@@ -17,11 +17,17 @@ export default function PageHeader({ title, onBack, backTo, actions, className }
       )}
     >
       <div className="relative flex h-14 items-center justify-between px-2">
+        {isRootTab && (
+          <div aria-hidden className="pointer-events-none h-11 w-11 shrink-0 lg:hidden" />
+        )}
         <button
           type="button"
           onClick={handleBack}
           aria-label="Back"
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-foreground transition hover:bg-accent"
+          className={cn(
+            'h-11 w-11 shrink-0 items-center justify-center rounded-md text-foreground transition hover:bg-accent',
+            isRootTab ? 'hidden lg:flex' : 'flex'
+          )}
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
