@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   AlertDialog,
@@ -14,6 +15,48 @@ import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Pencil, Trash2, CalendarPlus, CalendarDays } from 'lucide-react';
 import { formatDateTime } from '@/lib/inbox';
+
+const NOTE_URL_RE = /((?:https?:\/\/|msteams:\/\/|www\.)[^\s<>]+)/gi;
+
+// Long links (Teams message links especially) are shown as a short label
+// so list rows stay tidy; the full URL is kept in the title/href.
+const shortLabel = (url) => {
+  if (url.length <= 48) return url;
+  try {
+    const u = new URL(/^www\./i.test(url) ? `https://${url}` : url);
+    return `${u.hostname}/…`;
+  } catch {
+    return `${url.slice(0, 45)}…`;
+  }
+};
+
+// Renders plain-text notes, turning any URLs (e.g. Microsoft Teams message links)
+// into clickable links that open in a new tab.
+const renderNotes = (text) =>
+  String(text)
+    .split(NOTE_URL_RE)
+    .map((part, i) => {
+      if (!part) return null;
+      if (i % 2 === 0) return part;
+      const trail = (part.match(/[.,;:!?)\]]+$/) || [''])[0];
+      const url = trail ? part.slice(0, part.length - trail.length) : part;
+      const href = /^www\./i.test(url) ? `https://${url}` : url;
+      return (
+        <Fragment key={i}>
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={url}
+            onClick={(e) => e.stopPropagation()}
+            className="break-all font-medium text-primary underline underline-offset-2 hover:opacity-80"
+          >
+            {shortLabel(url)}
+          </a>
+          {trail}
+        </Fragment>
+      );
+    });
 
 const isOverdue = (iso) => {
   if (!iso) return false;
@@ -51,7 +94,7 @@ export default function TaskItem({ task, onToggle, onEdit, onSchedule, onDelete,
           </p>
         )}
         {!compact && task.notes && (
-          <p className="mt-1 line-clamp-2 whitespace-pre-wrap text-xs text-muted-foreground">{task.notes}</p>
+          <p className="mt-1 line-clamp-3 whitespace-pre-wrap break-words text-xs text-muted-foreground">{renderNotes(task.notes)}</p>
         )}
       </div>
 
