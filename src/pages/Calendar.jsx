@@ -157,7 +157,7 @@ export default function Calendar() {
 
   return (
     <main className="min-h-screen bg-background text-foreground pb-safe">
-      <PageHeader title="Calendar" actions={
+      <PageHeader title="Calendar" backTo="/" actions={
         <button
           onClick={() => downloadICS(generateICSBatch(items), 'all-engagements.ics')}
           disabled={!items.length}
