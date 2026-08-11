@@ -32,7 +32,7 @@
           "with": {
             "function_name": "checkEngagementReminders",
             "args": {
-              "secret": "9f3a2b7e8c1d4a6f0b5e3c2d1a9f8e7b"
+              "secret": "30efc2cbc4bd0f6cc3bee14a173892b3"
             }
           },
           "then": "end"
