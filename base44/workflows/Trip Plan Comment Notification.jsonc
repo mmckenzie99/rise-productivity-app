@@ -1,6 +1,6 @@
 {
   "name": "Trip Plan Comment Notification",
-  "description": "When a PlanComment is created on a calendar plan tied to a trip, notify the trip creator and the assignees of the trip's related calendar events. Comments containing 'urgent' are flagged high-priority. No email is sent.",
+  "description": "When a PlanComment is created on a calendar plan tied to a trip, notify the trip creator and the assignees of the trip's related calendar events. Comments containing 'urgent' are flagged high-priority. No email is sent. Invokes notifyTripPlanComment with the cron secret so anonymous direct HTTP calls are rejected.",
   "trigger": {
     "condition": null,
     "config": {
@@ -25,7 +25,8 @@
           "with": {
             "function_name": "notifyTripPlanComment",
             "args": {
-              "plan_comment_id": "${ .trigger.entity_id }"
+              "plan_comment_id": "${ .trigger.entity_id }",
+              "secret": "9f3a2b7e8c1d4a6f0b5e3c2d1a9f8e7b"
             }
           },
           "then": "end"

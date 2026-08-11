@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
+import { secrets } from 'base44:runtime';
 
 // Fires when a PlanComment is created. It links the commented calendar plan to
 // any trip whose date range contains the plan's date, then notifies the trip
@@ -15,6 +16,29 @@ export default async function (req: Request): Promise<Response> {
     } catch (_e) {
       body = {};
     }
+
+    // Authorize: either the cron secret (entity-triggered workflow, which has
+    // no user context) or a valid admin session (direct call). Without one of
+    // these the request is indistinguishable from anonymous HTTP and is
+    // rejected before any service-role work runs.
+    let authorized = false;
+    const cronSecret = secrets.get('CRON_SECRET');
+    if (cronSecret && body?.secret === cronSecret) {
+      authorized = true;
+    }
+    if (!authorized) {
+      try {
+        const user = await base44.auth.me();
+        if (user && user.role === 'admin') {
+          authorized = true;
+        } else {
+          return Response.json({ error: 'Forbidden' }, { status: 403 });
+        }
+      } catch (_e) {
+        return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+    }
+
     const planCommentId = body?.plan_comment_id;
     if (!planCommentId) {
       return Response.json({ error: 'plan_comment_id required' }, { status: 400 });
