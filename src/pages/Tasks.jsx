@@ -55,7 +55,7 @@ export default function Tasks() {
 
   return (
     <main className="min-h-screen bg-background text-foreground pb-safe">
-      <PageHeader title="Tasks" actions={
+      <PageHeader title="Tasks" backTo="/" actions={
         <button
           onClick={openNew}
           className="inline-flex items-center gap-1.5 rounded-md bg-[#D9A404] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#B89003]"
