@@ -66,7 +66,7 @@ export default function Trips() {
 
   return (
     <main className="min-h-screen bg-background text-foreground pb-safe">
-      <PageHeader title="Trips" isRootTab actions={isAdmin && (
+      <PageHeader title="Trips" isRootTab backTo="/" actions={isAdmin && (
         <TooltipProvider delayDuration={300}>
           <Tooltip>
             <TooltipTrigger asChild>
