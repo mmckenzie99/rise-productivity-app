@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import Brand from './Brand';
-import NotificationBell from './NotificationBell';
 import ProfileMenu from './ProfileMenu';
 
 const ACTIVE = 'bg-primary text-primary-foreground border-primary hover:bg-primary/90 hover:text-primary-foreground';
@@ -67,7 +66,6 @@ export default function AppHeader({ onAdd, onInvite, isAdmin, isOwner, newOpen, 
         )}
 
         <ProfileMenu />
-        <div className="hidden lg:block"><NotificationBell /></div>
         <Button size="icon" variant="ghost" aria-label="Sign out" className="h-11 w-11 lg:h-9 lg:w-9" onClick={() => base44.auth.logout('/login')}><LogOut className="h-4 w-4" /></Button>
       </div>
     </header>
