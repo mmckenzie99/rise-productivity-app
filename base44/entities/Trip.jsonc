@@ -170,7 +170,7 @@
     "is_shared": {
       "type": "boolean",
       "default": false,
-      "description": "When true, all authenticated users can read this record. When false, only the creator and admins can see it."
+      "description": "When true, all authenticated users can read this record. When false, only the creator and admins can see it. Owner-controlled sharing."
     }
   },
   "required": [
