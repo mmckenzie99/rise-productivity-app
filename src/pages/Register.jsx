@@ -40,8 +40,20 @@ export default function Register() {
   const handleVerify = async () => {
     setError("");
     setLoading(true);
+    const verifyWithRetry = async () => {
+      try {
+        return await base44.auth.verifyOtp({ email, otpCode });
+      } catch (err) {
+        const msg = (err?.message || "").toLowerCase();
+        if (msg.includes("user not found")) {
+          await new Promise((resolve) => setTimeout(resolve, 2500));
+          return base44.auth.verifyOtp({ email, otpCode });
+        }
+        throw err;
+      }
+    };
     try {
-      const result = await base44.auth.verifyOtp({ email, otpCode });
+      const result = await verifyWithRetry();
       if (result?.access_token) {
         base44.auth.setToken(result.access_token);
       }
