@@ -10,6 +10,7 @@ import FormTravel from './FormTravel';
 import FormPerDiem from './FormPerDiem';
 import FormLodging from './FormLodging';
 import MultiTypeSelect from './MultiTypeSelect';
+import ShareToggle from './ShareToggle';
 
 export default function TripForm({ open, item, engagements, onClose, onSave }) {
   const [form, setForm] = useState(defaultTrip);
@@ -86,6 +87,8 @@ export default function TripForm({ open, item, engagements, onClose, onSave }) {
               </div>
             </div>
           </div>
+
+          <ShareToggle value={form.is_shared} onChange={(v) => set('is_shared', v)} />
 
           <FormTravel form={form} set={set} />
           <FormLodging form={form} set={set} />

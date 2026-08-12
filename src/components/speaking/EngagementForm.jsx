@@ -8,6 +8,7 @@ import FormSchedule from './FormSchedule';
 import FormLocation from './FormLocation';
 import FormPresentation from './FormPresentation';
 import RichTextEditor from './RichTextEditor';
+import ShareToggle from './ShareToggle';
 
 export default function EngagementForm({ open, item, onClose, onSave }) {
   const [form, setForm] = useState(EMPTY);
@@ -38,6 +39,8 @@ export default function EngagementForm({ open, item, onClose, onSave }) {
           <FormSchedule form={form} set={set} />
           <FormPresentation form={form} set={set} />
           <FormLocation form={form} set={set} />
+
+          <ShareToggle value={form.is_shared} onChange={(v) => set('is_shared', v)} />
 
           <div className="space-y-2 rounded-lg border border-border bg-card p-4">
             <h3 className="font-display text-sm font-semibold text-foreground">Notes</h3>
