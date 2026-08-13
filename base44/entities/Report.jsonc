@@ -1,0 +1,62 @@
+{
+  "name": "Report",
+  "type": "object",
+  "properties": {
+    "message_id": {
+      "type": "string",
+      "description": "ID of the reported chat message"
+    },
+    "reported_user_id": {
+      "type": "string",
+      "description": "User id of the reported user (the message author)"
+    },
+    "room_id": {
+      "type": "string",
+      "description": "ID of the chat room the reported message belongs to"
+    },
+    "reporter_id": {
+      "type": "string",
+      "description": "User id of the person who filed the report"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Reason category selected by the reporter, with an optional free-text note appended"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "reviewing",
+        "resolved",
+        "dismissed"
+      ],
+      "default": "open",
+      "description": "Workflow status of the report; admins update this as they triage"
+    }
+  },
+  "required": [
+    "message_id",
+    "reported_user_id",
+    "room_id",
+    "reporter_id",
+    "reason"
+  ],
+  "rls": {
+    "create": null,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

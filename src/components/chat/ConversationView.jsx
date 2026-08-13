@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Send, Paperclip, FileText, Download, X, Archive, RotateCcw, Trash2, UserPlus } from 'lucide-react';
 import AddParticipantDialog from '@/components/chat/AddParticipantDialog';
+import MessageActionsMenu from '@/components/chat/MessageActionsMenu';
+import ReportMessageDialog from '@/components/chat/ReportMessageDialog';
+import { toast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 import Highlight from '@/components/chat/Highlight';
 import { base44 } from '@/api/base44Client';
@@ -22,6 +25,8 @@ export default function ConversationView({ room, user, onBack, onArchive, onUnar
   const [editingTopic, setEditingTopic] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [topicDraft, setTopicDraft] = useState('');
+  const [blockedIds, setBlockedIds] = useState(user.blocked_user_ids || []);
+  const [reportTarget, setReportTarget] = useState(null);
   const scrollRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -127,6 +132,22 @@ export default function ConversationView({ room, user, onBack, onArchive, onUnar
     onArchive?.(room);
   };
 
+  const handleBlock = async (userId, userName) => {
+    const current = blockedIds || [];
+    if (!userId || current.includes(userId)) {
+      toast({ title: 'Already blocked', description: `${userName || 'User'} is already on your block list.` });
+      return;
+    }
+    const next = [...current, userId];
+    try {
+      await base44.auth.updateMe({ blocked_user_ids: next });
+      setBlockedIds(next);
+      toast({ title: 'User blocked', description: `Messages from ${userName || 'this user'} are now hidden.` });
+    } catch (e) {
+      toast({ variant: 'destructive', title: 'Block failed', description: e?.message || String(e) });
+    }
+  };
+
   const send = async () => {
     const text = input.trim();
     if ((!text && !pendingFile) || sending || uploading) return;
@@ -181,9 +202,10 @@ export default function ConversationView({ room, user, onBack, onArchive, onUnar
   };
 
   const q = (query || '').trim().toLowerCase();
-  const visibleMessages = q
+  const visibleMessages = (q
     ? messages.filter((m) => [m.body || '', m.attachment?.name || ''].join(' ').toLowerCase().includes(q))
-    : messages;
+    : messages
+  ).filter((m) => m.is_system || m.author_id === user.id || !blockedIds.includes(m.author_id));
 
   return (
     <div className="flex h-full flex-col">
@@ -270,19 +292,22 @@ export default function ConversationView({ room, user, onBack, onArchive, onUnar
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 border-b border-border px-3 py-2">
-        {(room.participant_names || []).map((name, i) => {
-          const me = (room.participant_ids || [])[i] === user.id;
-          return (
-            <span
-              key={i}
-              className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ${
-                me ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
-              }`}
-            >
-              {me ? 'You' : name}
-            </span>
-          );
-        })}
+        {(room.participant_names || [])
+          .map((name, i) => ({ name, id: (room.participant_ids || [])[i] }))
+          .filter((p) => !p.id || p.id === user.id || !blockedIds.includes(p.id))
+          .map((p, i) => {
+            const me = p.id === user.id;
+            return (
+              <span
+                key={i}
+                className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                  me ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
+                }`}
+              >
+                {me ? 'You' : p.name}
+              </span>
+            );
+          })}
         <button
           onClick={() => setAddOpen(true)}
           className="inline-flex items-center gap-1 rounded-full border border-dashed border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground transition hover:border-primary hover:text-primary"
@@ -319,7 +344,13 @@ export default function ConversationView({ room, user, onBack, onArchive, onUnar
                   }`}
                 >
                   {!mine && (
-                    <p className="mb-0.5 text-[10px] font-semibold opacity-80">{m.author_name}</p>
+                    <div className="mb-0.5 flex items-center justify-between gap-2">
+                      <p className="text-[10px] font-semibold opacity-80">{m.author_name}</p>
+                      <MessageActionsMenu
+                        onReport={() => setReportTarget(m)}
+                        onBlock={() => handleBlock(m.author_id, m.author_name)}
+                      />
+                    </div>
                   )}
                   {m.attachment && (
                     <a
@@ -403,6 +434,15 @@ export default function ConversationView({ room, user, onBack, onArchive, onUnar
         room={room}
         currentUser={user}
         onAdded={() => setAddOpen(false)}
+      />
+
+      <ReportMessageDialog
+        open={!!reportTarget}
+        onClose={() => setReportTarget(null)}
+        message_id={reportTarget?.id}
+        reported_user_id={reportTarget?.author_id}
+        room_id={room.id}
+        currentUser={user}
       />
     </div>
   );

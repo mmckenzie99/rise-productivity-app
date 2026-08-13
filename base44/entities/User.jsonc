@@ -34,6 +34,14 @@
     "can_start_chats": {
       "type": "boolean",
       "description": "Explicit per-user override for starting chat conversations (creating a ChatRoom). true forces on, false forces off; when unset the role default from AppSettings applies. Users without this permission may still be added to, and reply within, conversations that others start."
+    },
+    "blocked_user_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "User ids this person has blocked from chat. Messages and participant entries from these users are hidden for the blocker only. Each user maintains their own list."
     }
   },
   "required": [
