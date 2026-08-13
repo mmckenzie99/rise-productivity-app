@@ -152,6 +152,16 @@ export default function Register() {
           <Link to="/login" className="text-primary font-medium hover:underline">
             Log in
           </Link>
+          <div className="mt-3">
+            <a
+              href="https://rise-clarity-help.base44.app/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-muted-foreground hover:underline"
+            >
+              Privacy Policy
+            </a>
+          </div>
         </>
       }
     >
