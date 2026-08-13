@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useOutlet, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import BottomTabBar from '@/components/speaking/BottomTabBar';
+import PushedScreenTransition from '@/components/PushedScreenTransition';
 
 // The five bottom-tab destinations. Each gets a persistent container so that
 // switching tabs hides the inactive page (visibility:hidden, NOT display:none)
@@ -39,21 +41,25 @@ export default function MainLayout() {
           const content = isActive ? outlet : cacheRef.current[seg];
           if (!content) return null;
           return (
-            <div
+            <motion.div
               key={seg}
               aria-hidden={!isActive}
+              initial={false}
+              animate={{ opacity: isActive ? 1 : 0 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
               className={isActive
                 ? ''
                 : 'absolute inset-0 invisible pointer-events-none overflow-hidden'}
             >
               {content}
-            </div>
+            </motion.div>
           );
         })}
-        {/* Non-tab pushed routes (/calendar, /tasks, /users) render on top of
-            the frozen tab containers and unmount on leave, as expected for a
-            pushed detail screen. */}
-        {!isTabRoute && <div>{outlet}</div>}
+        {/* Non-tab pushed routes (/calendar, /tasks, /users) slide+fade in via
+            framer-motion. mode="popLayout" pops the exiting screen out of flow
+            so the keep-alive tab underneath shows immediately — no stacking or
+            layout shift, and tab state preservation is untouched. */}
+        <PushedScreenTransition active={!isTabRoute}>{outlet}</PushedScreenTransition>
       </div>
       <BottomTabBar />
     </div>
