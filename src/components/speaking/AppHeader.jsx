@@ -1,8 +1,7 @@
-import { LogOut, LogIn, Users, CalendarDays, Plane, LayoutDashboard, Menu, MessageCircle, Plus, Inbox as InboxIcon } from 'lucide-react';
+import { LogOut, Users, CalendarDays, Plane, LayoutDashboard, Menu, MessageCircle, Plus, Inbox as InboxIcon } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
-import { useAuth } from '@/lib/AuthContext';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import Brand from './Brand';
 import ProfileMenu from './ProfileMenu';
@@ -13,7 +12,6 @@ const ITEM_HOVER = 'hover:bg-primary hover:text-primary-foreground focus:bg-prim
 
 export default function AppHeader({ onAdd, onInvite, isAdmin, isOwner, newOpen, inviteOpen }) {
   const { pathname } = useLocation();
-  const { user } = useAuth();
   return (
     <header className="flex flex-col gap-5 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
       <Brand />
@@ -67,14 +65,8 @@ export default function AppHeader({ onAdd, onInvite, isAdmin, isOwner, newOpen, 
           </div>
         )}
 
-        {user ? (
-          <>
-            <ProfileMenu />
-            <Button size="icon" variant="ghost" aria-label="Sign out" className="h-11 w-11 lg:h-9 lg:w-9" onClick={() => base44.auth.logout('/login')}><LogOut className="h-4 w-4" /></Button>
-          </>
-        ) : (
-          <Button asChild variant="outline" className="h-11 lg:h-9"><Link to="/login"><LogIn className="mr-2 h-4 w-4" />Log in</Link></Button>
-        )}
+        <ProfileMenu />
+        <Button size="icon" variant="ghost" aria-label="Sign out" className="h-11 w-11 lg:h-9 lg:w-9" onClick={() => base44.auth.logout('/login')}><LogOut className="h-4 w-4" /></Button>
       </div>
     </header>
   );
