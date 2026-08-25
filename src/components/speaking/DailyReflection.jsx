@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useAuth } from '@/lib/AuthContext';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +11,6 @@ import TimePicker from './TimePicker';
 import { formatDate } from '@/lib/speaking';
 
 export default function DailyReflection({ dateKey, engagements = [] }) {
-  const { user } = useAuth();
   const [record, setRecord] = useState(null);
   const [meditation, setMeditation] = useState('');
   const [reference, setReference] = useState('');
@@ -30,7 +28,7 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
   useEffect(() => {
     let active = true;
     setLoading(true);
-    base44.entities.DailyReflection.filter({ date: dateKey, created_by_id: user?.id })
+    base44.entities.DailyReflection.filter({ date: dateKey })
       .then((res) => {
         if (!active) return;
         const rec = res && res[0];
@@ -44,7 +42,7 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
       })
       .finally(() => active && setLoading(false));
     return () => { active = false; };
-  }, [dateKey, user?.id]);
+  }, [dateKey]);
 
   const persist = async (patch) => {
     setSaving(true);

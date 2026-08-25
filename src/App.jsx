@@ -6,8 +6,6 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
-import { Navigate } from 'react-router-dom';
-import ProtectedRoute from '@/components/ProtectedRoute';
 import MainLayout from '@/components/MainLayout';
 import useChatNotifications from '@/hooks/useChatNotifications';
 import { lazy, Suspense } from 'react';
@@ -26,7 +24,7 @@ const Tasks = lazy(() => import('@/pages/Tasks'));
 import useSystemDarkMode from '@/hooks/useSystemDarkMode';
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
   useChatNotifications();
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -37,15 +35,9 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
-  if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
-      navigateToLogin();
-      return null;
-    }
+  // Public app: no login required. Only surface a hard error for unregistered users.
+  if (authError?.type === 'user_not_registered') {
+    return <UserNotRegisteredError />;
   }
 
   // Render the main app
@@ -56,18 +48,16 @@ const AuthenticatedApp = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/trips" element={<Trips />} />
-            <Route path="/inbox" element={<Inbox />} />
-            <Route path="/users" element={<UserManagement />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/chat/:roomId" element={<Chat />} />
-            <Route path="/tasks" element={<Tasks />} />
-          </Route>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/trips" element={<Trips />} />
+          <Route path="/inbox" element={<Inbox />} />
+          <Route path="/users" element={<UserManagement />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/chat/:roomId" element={<Chat />} />
+          <Route path="/tasks" element={<Tasks />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>

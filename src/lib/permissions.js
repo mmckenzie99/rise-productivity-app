@@ -8,6 +8,7 @@ export const isAdmin = (user) => user?.role === 'admin';
 export const isOwner = (user) => !!user?.is_owner;
 
 export const resolveFeature = (user, settings, key) => {
+  if (!user) return true; // public app: anonymous visitors can use all features
   if (isOwner(user)) return true;
   const v = user?.[key];
   if (v === true) return true;
@@ -28,6 +29,7 @@ export const DASHBOARD_SECTIONS = [
 
 // Resolves whether a given Dashboard section is visible to the user.
 export const resolveDashboardSection = (user, settings, id) => {
+  if (!user) return true;
   if (isOwner(user)) return true;
   const role = user?.role || 'user';
   return settings?.features?.dashboard_sections?.[id]?.[role] !== false;
