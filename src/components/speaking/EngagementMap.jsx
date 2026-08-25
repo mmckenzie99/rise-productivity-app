@@ -22,6 +22,23 @@ L.Map.prototype._initContainer = function (id) {
     throw e;
   }
 };
+// Guard against Leaflet's "Map container is being reused by another instance"
+// error, which fires during teardown (map.remove) when a stale map instance's
+// container has since been claimed by a newer instance (e.g. a Suspense/concurrent
+// re-attach re-init via the _initContainer guard above). The orphaned map has
+// nothing left to clean on that container, so swallow the error instead of
+// letting it surface as an uncaught runtime error on unmount.
+const _origRemove = L.Map.prototype.remove;
+L.Map.prototype.remove = function () {
+  try {
+    return _origRemove.call(this);
+  } catch (e) {
+    if (e && e.message && e.message.indexOf('reused by another instance') !== -1) {
+      return this;
+    }
+    throw e;
+  }
+};
 const upcomingIcon=L.divIcon({html:'<div style="width:18px;height:18px;background:#D9A404;border:2px solid #FFFFFF;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 4px #1B2A4B66"></div>',className:'',iconSize:[20,20],iconAnchor:[10,20]});
 const pastIcon=L.divIcon({html:`<img src="https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/76e4a21d0_Icon.png" style="width:26px;height:26px;border-radius:50%;object-fit:cover"/>`,className:'',iconSize:[26,26],iconAnchor:[13,13]});
 const todayStr=new Date().toISOString().slice(0,10);
