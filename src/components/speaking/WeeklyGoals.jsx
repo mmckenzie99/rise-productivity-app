@@ -3,7 +3,8 @@ import { data } from '@/lib/workspaceData';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import TimePicker from '@/components/speaking/TimePicker';
-import { Target, Plus, Trash2, Check, Bell, ChevronDown } from 'lucide-react';
+import AddButton from '@/components/speaking/AddButton';
+import { Target, Trash2, Check, Bell, ChevronDown } from 'lucide-react';
 
 const FOCUSES = ['Spiritual', 'Professional', 'Physical', 'Mental', 'Relational', 'Personal'];
 const MAX_GOALS = 4;
@@ -178,9 +179,7 @@ export default function WeeklyGoals({ cursor }) {
               placeholder="Add a goal…"
               className="h-8 flex-1 min-w-[120px] border-border text-sm"
             />
-            <Button size="sm" onClick={addGoal} disabled={!draftText.trim()} className="h-8 shrink-0 px-2.5">
-              <Plus className="h-3.5 w-3.5" />
-            </Button>
+            <AddButton onClick={addGoal} disabled={!draftText.trim()} label="Add goal" className="h-8 px-2" iconClass="h-3.5 w-3.5" />
           </div>
           <div className="flex flex-wrap gap-1">
             <button

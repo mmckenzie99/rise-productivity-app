@@ -1,6 +1,7 @@
-import { LogOut, CalendarDays, Plane, LayoutDashboard, Users, BookOpen, Activity, Plus } from 'lucide-react';
+import { LogOut, CalendarDays, Plane, LayoutDashboard, Users, BookOpen, Activity } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import AddButton from './AddButton';
 import { useAuth } from '@/lib/AuthContext';
 import Brand from './Brand';
 import ProfileMenu from './ProfileMenu';
@@ -36,9 +37,7 @@ export default function AppHeader({ onAdd }) {
             </Link>
           ))}
           {onAdd && (
-            <Button onClick={onAdd} className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <Plus className="mr-2 h-4 w-4" />New
-            </Button>
+            <AddButton onClick={onAdd} label="New" />
           )}
         </div>
         <ProfileMenu />

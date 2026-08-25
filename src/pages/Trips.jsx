@@ -1,10 +1,9 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
-import { ArrowLeft, Plus, Building2, CalendarDays, LayoutGrid, CalendarClock, CheckCircle2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
+import { ArrowLeft, Building2, CalendarDays, LayoutGrid, CalendarClock, CheckCircle2 } from 'lucide-react';
 import useTrips from '@/hooks/useTrips';
+import AddButton from '@/components/speaking/AddButton';
 import useEngagements from '@/hooks/useEngagements';
 import { formatCurrency, getTripStatus, formatPlaces } from '@/lib/trips';
 import TripForm from '@/components/speaking/TripForm';
@@ -70,16 +69,7 @@ export default function Trips() {
   return (
     <main className="min-h-screen bg-background text-foreground pb-safe">
       <PageHeader title="Trips" isRootTab backTo="/" actions={isAdmin && (
-        <TooltipProvider delayDuration={300}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button onClick={() => setFormOpen(true)} size="icon" aria-label="New Trip" className="bg-[#D9A404] hover:bg-[#B89003]">
-                <Plus className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>New Trip</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <AddButton onClick={() => setFormOpen(true)} label="New trip" />
       )} />
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={load}>

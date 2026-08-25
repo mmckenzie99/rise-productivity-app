@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import RichTextEditor from '@/components/speaking/RichTextEditor';
+import DatePicker from '@/components/speaking/DatePicker';
+import NumberWheelPicker from '@/components/speaking/NumberWheelPicker';
 import SectionCard from '@/components/faith/SectionCard';
 import { Save, Calendar, BookMarked, BookOpen, Pencil, Target, Heart } from 'lucide-react';
 import { formatDate } from '@/lib/speaking';
@@ -163,11 +165,11 @@ export default function FaithJournal() {
       <SectionCard title="Details" icon={BookMarked}>
         <div className="space-y-1">
           <Label className="text-[11px] text-[#5A6781]">Date</Label>
-          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="border-[#D6DAE3] text-[#1B2A4B]" />
+          <DatePicker value={date} onChange={(v) => setDate(v)} label="Date" className="border-[#D6DAE3] text-[#1B2A4B]" />
         </div>
         <div className="mt-3 space-y-1">
           <Label className="text-[11px] text-[#5A6781]">Time spent (minutes)</Label>
-          <Input type="number" min="0" value={durationMinutes} onChange={(e) => setDurationMinutes(e.target.value)} placeholder="0" className="border-[#D6DAE3] text-[#1B2A4B]" />
+          <NumberWheelPicker value={durationMinutes} onChange={(v) => setDurationMinutes(v)} label="Time spent (minutes)" min={0} max={480} step={5} className="border-[#D6DAE3] text-[#1B2A4B]" />
         </div>
         <div className="mt-3 flex items-center justify-between gap-3">
           <div>

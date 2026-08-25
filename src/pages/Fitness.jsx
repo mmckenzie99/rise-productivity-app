@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Plus, Star, Trash2, Dumbbell, Moon, Scale, Target, Check } from 'lucide-react';
+import { Star, Trash2, Dumbbell, Moon, Scale, Target, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,6 +14,8 @@ import { Image } from '@/components/ui/image';
 import { formatDate } from '@/lib/speaking';
 import ImportantFlagButton from '@/components/speaking/ImportantFlagButton';
 import { Switch } from '@/components/ui/switch';
+import AddButton from '@/components/speaking/AddButton';
+import NumberWheelPicker from '@/components/speaking/NumberWheelPicker';
 import { syncFollowUpFlag } from '@/lib/followUpFlag';
 import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
 
@@ -92,9 +94,7 @@ export default function Fitness() {
   return (
     <main className="min-h-screen bg-background text-foreground pb-safe">
       <PageHeader title="Fitness" backTo="/" actions={
-        <button onClick={() => { setFlagForFollowUp(false); setShowForm(true); setShowGoal(false); }} className="inline-flex items-center gap-1.5 rounded-md bg-[#D9A404] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#B89003]">
-          <Plus className="h-4 w-4" />Log
-        </button>
+        <AddButton onClick={() => { setFlagForFollowUp(false); setShowForm(true); setShowGoal(false); }} label="Log workout" />
       } />
       <div className="mx-auto max-w-3xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={load}>
@@ -119,7 +119,7 @@ export default function Fitness() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="flex items-center gap-2 font-display text-lg font-semibold"><Target className="h-4 w-4 text-primary" />Goals</h2>
-            <button onClick={() => { setShowGoal(true); setShowForm(false); }} className="text-xs font-medium text-primary hover:underline">+ Add goal</button>
+            <AddButton onClick={() => { setShowGoal(true); setShowForm(false); }} label="Add goal" className="h-8 px-2" iconClass="h-3.5 w-3.5" />
           </div>
           {goals.length === 0 ? (
             <p className="rounded-lg border border-dashed border-border bg-card/60 py-6 text-center text-sm text-muted-foreground">No fitness goals yet.</p>
@@ -205,12 +205,12 @@ export default function Fitness() {
                 <div className="space-y-1"><Label>Intensity</Label><ResponsiveSelect value={form.intensity} onValueChange={(v) => setForm({ ...form, intensity: v })} options={INTENSITIES.map((a) => ({ value: a, label: a }))} label="Intensity" /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1"><Label>Duration (min)</Label><Input type="number" value={form.duration_minutes} onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })} /></div>
-                <div className="space-y-1"><Label>Distance (mi)</Label><Input type="number" value={form.distance_miles} onChange={(e) => setForm({ ...form, distance_miles: e.target.value })} /></div>
-                <div className="space-y-1"><Label>Calories</Label><Input type="number" value={form.calories} onChange={(e) => setForm({ ...form, calories: e.target.value })} /></div>
-                <div className="space-y-1"><Label>Weight (lbs)</Label><Input type="number" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} /></div>
-                <div className="space-y-1"><Label>Sleep (hrs)</Label><Input type="number" value={form.sleep_hours} onChange={(e) => setForm({ ...form, sleep_hours: e.target.value })} /></div>
-                <div className="space-y-1"><Label>Sleep score (0-100)</Label><Input type="number" value={form.sleep_score} onChange={(e) => setForm({ ...form, sleep_score: e.target.value })} /></div>
+                <div className="space-y-1"><Label>Duration (min)</Label><NumberWheelPicker value={form.duration_minutes} onChange={(v) => setForm({ ...form, duration_minutes: v })} label="Duration (min)" min={0} max={300} step={5} /></div>
+                <div className="space-y-1"><Label>Distance (mi)</Label><NumberWheelPicker value={form.distance_miles} onChange={(v) => setForm({ ...form, distance_miles: v })} label="Distance (mi)" min={0} max={50} step={0.25} /></div>
+                <div className="space-y-1"><Label>Calories</Label><NumberWheelPicker value={form.calories} onChange={(v) => setForm({ ...form, calories: v })} label="Calories" min={0} max={2000} step={10} /></div>
+                <div className="space-y-1"><Label>Weight (lbs)</Label><NumberWheelPicker value={form.weight} onChange={(v) => setForm({ ...form, weight: v })} label="Weight (lbs)" min={50} max={400} step={1} /></div>
+                <div className="space-y-1"><Label>Sleep (hrs)</Label><NumberWheelPicker value={form.sleep_hours} onChange={(v) => setForm({ ...form, sleep_hours: v })} label="Sleep (hrs)" min={0} max={12} step={0.5} /></div>
+                <div className="space-y-1"><Label>Sleep score (0-100)</Label><NumberWheelPicker value={form.sleep_score} onChange={(v) => setForm({ ...form, sleep_score: v })} label="Sleep score (0-100)" min={0} max={100} step={1} /></div>
               </div>
               <div className="space-y-1"><Label>Notes</Label><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} /></div>
               <div className="space-y-1">

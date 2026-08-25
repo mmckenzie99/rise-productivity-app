@@ -3,6 +3,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import AppHeader from '@/components/speaking/AppHeader';
+import AddButton from '@/components/speaking/AddButton';
 
 import EngagementMap from '@/components/speaking/EngagementMap';
 import Filters from '@/components/speaking/Filters';
@@ -143,10 +144,13 @@ export default function Home() {
       <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={async () => { await loadEngagements(); }}>
          <div className="space-y-6">
-          <AppHeader onAdd={() => setSearchParams({ editEngagement: 'new' })} />
-          <div className="relative sm:max-w-xs">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input className="bg-card pl-9 text-sm h-9 border-border" placeholder="Search place or engagement type…" value={filters.search} onChange={e => setFilters({ ...filters, search: e.target.value })} />
+          <AppHeader />
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 sm:max-w-xs">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input className="bg-card pl-9 text-sm h-9 border-border" placeholder="Search place or engagement type…" value={filters.search} onChange={e => setFilters({ ...filters, search: e.target.value })} />
+            </div>
+            <AddButton onClick={() => setSearchParams({ editEngagement: 'new' })} label="New engagement" />
           </div>
           <div ref={mapRef}><EngagementMap items={visible} onView={openEngagement} focusItem={mapFocus} /></div>
           <Filters filters={filters} setFilters={setFilters} onArchive={() => setArchive(true)} />
