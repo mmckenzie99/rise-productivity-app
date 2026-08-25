@@ -170,6 +170,15 @@ export default function Calendar() {
   const fmtShort = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   const weekRangeLabel = `${fmtShort(weekStartDate)} - ${fmtShort(weekEndDate)}`;
 
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const shiftMonth = (delta) => {
+    const d = new Date(overlayCursor);
+    d.setMonth(d.getMonth() + delta);
+    const key = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+    setSearchParams((prev) => { const sp = new URLSearchParams(prev); sp.set('view', 'month'); sp.set('calDate', key); return sp; }, { replace: true });
+  };
+  const monthLabel = `${MONTHS[overlayCursor.getMonth()]} ${overlayCursor.getFullYear()}`;
+
   return (
     <main className="min-h-screen bg-background text-foreground pb-safe">
       <PageHeader title="Agenda" backTo="/" actions={
@@ -199,7 +208,7 @@ export default function Calendar() {
         />
 
         {/* Layer 1: Week/Day overlay (Dialog on top of the month base) */}
-        <Dialog open={view === 'week' || view === 'day'} onOpenChange={(v) => !v && closeViewOverlay()}>
+        <Dialog open={view === 'month' || view === 'week' || view === 'day'} onOpenChange={(v) => !v && closeViewOverlay()}>
           <DialogContent className="flex inset-0 max-h-none max-w-none flex-col overflow-y-hidden gap-0 p-0 bg-card translate-x-0 translate-y-0 rounded-none sm:top-[50%] sm:left-[50%] sm:right-auto sm:bottom-auto sm:h-auto sm:max-h-[90dvh] sm:max-w-4xl sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
             <DialogHeader className="shrink-0 border-b border-border bg-card px-6 pt-[calc(1.5rem+env(safe-area-inset-top))] pb-3">
               <div className="flex items-center justify-between">
@@ -208,7 +217,7 @@ export default function Calendar() {
                   {['month', 'week', 'day'].map((m) => (
                     <button
                       key={m}
-                      onClick={() => (m === 'month' ? closeViewOverlay() : handleOverlayModeChange(m))}
+                      onClick={() => handleOverlayModeChange(m)}
                       className={`rounded-md px-3 py-1.5 text-sm font-medium capitalize transition ${view === m ? 'bg-[#D9A404] text-white' : 'bg-card text-foreground border border-border'}`}
                     >
                       {m}
@@ -237,29 +246,66 @@ export default function Calendar() {
                   </button>
                 </div>
               )}
+              {view === 'month' && (
+                <div className="mt-3 flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => shiftMonth(-1)}
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border bg-card text-foreground transition hover:bg-muted"
+                    aria-label="Previous month"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <span className="min-w-[140px] text-center text-sm font-medium text-foreground">{monthLabel}</span>
+                  <button
+                    type="button"
+                    onClick={() => shiftMonth(1)}
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border bg-card text-foreground transition hover:bg-muted"
+                    aria-label="Next month"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </div>
+              )}
             </DialogHeader>
             <div className="min-h-0 overflow-y-auto overscroll-contain px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
-            <DayPlanner
-              items={items}
-              events={calEvents}
-              mode={view}
-              cursor={overlayCursor}
-              onSelect={(e) => navigate(`/?engagementId=${e.id}`)}
-              onEventSelect={(p) => openPlanForm(p.id)}
-              onAddSlot={(date, time) => {
-                const [h, mi] = time.split(':').map(Number);
-                const end = h * 60 + mi + 60;
-                const eh = Math.floor(end / 60) % 24, em = end % 60;
-                openPlanForm('new', { planDate: date, planStart: time, planEnd: `${pad2(eh)}:${pad2(em)}` });
-              }}
-              onGoToDate={(d) => {
-                const key = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-                setSearchParams((prev) => { const sp = new URLSearchParams(prev); sp.set('view', 'day'); sp.set('calDate', key); return sp; }, { replace: true });
-              }}
-              onSelectReflection={openReflection}
-              canReflect={canReflect}
-              reflectionDates={reflectionDates}
-            />
+            {view === 'month' ? (
+              <CalendarView
+                items={items}
+                events={calEvents}
+                controlledMode="month"
+                hideHeader
+                focusDate={calFocus}
+                onSelect={(e) => navigate(`/?engagementId=${e.id}`)}
+                onEventSelect={(p) => openPlanForm(p.id)}
+                onSelectDay={openDayView}
+                onSelectReflection={openReflection}
+                canReflect={canReflect}
+                reflectionDates={reflectionDates}
+              />
+            ) : (
+              <DayPlanner
+                items={items}
+                events={calEvents}
+                mode={view}
+                cursor={overlayCursor}
+                onSelect={(e) => navigate(`/?engagementId=${e.id}`)}
+                onEventSelect={(p) => openPlanForm(p.id)}
+                onAddSlot={(date, time) => {
+                  const [h, mi] = time.split(':').map(Number);
+                  const end = h * 60 + mi + 60;
+                  const eh = Math.floor(end / 60) % 24, em = end % 60;
+                  openPlanForm('new', { planDate: date, planStart: time, planEnd: `${pad2(eh)}:${pad2(em)}` });
+                }}
+                onGoToDate={(d) => {
+                  const key = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+                  setSearchParams((prev) => { const sp = new URLSearchParams(prev); sp.set('view', 'day'); sp.set('calDate', key); return sp; }, { replace: true });
+                }}
+                onSelectReflection={openReflection}
+                canReflect={canReflect}
+                reflectionDates={reflectionDates}
+              />
+            )}
             </div>
           </DialogContent>
         </Dialog>

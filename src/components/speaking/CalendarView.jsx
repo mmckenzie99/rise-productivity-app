@@ -13,7 +13,7 @@ const keyOf = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, 
 
 const MODES = ['month', 'week', 'day'];
 
-export default function CalendarView({ items, events, onSelect, onEventSelect, onAddSlot, focusDate, controlledMode, onModeChange, onSelectDay, onSelectReflection, canReflect, reflectionDates }) {
+export default function CalendarView({ items, events, onSelect, onEventSelect, onAddSlot, focusDate, controlledMode, onModeChange, onSelectDay, onSelectReflection, canReflect, reflectionDates, hideHeader }) {
   const today = new Date();
   const [internalMode, setInternalMode] = useState('month');
   const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
@@ -184,6 +184,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
 
   return (
     <div className="space-y-4">
+      {!hideHeader && (
       <div className="flex flex-wrap items-center justify-center gap-2 rounded-lg border border-[#D6DAE3] bg-white p-4 sm:justify-between">
         <div className="flex min-w-0 items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => step(-1)} className="shrink-0 border-[#D6DAE3] bg-white text-[#1B2A4B]">
@@ -211,6 +212,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
           ))}
         </div>
       </div>
+      )}
       <div className="rounded-lg border border-[#D6DAE3] bg-white p-4">
         {mode === 'month'
           ? renderMonth()
