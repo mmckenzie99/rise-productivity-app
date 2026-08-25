@@ -1,6 +1,6 @@
 import { useMemo, useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { ArrowLeft, Download } from 'lucide-react';
+import { ArrowLeft, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { base44 } from '@/api/base44Client';
 import useEngagements from '@/hooks/useEngagements';
@@ -150,6 +150,26 @@ export default function Calendar() {
 
   const overlayCursor = calDate ? new Date(calDate + 'T00:00:00') : new Date();
 
+  // Week navigation (Week View): shift the focused week by ±1, keeping view=week.
+  const shiftWeek = (delta) => {
+    const d = new Date(overlayCursor);
+    d.setDate(d.getDate() + delta * 7);
+    const key = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+    setSearchParams((prev) => { const sp = new URLSearchParams(prev); sp.set('view', 'week'); sp.set('calDate', key); return sp; }, { replace: true });
+  };
+  const weekStartDate = useMemo(() => {
+    const d = new Date(overlayCursor);
+    d.setDate(d.getDate() - d.getDay());
+    return d;
+  }, [overlayCursor]);
+  const weekEndDate = useMemo(() => {
+    const d = new Date(weekStartDate);
+    d.setDate(d.getDate() + 6);
+    return d;
+  }, [weekStartDate]);
+  const fmtShort = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const weekRangeLabel = `${fmtShort(weekStartDate)} - ${fmtShort(weekEndDate)}`;
+
   return (
     <main className="min-h-screen bg-background text-foreground pb-safe">
       <PageHeader title="Agenda" backTo="/" actions={
@@ -196,6 +216,27 @@ export default function Calendar() {
                   ))}
                 </div>
               </div>
+              {view === 'week' && (
+                <div className="mt-3 flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => shiftWeek(-1)}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-foreground transition hover:bg-muted"
+                    aria-label="Previous week"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <span className="min-w-[140px] text-center text-sm font-medium text-foreground">{weekRangeLabel}</span>
+                  <button
+                    type="button"
+                    onClick={() => shiftWeek(1)}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-foreground transition hover:bg-muted"
+                    aria-label="Next week"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
             </DialogHeader>
             <div className="min-h-0 overflow-y-auto overscroll-contain px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
             <DayPlanner
