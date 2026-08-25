@@ -23,7 +23,7 @@
           },
           "focus": {
             "type": "array",
-            "description": "Focus categories this goal belongs to (e.g. Spiritual, Professional, Physical)",
+            "description": "Focus categories (e.g. Spiritual, Professional, Physical)",
             "items": {
               "type": "string"
             }
@@ -34,53 +34,31 @@
           },
           "reminder_time": {
             "type": "string",
-            "description": "Time of day (HH:MM) to send a daily reminder for this specific goal during its week, or blank for none"
+            "description": "Time of day (HH:MM) for a daily reminder, or blank for none"
           }
         }
       }
     },
     "goal_reminder_time": {
       "type": "string",
-      "description": "Time of day (HH:MM) to send a weekly goal review reminder on the week's start date, or blank for none"
+      "description": "Time of day (HH:MM) for a weekly review reminder, or blank for none"
     },
     "reminder_timezone": {
       "type": "string",
-      "description": "IANA timezone the reminder time is interpreted in (e.g. America/Detroit)"
+      "description": "IANA timezone the reminder time is interpreted in"
+    },
+    "workspace_id": {
+      "type": "string",
+      "description": "Workspace this weekly goal set belongs to. Shared between workspace members. Stamped server-side by the data backend function."
     }
   },
   "required": [
     "start_date"
   ],
   "rls": {
-    "create": {
-      "created_by_id": "{{user.id}}"
-    },
-    "read": {
-      "created_by_id": "{{user.id}}"
-    },
-    "update": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    },
-    "delete": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    }
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
   }
 }
