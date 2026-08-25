@@ -16,6 +16,7 @@ import CalendarEventForm from '@/components/speaking/CalendarEventForm';
 import DailyReflectionOverlay from '@/components/reflection/DailyReflectionOverlay';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { todayStr } from '@/lib/calendarNav';
+import useReflections from '@/hooks/useReflections';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
 import PageHeader from '@/components/speaking/PageHeader';
 
@@ -28,6 +29,7 @@ export default function Calendar() {
   const { items, loading, load: loadEngagements } = useEngagements();
   const { items: calEvents, loading: calEventsLoading, save: saveCalEvent, remove: removeCalEvent, load: loadCalEvents } = useCalendarEvents();
   const { settings } = useAppSettings();
+  const { dateSet: reflectionDates, load: loadReflections } = useReflections();
   const [users, setUsers] = useState([]);
   const lastSaveWasNewRef = useRef(false);
   const lastSaveDateRef = useRef('');
@@ -165,7 +167,7 @@ export default function Calendar() {
         </button>
       } />
       <div className="mx-auto max-w-6xl space-y-5 px-4 py-6 sm:px-6 sm:py-9">
-        <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); }}>
+        <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); await loadReflections(); }}>
         {/* Base: Month view (always rendered) */}
         <CalendarView
           items={items}
@@ -178,6 +180,7 @@ export default function Calendar() {
           onModeChange={handleModeChange}
           onSelectReflection={openReflection}
           canReflect={canReflect}
+          reflectionDates={reflectionDates}
         />
 
         {/* Layer 1: Week/Day overlay (Dialog on top of the month base) */}
@@ -219,6 +222,7 @@ export default function Calendar() {
               }}
               onSelectReflection={openReflection}
               canReflect={canReflect}
+              reflectionDates={reflectionDates}
             />
             </div>
           </DialogContent>

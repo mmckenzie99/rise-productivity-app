@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Plus, CalendarPlus, CalendarDays } from 'lucide-react';
-import { calendarUrl, todayStr } from '@/lib/calendarNav';
+import { Plus, CalendarDays, BookOpen } from 'lucide-react';
 
 const BTN = 'flex flex-1 flex-col items-center gap-0.5 py-1 text-[11px] font-medium text-foreground select-none active:opacity-70';
 
@@ -9,7 +8,7 @@ export default function QuickActionBar() {
   const navigate = useNavigate();
   const actions = [
     { key: 'new', label: 'New', icon: Plus, onClick: () => navigate('/engagements?action=new') },
-    { key: 'new-plan', label: 'New Plan', icon: CalendarPlus, onClick: () => navigate(calendarUrl({ planId: 'new', calDate: todayStr() })) },
+    { key: 'faith', label: 'Faith', icon: BookOpen, onClick: () => navigate('/faith') },
     { key: 'calendar', label: 'Agenda', icon: CalendarDays, onClick: () => navigate('/calendar') },
   ];
   return (

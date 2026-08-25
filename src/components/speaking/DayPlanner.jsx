@@ -36,7 +36,7 @@ const hourLabel = (h) => {
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function DayPlanner({ items, events, mode, cursor, onSelect, onEventSelect, onAddSlot, onGoToDate, onSelectReflection, canReflect }) {
+export default function DayPlanner({ items, events, mode, cursor, onSelect, onEventSelect, onAddSlot, onGoToDate, onSelectReflection, canReflect, reflectionDates }) {
   const days = [];
   if (mode === 'day') {
     days.push(new Date(cursor));
@@ -232,11 +232,11 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                     </button>
                   )}
                 </div>
-                {canReflect && (
+                {reflectionDates?.has(keyOf(d)) && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onSelectReflection?.(keyOf(d)); }}
-                    className="absolute right-1 top-1 text-muted-foreground transition hover:text-[#D9A404]"
-                    title="Daily reflection"
+                    className="absolute right-1 top-1 text-[#D9A404] transition hover:opacity-70"
+                    title="Open Faith entry"
                   >
                     <BookOpen className="h-3 w-3" />
                   </button>

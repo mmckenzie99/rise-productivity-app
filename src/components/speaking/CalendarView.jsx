@@ -13,7 +13,7 @@ const keyOf = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, 
 
 const MODES = ['month', 'week', 'day'];
 
-export default function CalendarView({ items, events, onSelect, onEventSelect, onAddSlot, focusDate, controlledMode, onModeChange, onSelectDay, onSelectReflection, canReflect }) {
+export default function CalendarView({ items, events, onSelect, onEventSelect, onAddSlot, focusDate, controlledMode, onModeChange, onSelectDay, onSelectReflection, canReflect, reflectionDates }) {
   const today = new Date();
   const [internalMode, setInternalMode] = useState('month');
   const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
@@ -136,11 +136,11 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                   >
                     <div className="flex items-center justify-between">
                       <p className="text-xs font-medium">{cell.day}</p>
-                      {!cell.muted && canReflect && (
+                      {!cell.muted && reflectionDates?.has(cell.key) && (
                         <button
                           onClick={(e) => { e.stopPropagation(); onSelectReflection?.(cell.key); }}
-                          className="text-[#5A6781] transition hover:text-[#D9A404]"
-                          title="Daily reflection"
+                          className="text-[#D9A404] transition hover:opacity-70"
+                          title="Open Faith entry"
                         >
                           <BookOpen className="h-3 w-3" />
                         </button>
