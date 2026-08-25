@@ -70,7 +70,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
 
   const shift = (delta) => {
     const d = new Date(cursor);
-    d.setDate(d.getDate() + delta);
+    d.setDate(d.getDate() + delta * (mode === 'week' ? 7 : 1));
     swipeDir.current = delta;
     if (mode === 'week') onGoToWeek?.(d);
     else onGoToDate?.(d);
