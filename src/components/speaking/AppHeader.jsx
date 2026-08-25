@@ -2,6 +2,7 @@ import { LogOut, CalendarDays, Plane, LayoutDashboard, Users, BookOpen, Activity
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/AuthContext';
+import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
 import Brand from './Brand';
 import ProfileMenu from './ProfileMenu';
 
@@ -23,6 +24,8 @@ const NAV = [
 export default function AppHeader({ onAdd }) {
   const { pathname } = useLocation();
   const { logout } = useAuth();
+  const { flaggedItems } = useImportantFlags();
+  const inboxCount = flaggedItems.length;
   return (
     <header className="flex flex-col gap-5 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
       <Brand />
@@ -41,9 +44,21 @@ export default function AppHeader({ onAdd }) {
             </Button>
           )}
         </div>
-        <Link to="/inbox" aria-label="Inbox">
-          <Button variant="ghost" size="icon" aria-label="Inbox" className="h-11 w-11">
-            <InboxIcon className="h-4 w-4" />
+        <Link to="/inbox" aria-label="Inbox" className="relative inline-flex">
+          <Button
+            variant="outline"
+            aria-label="Inbox"
+            className="h-11 gap-2 border-primary/40 bg-primary/10 px-3 text-primary hover:bg-primary/20"
+          >
+            <span className="relative">
+              <InboxIcon className="h-5 w-5" />
+              {inboxCount > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-none text-primary-foreground">
+                  {inboxCount > 99 ? '99+' : inboxCount}
+                </span>
+              )}
+            </span>
+            <span className="font-semibold">Inbox</span>
           </Button>
         </Link>
         <ProfileMenu />
