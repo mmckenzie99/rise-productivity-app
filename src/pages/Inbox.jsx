@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flag, Plus, Check } from 'lucide-react';
+import { Plus, Check, BookOpen, Dumbbell, Users } from 'lucide-react';
 import useTasks from '@/hooks/useTasks';
 import useCalendarEvents from '@/hooks/useCalendarEvents';
 import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
@@ -56,6 +56,10 @@ export default function Inbox() {
   );
   const shown = filter === 'done' ? done : outstanding;
 
+  const faithFlags = useMemo(() => flaggedItems.filter((i) => i.source_type === 'FaithJournalEntry'), [flaggedItems]);
+  const fitnessFlags = useMemo(() => flaggedItems.filter((i) => i.source_type === 'Fitness'), [flaggedItems]);
+  const engagementFlags = useMemo(() => flaggedItems.filter((i) => i.source_type === 'Engagement'), [flaggedItems]);
+
   const openNew = () => { setEditing(null); setFormOpen(true); };
   const openEdit = (t) => { setEditing(t); setFormOpen(true); };
 
@@ -106,23 +110,23 @@ export default function Inbox() {
           <div className="py-14 text-center text-sm text-muted-foreground">Loading…</div>
         ) : (
           <>
-            {/* Important items (flagged) */}
+            {/* 1. Faith Journal Entry */}
             <section className="space-y-3">
               <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
-                <Flag className="h-4 w-4 text-primary" />Important items
-                <span className="text-sm font-normal text-muted-foreground">{flaggedItems.length}</span>
+                <BookOpen className="h-4 w-4 text-primary" />Faith Journal Entry
+                <span className="text-sm font-normal text-muted-foreground">{faithFlags.length}</span>
               </h2>
-              {flaggedItems.length === 0 ? (
+              {faithFlags.length === 0 ? (
                 <p className="rounded-lg border border-dashed border-border bg-card/60 py-8 text-center text-sm text-muted-foreground">
-                  No items flagged as important yet. Tap the flag on any engagement, trip, plan, task, or fitness log to pin it here.
+                  No sermon-prep entries flagged yet. Mark a Faith journal entry as sermon prep to pin it here.
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {flaggedItems.map((it) => (
+                  {faithFlags.map((it) => (
                     <button key={it.id} onClick={() => navigate(sourceLink(it))} className="flex w-full items-center gap-3 rounded-lg border border-border bg-card p-3 text-left transition hover:border-primary/50">
-                      <Flag className="h-4 w-4 shrink-0 fill-primary text-primary" />
+                      <BookOpen className="h-4 w-4 shrink-0 text-primary" />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold">{it.source_title || it.message_text || 'Item'}</p>
+                        <p className="truncate text-sm font-semibold">{it.source_title || it.message_text || 'Faith entry'}</p>
                         <p className="text-xs text-muted-foreground">{it.source_type}</p>
                       </div>
                     </button>
@@ -131,11 +135,61 @@ export default function Inbox() {
               )}
             </section>
 
-            {/* Tasks (outstanding + done) */}
+            {/* 2. Fitness Journal Entry */}
+            <section className="space-y-3">
+              <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
+                <Dumbbell className="h-4 w-4 text-primary" />Fitness Journal Entry
+                <span className="text-sm font-normal text-muted-foreground">{fitnessFlags.length}</span>
+              </h2>
+              {fitnessFlags.length === 0 ? (
+                <p className="rounded-lg border border-dashed border-border bg-card/60 py-8 text-center text-sm text-muted-foreground">
+                  No workouts flagged for follow-up yet. Use “Flag for follow-up” on a workout log to pin it here.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {fitnessFlags.map((it) => (
+                    <button key={it.id} onClick={() => navigate(sourceLink(it))} className="flex w-full items-center gap-3 rounded-lg border border-border bg-card p-3 text-left transition hover:border-primary/50">
+                      <Dumbbell className="h-4 w-4 shrink-0 text-primary" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold">{it.source_title || it.message_text || 'Workout'}</p>
+                        <p className="text-xs text-muted-foreground">{it.source_type}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* 3. Engagement Follow-up */}
+            <section className="space-y-3">
+              <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
+                <Users className="h-4 w-4 text-primary" />Engagement Follow-up
+                <span className="text-sm font-normal text-muted-foreground">{engagementFlags.length}</span>
+              </h2>
+              {engagementFlags.length === 0 ? (
+                <p className="rounded-lg border border-dashed border-border bg-card/60 py-8 text-center text-sm text-muted-foreground">
+                  No engagements flagged for follow-up yet. Use “Flag for follow-up” on an engagement to pin it here.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {engagementFlags.map((it) => (
+                    <button key={it.id} onClick={() => navigate(sourceLink(it))} className="flex w-full items-center gap-3 rounded-lg border border-border bg-card p-3 text-left transition hover:border-primary/50">
+                      <Users className="h-4 w-4 shrink-0 text-primary" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold">{it.source_title || it.message_text || 'Engagement'}</p>
+                        <p className="text-xs text-muted-foreground">{it.source_type}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* 4. Created Tasks */}
             <section className="space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
-                  Tasks
+                  Created Tasks
                   <span className="text-sm font-normal text-muted-foreground">{outstanding.length}</span>
                 </h2>
               </div>

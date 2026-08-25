@@ -13,6 +13,8 @@ import PageHeader from '@/components/speaking/PageHeader';
 import { Image } from '@/components/ui/image';
 import { formatDate } from '@/lib/speaking';
 import ImportantFlagButton from '@/components/speaking/ImportantFlagButton';
+import { Switch } from '@/components/ui/switch';
+import { syncFollowUpFlag } from '@/lib/followUpFlag';
 import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
 
 const ACTIVITIES = ['Run', 'Walk', 'Strength', 'Cycling', 'Swim', 'Yoga', 'Sports', 'Other'];
@@ -43,7 +45,8 @@ export default function Fitness() {
   const [showGoal, setShowGoal] = useState(false);
   const [goal, setGoal] = useState({ goal_metric: 'Workouts per week', goal_target: '', goal_deadline: '' });
   const [favOnly, setFavOnly] = useState(false);
-  const { flaggedKeys, toggle } = useImportantFlags();
+  const [flagForFollowUp, setFlagForFollowUp] = useState(false);
+  const { flaggedKeys, toggle, load: loadFlags } = useImportantFlags();
 
   const logs = useMemo(() => items.filter((i) => i.kind !== 'goal'), [items]);
   const goals = useMemo(() => items.filter((i) => i.kind === 'goal'), [items]);
@@ -60,14 +63,19 @@ export default function Fitness() {
   const visibleLogs = favOnly ? logs.filter((l) => l.is_favorite) : logs;
 
   const submit = async () => {
-    await save({
+    const saved = await save({
       kind: 'log', date: form.date, activity: form.activity,
       duration_minutes: num(form.duration_minutes), distance_miles: num(form.distance_miles),
       intensity: form.intensity, calories: num(form.calories),
       sleep_hours: num(form.sleep_hours), sleep_score: num(form.sleep_score),
       weight: num(form.weight), notes: form.notes, photo_url: form.photo_url, is_favorite: form.is_favorite,
     });
+    if (saved?.id) {
+      await syncFollowUpFlag('Fitness', saved.id, flagForFollowUp, `${form.activity || 'Workout'} — ${formatDate(form.date)}`, form.date);
+      await loadFlags();
+    }
     setForm(blankForm());
+    setFlagForFollowUp(false);
     setShowForm(false);
   };
 
@@ -84,7 +92,7 @@ export default function Fitness() {
   return (
     <main className="min-h-screen bg-background text-foreground pb-safe">
       <PageHeader title="Fitness" backTo="/" actions={
-        <button onClick={() => { setShowForm(true); setShowGoal(false); }} className="inline-flex items-center gap-1.5 rounded-md bg-[#D9A404] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#B89003]">
+        <button onClick={() => { setFlagForFollowUp(false); setShowForm(true); setShowGoal(false); }} className="inline-flex items-center gap-1.5 rounded-md bg-[#D9A404] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#B89003]">
           <Plus className="h-4 w-4" />Log
         </button>
       } />
@@ -213,6 +221,13 @@ export default function Fitness() {
                 <input type="checkbox" checked={form.is_favorite} onChange={(e) => setForm({ ...form, is_favorite: e.target.checked })} />
                 Save as favorite (reusable workout)
               </label>
+              <div className="flex items-center justify-between gap-3 rounded-md border border-border p-3">
+                <div>
+                  <Label>Flag for follow-up</Label>
+                  <p className="text-[11px] text-muted-foreground">Pins this workout in the Inbox for follow-up.</p>
+                </div>
+                <Switch checked={flagForFollowUp} onCheckedChange={setFlagForFollowUp} />
+              </div>
             </div>
             <div className="mt-3 flex gap-2">
               <Button variant="outline" className="flex-1" onClick={() => setShowForm(false)}>Cancel</Button>

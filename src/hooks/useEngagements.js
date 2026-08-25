@@ -28,9 +28,11 @@ export default function useEngagements() {
     const optimistic = { ...item, id: tempId, ...d };
     setItems((prev) => (id ? prev.map((x) => (x.id === id ? { ...x, ...d } : x)) : [...prev, optimistic]));
     try {
-      if (id) await data.entities.Engagement.update(id, d);
-      else await data.entities.Engagement.create(d);
+      let saved;
+      if (id) saved = await data.entities.Engagement.update(id, d);
+      else saved = await data.entities.Engagement.create(d);
       await load();
+      return saved;
     } catch (e) {
       await load();
       throw e;

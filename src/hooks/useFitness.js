@@ -27,7 +27,7 @@ export default function useFitness() {
     if (id) {
       setItems((prev) => prev.map((x) => (x.id === id ? { ...x, ...fields } : x)));
       try {
-        await data.entities.Fitness.update(id, fields);
+        return await data.entities.Fitness.update(id, fields);
       } catch (e) {
         console.error('Failed to save fitness entry', e);
         await load();
@@ -36,6 +36,7 @@ export default function useFitness() {
       try {
         const created = await data.entities.Fitness.create(fields);
         setItems((prev) => [created, ...prev]);
+        return created;
       } catch (e) {
         console.error('Failed to create fitness entry', e);
       }

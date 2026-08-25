@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { EMPTY, asArray } from '@/lib/speaking';
+import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
+import { syncFollowUpFlag } from '@/lib/followUpFlag';
 import FormBasics from './FormBasics';
 import FormSchedule from './FormSchedule';
 import FormLocation from './FormLocation';
@@ -13,16 +16,26 @@ import ShareToggle from './ShareToggle';
 export default function EngagementForm({ open, item, onClose, onSave }) {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
+  const [flagForFollowUp, setFlagForFollowUp] = useState(false);
+  const { flaggedKeys, load: loadFlags } = useImportantFlags();
+  const flaggedKeysRef = useRef(flaggedKeys);
+  flaggedKeysRef.current = flaggedKeys;
 
   useEffect(() => {
     setForm(item ? { ...EMPTY, ...item, presentation_type: asArray(item.presentation_type) } : EMPTY);
+    setFlagForFollowUp(item ? flaggedKeysRef.current.has(`Engagement:${item.id}`) : false);
   }, [item, open]);
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const submit = async () => {
     setSaving(true);
-    await onSave(form);
+    const saved = await onSave(form);
+    const id = saved?.id || form.id;
+    if (id) {
+      await syncFollowUpFlag('Engagement', id, flagForFollowUp, form.title || form.speaker_name || 'Engagement', form.speaking_date);
+      await loadFlags();
+    }
     setSaving(false);
     onClose();
   };
@@ -41,6 +54,14 @@ export default function EngagementForm({ open, item, onClose, onSave }) {
           <FormLocation form={form} set={set} />
 
           <ShareToggle value={form.is_shared} onChange={(v) => set('is_shared', v)} />
+
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-4">
+            <div>
+              <h3 className="font-display text-sm font-semibold text-foreground">Flag for follow-up</h3>
+              <Label className="text-xs text-muted-foreground">Pins this engagement in the Inbox for follow-up.</Label>
+            </div>
+            <Switch checked={flagForFollowUp} onCheckedChange={setFlagForFollowUp} />
+          </div>
 
           <div className="space-y-2 rounded-lg border border-border bg-card p-4">
             <h3 className="font-display text-sm font-semibold text-foreground">Notes</h3>
