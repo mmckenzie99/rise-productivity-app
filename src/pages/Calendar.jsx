@@ -99,7 +99,12 @@ export default function Calendar() {
 
   // Overlay mode toggle → switch between week and day (replace, no new history entry).
   const handleOverlayModeChange = (m) =>
-    setSearchParams((prev) => { const sp = new URLSearchParams(prev); sp.set('view', m); return sp; }, { replace: true });
+    setSearchParams((prev) => {
+      const sp = new URLSearchParams(prev);
+      sp.set('view', m);
+      if (m === 'day') sp.set('calDate', todayStr());
+      return sp;
+    }, { replace: true });
 
   // Day cell click in month view → open day overlay focused on that date.
   const openDayView = (dateKey) =>
