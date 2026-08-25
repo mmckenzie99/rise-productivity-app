@@ -221,19 +221,19 @@ export default function Calendar() {
                   <button
                     type="button"
                     onClick={() => shiftWeek(-1)}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-foreground transition hover:bg-muted"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border bg-card text-foreground transition hover:bg-muted"
                     aria-label="Previous week"
                   >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-5 w-5" />
                   </button>
                   <span className="min-w-[140px] text-center text-sm font-medium text-foreground">{weekRangeLabel}</span>
                   <button
                     type="button"
                     onClick={() => shiftWeek(1)}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-foreground transition hover:bg-muted"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border bg-card text-foreground transition hover:bg-muted"
                     aria-label="Next week"
                   >
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-5 w-5" />
                   </button>
                 </div>
               )}
