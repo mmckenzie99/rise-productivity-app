@@ -8,7 +8,7 @@ import PushedScreenTransition from '@/components/PushedScreenTransition';
 // switching tabs hides the inactive page (visibility:hidden, NOT display:none)
 // rather than unmounting it — preserving its scroll position and in-component
 // state across tab switches, matching native iOS UITabBarController behavior.
-const TAB_SEGMENTS = ['/', '/dashboard', '/trips', '/inbox', '/chat'];
+const TAB_SEGMENTS = ['/', '/engagements', '/trips', '/calendar', '/fitness'];
 
 const tabSegment = (pathname) => {
   if (pathname === '/') return '/';

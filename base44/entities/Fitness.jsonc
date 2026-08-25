@@ -1,0 +1,115 @@
+{
+  "name": "Fitness",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "log",
+        "goal"
+      ],
+      "default": "log",
+      "description": "Whether this record is a workout/sleep/weight log entry or a fitness goal"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "The day this entry is for (log date, or goal start date)"
+    },
+    "activity": {
+      "type": "string",
+      "enum": [
+        "Run",
+        "Walk",
+        "Strength",
+        "Cycling",
+        "Swim",
+        "Yoga",
+        "Sports",
+        "Other"
+      ],
+      "description": "Type of workout"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Workout duration in minutes"
+    },
+    "distance_miles": {
+      "type": "number",
+      "description": "Distance in miles"
+    },
+    "intensity": {
+      "type": "string",
+      "enum": [
+        "Easy",
+        "Moderate",
+        "Hard"
+      ]
+    },
+    "calories": {
+      "type": "number"
+    },
+    "sleep_hours": {
+      "type": "number",
+      "description": "Hours of sleep"
+    },
+    "sleep_score": {
+      "type": "number",
+      "description": "Sleep quality score 0-100"
+    },
+    "weight": {
+      "type": "number",
+      "description": "Body weight in lbs"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Freeform notes"
+    },
+    "photo_url": {
+      "type": "string",
+      "description": "Photo attachment URL (workout or progress photo)"
+    },
+    "is_favorite": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marked as a favorite/reusable workout"
+    },
+    "goal_metric": {
+      "type": "string",
+      "enum": [
+        "Workouts per week",
+        "Sleep score avg",
+        "Weight target",
+        "Distance per week"
+      ],
+      "description": "Metric a goal record tracks"
+    },
+    "goal_target": {
+      "type": "number",
+      "description": "Target value for the goal"
+    },
+    "goal_deadline": {
+      "type": "string",
+      "format": "date",
+      "description": "Deadline for the goal"
+    },
+    "goal_completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "workspace_id": {
+      "type": "string",
+      "description": "Workspace this entry belongs to. Stamped server-side by the data backend function."
+    }
+  },
+  "required": [
+    "kind",
+    "date"
+  ],
+  "rls": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  }
+}

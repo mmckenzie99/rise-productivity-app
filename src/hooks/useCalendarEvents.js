@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { data } from '@/lib/workspaceData';
 
 export default function useCalendarEvents() {
   const [items, setItems] = useState([]);
@@ -7,25 +7,25 @@ export default function useCalendarEvents() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    setItems(await base44.entities.CalendarEvent.list('date'));
+    setItems(await data.entities.CalendarEvent.list('date'));
     setLoading(false);
   }, []);
 
   useEffect(() => {
     load();
-    const off = base44.entities.CalendarEvent.subscribe(load);
+    const off = data.entities.CalendarEvent.subscribe(load);
     return off;
   }, [load]);
 
   const save = async (item) => {
-    const { id, created_date, updated_date, created_by_id, ...fields } = item;
+    const { id, created_date, updated_date, created_by_id, workspace_id, ...fields } = item;
     const tempId = id || `temp_${Date.now()}`;
     const optimistic = { ...item, id: tempId };
     setItems((prev) => (id ? prev.map((x) => (x.id === id ? { ...x, ...fields } : x)) : [...prev, optimistic]));
     try {
       const result = id
-        ? await base44.entities.CalendarEvent.update(id, fields)
-        : await base44.entities.CalendarEvent.create(fields);
+        ? await data.entities.CalendarEvent.update(id, fields)
+        : await data.entities.CalendarEvent.create(fields);
       await load();
       return result;
     } catch (e) {
@@ -37,7 +37,7 @@ export default function useCalendarEvents() {
   const remove = async (id) => {
     setItems((prev) => prev.filter((x) => x.id !== id));
     try {
-      await base44.entities.CalendarEvent.delete(id);
+      await data.entities.CalendarEvent.delete(id);
       await load();
     } catch (e) {
       await load();

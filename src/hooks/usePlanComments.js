@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { data } from '@/lib/workspaceData';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function usePlanComments(calendarEventId) {
+  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -9,7 +11,7 @@ export default function usePlanComments(calendarEventId) {
     if (!calendarEventId) { setItems([]); setLoading(false); return; }
     setLoading(true);
     try {
-      const list = await base44.entities.PlanComment.filter({ calendar_event_id: calendarEventId }, 'created_date');
+      const list = await data.entities.PlanComment.filter({ calendar_event_id: calendarEventId }, 'created_date');
       setItems(list);
     } catch (e) {
       console.error('Failed to load plan comments', e);
@@ -21,23 +23,21 @@ export default function usePlanComments(calendarEventId) {
   useEffect(() => {
     load();
     if (!calendarEventId) return;
-    const off = base44.entities.PlanComment.subscribe(load);
+    const off = data.entities.PlanComment.subscribe(load);
     return off;
   }, [load, calendarEventId]);
 
-  const add = async (body, author_name, notify_admin_id, notify_admin_name) => {
+  const add = async (body, author_name) => {
     if (!body?.trim() || !calendarEventId) return;
     const payload = {
       calendar_event_id: calendarEventId,
       body: body.trim(),
-      author_name: author_name || 'Admin',
-      notify_admin_id: notify_admin_id || '',
-      notify_admin_name: notify_admin_name || '',
+      author_name: author_name || user?.full_name || 'Member',
     };
     const temp = { id: `temp_${Date.now()}`, ...payload, created_date: new Date().toISOString() };
     setItems((prev) => [...prev, temp]);
     try {
-      await base44.entities.PlanComment.create(payload);
+      await data.entities.PlanComment.create(payload);
       await load();
     } catch (e) {
       setItems((prev) => prev.filter((c) => c.id !== temp.id));
@@ -49,7 +49,7 @@ export default function usePlanComments(calendarEventId) {
     const snapshot = items;
     setItems((prev) => prev.filter((c) => c.id !== id));
     try {
-      await base44.entities.PlanComment.delete(id);
+      await data.entities.PlanComment.delete(id);
       await load();
     } catch (e) {
       setItems(snapshot);
