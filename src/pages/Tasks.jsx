@@ -7,7 +7,7 @@ import useCalendarEvents from '@/hooks/useCalendarEvents';
 import TaskItem from '@/components/tasks/TaskItem';
 import TaskForm from '@/components/tasks/TaskForm';
 import CalendarEventForm from '@/components/speaking/CalendarEventForm';
-import { buildPlanPrefillFromTask } from '@/lib/tasks';
+import { buildPlanPrefillFromTask, createRecurringPlanSeries } from '@/lib/tasks';
 import { toast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
@@ -38,6 +38,19 @@ export default function Tasks() {
 
   const openNew = () => { setEditing(null); setFormOpen(true); };
   const openEdit = (t) => { setEditing(t); setFormOpen(true); };
+
+  const handleSave = async (taskFields, planForm) => {
+    let linkedPlanId = taskFields.linked_plan_id || '';
+    if (planForm) {
+      try {
+        linkedPlanId = await createRecurringPlanSeries(planForm, saveCalEvent);
+        toast({ title: 'Recurring plan created', description: 'Added to the Agenda.' });
+      } catch (e) {
+        console.error('Failed to create recurring plan', e);
+      }
+    }
+    await save({ ...taskFields, linked_plan_id: linkedPlanId });
+  };
 
   const openSchedule = (t) => setScheduleTask(t);
   const closeSchedule = () => setScheduleTask(null);
@@ -118,7 +131,7 @@ export default function Tasks() {
         item={editing}
         plans={plans}
         onClose={() => setFormOpen(false)}
-        onSave={save}
+        onSave={handleSave}
         onSchedule={openSchedule}
       />
       <CalendarEventForm

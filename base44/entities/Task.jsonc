@@ -6,10 +6,24 @@
       "type": "string",
       "description": "What needs doing"
     },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Personal",
+        "Work"
+      ],
+      "default": "Personal",
+      "description": "Whether this task is personal or work-related"
+    },
     "due_date": {
       "type": "string",
       "format": "date-time",
       "description": "Optional due date and time"
+    },
+    "reminder_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional separate reminder date/time to resurface this task, distinct from the due date"
     },
     "notes": {
       "type": "string",
@@ -20,9 +34,18 @@
       "default": false,
       "description": "True once the task is complete"
     },
+    "is_recurring": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when this task repeats on a schedule and has a linked recurring CalendarEvent plan"
+    },
+    "recurrence_rule": {
+      "type": "string",
+      "description": "JSON-encoded recurrence config (freq, interval, weekdays, monthly mode, end mode) used to generate the linked recurring CalendarEvent plan"
+    },
     "linked_plan_id": {
       "type": "string",
-      "description": "Optional id of an existing CalendarEvent/Plan this task relates to"
+      "description": "Optional id of an existing CalendarEvent/Plan this task relates to; for a recurring task this is the first occurrence of the generated series"
     },
     "converted_to_plan_id": {
       "type": "string",

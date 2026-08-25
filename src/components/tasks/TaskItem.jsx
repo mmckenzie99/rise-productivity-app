@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Pencil, Trash2, CalendarPlus, CalendarDays } from 'lucide-react';
+import { Pencil, Trash2, CalendarPlus, CalendarDays, Bell, Repeat } from 'lucide-react';
 import { formatDateTime } from '@/lib/inbox';
 import ImportantFlagButton from '@/components/speaking/ImportantFlagButton';
 import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
@@ -87,7 +87,19 @@ export default function TaskItem({ task, onToggle, onEdit, onSchedule, onDelete,
         </p>
         {task.due_date && (
           <p className={cn('mt-0.5 text-xs', overdue ? 'font-medium text-primary' : 'text-muted-foreground')}>
-            {formatDateTime(task.due_date)}
+            Due {formatDateTime(task.due_date)}
+          </p>
+        )}
+        {task.reminder_at && !task.is_done && (
+          <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <Bell className="h-3 w-3" />
+            Remind {formatDateTime(task.reminder_at)}
+          </p>
+        )}
+        {task.is_recurring && (
+          <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-primary">
+            <Repeat className="h-3 w-3" />
+            Recurring
           </p>
         )}
         {task.linked_plan_id && linkedPlanTitle && (
