@@ -36,7 +36,7 @@ const hourLabel = (h) => {
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function DayPlanner({ items, events, mode, cursor, onSelect, onEventSelect, onAddSlot, onGoToDate, onSelectReflection, canReflect, reflectionDates }) {
+export default function DayPlanner({ items, events, mode, cursor, onSelect, onEventSelect, onAddSlot, onGoToDate, onGoToWeek, onSelectReflection, canReflect, reflectionDates }) {
   const days = [];
   if (mode === 'day') {
     days.push(new Date(cursor));
@@ -68,11 +68,12 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
   const touchStart = useRef(null);
   const swipeDir = useRef(0);
 
-  const shiftDay = (delta) => {
+  const shift = (delta) => {
     const d = new Date(cursor);
     d.setDate(d.getDate() + delta);
     swipeDir.current = delta;
-    onGoToDate?.(d);
+    if (mode === 'week') onGoToWeek?.(d);
+    else onGoToDate?.(d);
   };
 
   const onTouchStart = (e) => {
@@ -80,13 +81,13 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
     touchStart.current = { x: t.clientX, y: t.clientY };
   };
   const onTouchEnd = (e) => {
-    if (!touchStart.current || mode !== 'day') return;
+    if (!touchStart.current) return;
     const t = e.changedTouches[0];
     const dx = t.clientX - touchStart.current.x;
     const dy = t.clientY - touchStart.current.y;
     touchStart.current = null;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-      shiftDay(dx < 0 ? 1 : -1);
+      shift(dx < 0 ? 1 : -1);
     }
   };
 
@@ -158,7 +159,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
           </div>
         )}
         {mode === 'week' && (
-          <div className="mb-4 lg:hidden">
+          <div className="mb-4 lg:hidden" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
             <WeeklyListSummary
               days={days}
               byDate={byDate}
@@ -195,7 +196,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                   {mode === 'day' && (
                     <button
                       type="button"
-                      onClick={() => shiftDay(-1)}
+                      onClick={() => shift(-1)}
                       className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-foreground/15 bg-card text-foreground transition hover:bg-foreground/10"
                       title="Previous day"
                     >
@@ -224,7 +225,7 @@ export default function DayPlanner({ items, events, mode, cursor, onSelect, onEv
                   {mode === 'day' && (
                     <button
                       type="button"
-                      onClick={() => shiftDay(1)}
+                      onClick={() => shift(1)}
                       className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-foreground/15 bg-card text-foreground transition hover:bg-foreground/10"
                       title="Next day"
                     >

@@ -306,6 +306,10 @@ export default function Calendar() {
                   const key = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
                   setSearchParams((prev) => { const sp = new URLSearchParams(prev); sp.set('view', 'day'); sp.set('calDate', key); return sp; }, { replace: true });
                 }}
+                onGoToWeek={(d) => {
+                  const key = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+                  setSearchParams((prev) => { const sp = new URLSearchParams(prev); sp.set('view', 'week'); sp.set('calDate', key); return sp; }, { replace: true });
+                }}
                 onSelectReflection={openReflection}
                 canReflect={canReflect}
                 reflectionDates={reflectionDates}
