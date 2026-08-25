@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { data } from '@/lib/workspaceData';
+import { useSearchParams } from 'react-router-dom';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,7 +17,9 @@ const todayStr = () => {
 const stripHtml = (html) => (html ? String(html).replace(/<[^>]+>/g, '').trim() : '');
 
 export default function FaithJournal() {
-  const [date, setDate] = useState(todayStr());
+  const [searchParams, setSearchParams] = useSearchParams();
+  const date = searchParams.get('date') || todayStr();
+  const setDate = (d) => setSearchParams({ date: d }, { replace: true });
   const [meditation, setMeditation] = useState('');
   const [note, setNote] = useState('');
   const [record, setRecord] = useState(null);
@@ -81,7 +84,7 @@ export default function FaithJournal() {
       <div className="rounded-lg border border-[#D6DAE3] bg-white p-4">
         <div className="flex items-center gap-2">
           <BookOpen className="h-4 w-4 text-[#D9A404]" />
-          <h2 className="font-display text-lg font-semibold text-[#1B2A4B]">Meditation &amp; Notes</h2>
+          <h2 className="font-display text-lg font-semibold text-[#1B2A4B]">Daily Meditation</h2>
         </div>
         <div className="mt-3 space-y-1">
           <Label className="text-[11px] text-[#5A6781]">Date</Label>

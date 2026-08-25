@@ -13,7 +13,6 @@ import { data } from '@/lib/workspaceData';
 import CalendarView from '@/components/speaking/CalendarView';
 import DayPlanner from '@/components/speaking/DayPlanner';
 import CalendarEventForm from '@/components/speaking/CalendarEventForm';
-import DailyReflectionOverlay from '@/components/reflection/DailyReflectionOverlay';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { todayStr } from '@/lib/calendarNav';
 import useReflections from '@/hooks/useReflections';
@@ -49,7 +48,6 @@ export default function Calendar() {
   const planDate = searchParams.get('planDate');
   const planStart = searchParams.get('planStart');
   const planEnd = searchParams.get('planEnd');
-  const reflectionDate = searchParams.get('reflectionDate');
 
   const calFocus = useMemo(() => (calDate ? { date: calDate } : null), [calDate]);
   const calEventForm = !planIdParam
@@ -86,11 +84,8 @@ export default function Calendar() {
     }, { replace: true });
   };
 
-  // --- reflection overlay (push: own history entry, back returns to calendar) ---
-  const openReflection = (dateKey) =>
-    setSearchParams((prev) => { const sp = new URLSearchParams(prev); sp.set('reflectionDate', dateKey); return sp; });
-  const closeReflection = () =>
-    setSearchParams((prev) => { const sp = new URLSearchParams(prev); sp.delete('reflectionDate'); return sp; }, { replace: true });
+  // --- reflection: navigate to the Faith page for that day (separate route) ---
+  const openReflection = (dateKey) => navigate(`/faith?date=${dateKey}`);
 
   // --- navigation (push, so the back stack preserves the return path) ---
   // Base CalendarView mode toggle → opens/closes the Week/Day overlay.
@@ -240,14 +235,6 @@ export default function Calendar() {
           onDelete={handleDeletePlan}
           onDeleteFuture={handleDeleteFuture}
           onDeleteSeries={handleDeleteSeries}
-        />
-
-        {/* Layer 3: Reflection overlay (personal editor + transparency stamp) */}
-        <DailyReflectionOverlay
-          open={!!reflectionDate}
-          dateKey={reflectionDate}
-          engagements={items}
-          onClose={closeReflection}
         />
 
         <div className="h-28 lg:hidden" />

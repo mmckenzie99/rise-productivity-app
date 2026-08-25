@@ -125,7 +125,7 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
         className="flex w-full items-center gap-1.5 p-3 text-left text-[#1B2A4B]"
       >
         <BookOpen className="h-3.5 w-3.5 shrink-0 text-[#D9A404]" />
-        <span className="text-xs font-semibold uppercase tracking-wider">Meditation &amp; Notes</span>
+        <span className="text-xs font-semibold uppercase tracking-wider">Daily Meditation</span>
         <span className="ml-1 truncate text-[10px] text-[#5A6781]">{formatDate(dateKey)}</span>
         <ChevronDown className={`ml-auto h-3.5 w-3.5 shrink-0 text-[#5A6781] transition-transform ${expanded ? 'rotate-180' : ''}`} />
       </button>
