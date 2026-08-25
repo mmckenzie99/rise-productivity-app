@@ -122,66 +122,18 @@
         }
       }
     },
-    "is_shared": {
-      "type": "boolean",
-      "default": false,
-      "description": "When true, all authenticated users can read this record. When false, only the creator and admins can see it."
+    "workspace_id": {
+      "type": "string",
+      "description": "Workspace this engagement belongs to. Stamped server-side by the data backend function; scopes all access to the owning workspace."
     }
   },
   "required": [
     "speaker_name"
   ],
   "rls": {
-    "read": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        },
-        {
-          "data.is_shared": true
-        }
-      ]
-    },
-    "create": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    },
-    "update": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    },
-    "delete": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    }
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
   }
 }
