@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { data } from '@/lib/workspaceData';
 import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,9 +20,24 @@ const stripHtml = (html) => (html ? String(html).replace(/<[^>]+>/g, '').trim() 
 
 export default function FaithJournal() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const date = searchParams.get('date') || todayStr();
-  const setDate = (d) => setSearchParams({ date: d }, { replace: true });
+  const { pathname } = useLocation();
   const { load: loadFlags } = useImportantFlags();
+
+  // `date` is LOCAL state, not re-derived from the URL on every render. We sync
+  // it from the URL only while the Faith route is active, so the keep-alive
+  // instance doesn't refetch (and clobber in-progress edits) when the URL
+  // changes for another route. A ref guard in loadEntry additionally skips
+  // redundant same-date refetches.
+  const isActive = pathname.startsWith('/faith');
+  const urlDate = searchParams.get('date') || todayStr();
+  const [date, setDateState] = useState(urlDate);
+  const setDate = (d) => {
+    setDateState(d);
+    setSearchParams({ date: d }, { replace: true });
+  };
+  useEffect(() => {
+    if (isActive) setDateState(urlDate);
+  }, [isActive, urlDate]);
 
   const [record, setRecord] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -43,7 +58,10 @@ export default function FaithJournal() {
   const [prayerNotes, setPrayerNotes] = useState('');
   const [prayerTitle, setPrayerTitle] = useState('');
 
+  const loadedDateRef = useRef('');
   const loadEntry = useCallback(async (dateKey) => {
+    if (dateKey === loadedDateRef.current) return; // skip redundant same-date refetch
+    loadedDateRef.current = dateKey;
     setLoading(true);
     try {
       const res = await data.entities.DailyReflection.filter({ date: dateKey });
