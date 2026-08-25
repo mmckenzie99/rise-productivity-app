@@ -23,6 +23,10 @@ const sourceLink = (it) => {
     case 'CalendarEvent': return `/calendar?planId=${it.source_id}`;
     case 'Task': return '/tasks';
     case 'Fitness': return '/fitness';
+    case 'DailyReflection': {
+      const k = (it.message_date || '').slice(0, 10);
+      return k ? `/faith?date=${k}` : '/faith';
+    }
     default: return '/inbox';
   }
 };

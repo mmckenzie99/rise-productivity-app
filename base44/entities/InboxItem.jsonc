@@ -32,7 +32,7 @@
     "message_date": {
       "type": "string",
       "format": "date-time",
-      "description": "Date/time the message was received"
+      "description": "Date/time the message was received, or the source record's date for an important-flag item."
     },
     "reminder_at": {
       "type": "string",
@@ -57,6 +57,7 @@
         "CalendarEvent",
         "Task",
         "Fitness",
+        "DailyReflection",
         "None"
       ],
       "default": "None",
