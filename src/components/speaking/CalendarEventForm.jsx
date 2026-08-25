@@ -16,6 +16,7 @@ import useIsDarkMode from '@/hooks/useIsDarkMode';
 import RecurrenceEditor from './RecurrenceEditor';
 import ScrollFade from './ScrollFade';
 import LinkedTasksSection from '@/components/tasks/LinkedTasksSection';
+import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
 import { generateOccurrences } from '@/lib/recurrence';
 import { useAuth } from '@/lib/AuthContext';
 import useFeatureFlag, { usePlanFlag } from '@/hooks/useFeatureFlag';
@@ -95,6 +96,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
   const canCreateWork = usePlanFlag('can_create_work_plans');
   const canStart = useFeatureFlag('can_start_chats');
   const isAdmin = user?.role === 'admin';
+  const { flaggedKeys, toggle } = useImportantFlags();
   const assignees = (assignableUsers || []).filter((u) => u.id !== currentUserId);
 
   useEffect(() => {
@@ -295,6 +297,16 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
             <Switch checked={!!form.completed} onCheckedChange={toggleComplete} />
           </div>
 
+          {item?.id && (
+            <div className="flex items-center justify-between rounded-md border border-border bg-background px-3 py-2">
+              <div>
+                <Label className="text-sm">Flag as important</Label>
+                <p className="text-xs text-muted-foreground">Surfaces in Inbox → Important items.</p>
+              </div>
+              <Switch checked={flaggedKeys.has(`CalendarEvent:${item.id}`)} onCheckedChange={() => toggle('CalendarEvent', item.id, form.title || 'Plan')} />
+            </div>
+          )}
+
           <div className="space-y-1.5">
             <Label>Notes</Label>
             <RichTextEditor
@@ -306,15 +318,7 @@ export default function CalendarEventForm({ open, item, admins, assignableUsers,
 
           {item?.id && <LinkedTasksSection planId={item.id} />}
 
-          {item?.id && canStart && (
-            <button
-              type="button"
-              onClick={() => { navigate(`/chat?linkType=plan&linkedId=${item.id}`); }}
-              className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-[#1B2A4B] bg-[#1B2A4B] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#2A3D6B]"
-            >
-              <MessageCircle className="h-4 w-4" />Chat about this plan
-            </button>
-          )}
+          {/* chat removed */}
         </ScrollFade>
         <DialogFooter className="shrink-0 flex flex-row items-center justify-end gap-2 border-t border-border bg-card px-6 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3">
             {item?.id && onDelete && (

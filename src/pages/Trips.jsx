@@ -11,6 +11,8 @@ import TripForm from '@/components/speaking/TripForm';
 import TripDetail from '@/components/speaking/TripDetail';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
 import PageHeader from '@/components/speaking/PageHeader';
+import ImportantFlagButton from '@/components/speaking/ImportantFlagButton';
+import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
 
 const FILTERS = ['all', 'upcoming', 'completed'];
 
@@ -23,6 +25,7 @@ const FILTER_ICONS = {
 export default function Trips() {
   const { user } = useAuth();
   const isAdmin = true;
+  const { flaggedKeys, toggle } = useImportantFlags();
   const [searchParams, setSearchParams] = useSearchParams();
   const { items: trips, loading, save, remove, load } = useTrips();
   const { items: engagements } = useEngagements();
@@ -105,10 +108,13 @@ export default function Trips() {
             {visible.map(t => {
               const status = getTripStatus(t);
               return (
-                <button
+                <div
                   key={t.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setSelected(t)}
-                  className="flex w-full items-center gap-4 rounded-lg border border-border bg-card p-4 text-left transition hover:border-[#D9A404]"
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(t); } }}
+                  className="flex w-full cursor-pointer items-center gap-4 rounded-lg border border-border bg-card p-4 text-left transition hover:border-[#D9A404]"
                 >
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-background">
                     <img src="https://media.base44.com/images/public/6a60116b6ae7a4bd8b520b63/4323b7e34_ChatGPTImageJul22202605_46_19PM.png" alt="Trip logo" className="h-7 w-7 object-contain" />
@@ -125,12 +131,13 @@ export default function Trips() {
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1">
+                    <ImportantFlagButton flagged={flaggedKeys.has(`Trip:${t.id}`)} onToggle={() => toggle('Trip', t.id, formatPlaces(t))} />
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${status === 'upcoming' ? 'bg-blue-50 text-blue-700' : 'bg-green-50 text-green-700'}`}>
                       {status === 'upcoming' ? 'Upcoming' : 'Completed'}
                     </span>
                     <span className="text-sm font-semibold text-foreground">{formatCurrency(t.total_cost)}</span>
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>

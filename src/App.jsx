@@ -10,6 +10,7 @@ import { lazy, Suspense } from 'react';
 import useSystemDarkMode from '@/hooks/useSystemDarkMode';
 import WorkspaceGate from '@/pages/WorkspaceGate';
 import { getSession } from '@/lib/workspaceSession';
+import { ImportantFlagsProvider } from '@/lib/ImportantFlagsProvider';
 
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Home = lazy(() => import('@/pages/Home'));
@@ -21,6 +22,7 @@ const Fitness = lazy(() => import('@/pages/Fitness'));
 
 function AppRoutes() {
   return (
+    <ImportantFlagsProvider>
     <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div></div>}>
       <Routes>
         <Route element={<MainLayout />}>
@@ -35,6 +37,7 @@ function AppRoutes() {
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Suspense>
+    </ImportantFlagsProvider>
   );
 }
 

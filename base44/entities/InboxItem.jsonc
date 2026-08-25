@@ -4,7 +4,7 @@
   "properties": {
     "message_text": {
       "type": "string",
-      "description": "The pasted message body captured for later follow-up"
+      "description": "The pasted message body captured for later follow-up, or the source title for an important-flag record."
     },
     "sender_name": {
       "type": "string",
@@ -43,6 +43,32 @@
       "type": "boolean",
       "default": false,
       "description": "True once the reminder_at notification has been fired, to prevent duplicates."
+    },
+    "is_important": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when this record flags a source record as important for the Inbox."
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "Engagement",
+        "Trip",
+        "CalendarEvent",
+        "Task",
+        "Fitness",
+        "None"
+      ],
+      "default": "None",
+      "description": "The kind of source record this important flag points at."
+    },
+    "source_id": {
+      "type": "string",
+      "description": "ID of the source record this flag references."
+    },
+    "source_title": {
+      "type": "string",
+      "description": "Cached display title of the source record."
     },
     "workspace_id": {
       "type": "string",

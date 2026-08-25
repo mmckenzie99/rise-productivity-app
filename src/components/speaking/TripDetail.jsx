@@ -1,10 +1,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2, FileText, Plane, Car, CalendarDays, Building2, DollarSign, Download, MapPin, MessageCircle } from 'lucide-react';
+import { Pencil, Trash2, FileText, Plane, Car, CalendarDays, Building2, DollarSign, Download, MapPin } from 'lucide-react';
 import { formatCurrency, calcTravelByType, calcLodgingTotal, exportTripCSV, formatPlaces } from '@/lib/trips';
 import { formatTime } from '@/lib/speaking';
-import { useNavigate } from 'react-router-dom';
-import useFeatureFlag from '@/hooks/useFeatureFlag';
+// (chat-related imports removed)
 
 function Row({ icon: Icon, label, children }) {
   return (
@@ -17,10 +16,7 @@ function Row({ icon: Icon, label, children }) {
 }
 
 export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin }) {
-  const navigate = useNavigate();
-  const canStart = useFeatureFlag('can_start_chats');
   if (!trip) return null;
-  const openChat = () => { navigate(`/chat?linkType=trip&linkedId=${trip.id}`); };
   const travelByType = calcTravelByType(trip.travel_entries);
   const lodgingTotal = calcLodgingTotal(trip.lodging_entries);
 
@@ -170,7 +166,6 @@ export default function TripDetail({ trip, onClose, onEdit, onDelete, isAdmin })
           </div>
 
           <div className="flex flex-wrap justify-end gap-2">
-            {canStart && <Button variant="outline" onClick={openChat} className="border-[#1B2A4B] bg-[#1B2A4B] text-white hover:bg-[#2A3D6B]"><MessageCircle className="mr-1.5 h-4 w-4" />Chat</Button>}
             <Button variant="outline" onClick={() => exportTripCSV(trip)} className="border-border bg-card"><Download className="mr-1.5 h-4 w-4" />Export CSV</Button>
             {isAdmin && (
               <>

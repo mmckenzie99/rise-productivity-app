@@ -1,18 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { CalendarDays, Paperclip, Pencil, Trash2, Download, Plane, FileText, MessageCircle } from 'lucide-react';
+import { CalendarDays, Paperclip, Pencil, Trash2, Download, Plane, FileText } from 'lucide-react';
 import AddressMapsMenu from './AddressMapsMenu';
 import { formatDate, formatTime, statusTone, TIMEZONES, asArray } from '@/lib/speaking';
 import { generateICS, downloadICS } from '@/lib/icsExport';
-import { useNavigate } from 'react-router-dom';
-import useFeatureFlag from '@/hooks/useFeatureFlag';
+// (chat-related imports removed)
 import RichTextDisplay from './RichTextDisplay';
 
 export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAdmin, trip, onViewTrip, admins, currentUserId }) {
-  const navigate = useNavigate();
-  const canStart = useFeatureFlag('can_start_chats');
   if (!item) return null;
-  const openChat = () => { navigate(`/chat?linkType=engagement&linkedId=${item.id}`); };
   const dateForDisplay = item.speaking_date || item.deploy_date;
   const isRange = item.end_date && item.end_date !== dateForDisplay;
   const isPresentation = asArray(item.presentation_type).includes('Presentation(s)');
@@ -69,11 +65,6 @@ export default function EngagementDetail({ item, onClose, onEdit, onDelete, isAd
           </a>
         ))}
         <div className="flex flex-wrap gap-2 border-t border-border pt-3">
-          {canStart && (
-            <button onClick={openChat} className="inline-flex items-center gap-1.5 rounded-md border border-[#1B2A4B] bg-[#1B2A4B] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#2A3D6B]">
-              <MessageCircle className="h-3.5 w-3.5" />Chat
-            </button>
-          )}
           <button onClick={() => downloadICS(generateICS(item), `${item.title || item.place || 'engagement'}.ics`)} className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-[#D9A404] hover:text-[#D9A404]">
             <Download className="h-3.5 w-3.5" />Download .ics
           </button>

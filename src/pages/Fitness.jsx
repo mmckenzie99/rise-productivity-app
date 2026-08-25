@@ -12,6 +12,8 @@ import PullToRefresh from '@/components/speaking/PullToRefresh';
 import PageHeader from '@/components/speaking/PageHeader';
 import { Image } from '@/components/ui/image';
 import { formatDate } from '@/lib/speaking';
+import ImportantFlagButton from '@/components/speaking/ImportantFlagButton';
+import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
 
 const ACTIVITIES = ['Run', 'Walk', 'Strength', 'Cycling', 'Swim', 'Yoga', 'Sports', 'Other'];
 const INTENSITIES = ['Easy', 'Moderate', 'Hard'];
@@ -41,6 +43,7 @@ export default function Fitness() {
   const [showGoal, setShowGoal] = useState(false);
   const [goal, setGoal] = useState({ goal_metric: 'Workouts per week', goal_target: '', goal_deadline: '' });
   const [favOnly, setFavOnly] = useState(false);
+  const { flaggedKeys, toggle } = useImportantFlags();
 
   const logs = useMemo(() => items.filter((i) => i.kind !== 'goal'), [items]);
   const goals = useMemo(() => items.filter((i) => i.kind === 'goal'), [items]);
@@ -162,6 +165,7 @@ export default function Fitness() {
                       </div>
                       {l.notes && <p className="mt-1 whitespace-pre-wrap text-xs text-foreground">{l.notes}</p>}
                     </div>
+                    <ImportantFlagButton flagged={flaggedKeys.has(`Fitness:${l.id}`)} onToggle={() => toggle('Fitness', l.id, `${l.activity || 'Workout'} — ${formatDate(l.date)}`)} />
                     <button onClick={() => toggleFav(l)} className="shrink-0" aria-label="Favorite">
                       <Star className={`h-4 w-4 ${l.is_favorite ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
                     </button>

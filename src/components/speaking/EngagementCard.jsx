@@ -1,14 +1,16 @@
-import { CalendarDays, MapPin, Paperclip, Copy, MessageCircle, Navigation } from 'lucide-react';
+import { CalendarDays, MapPin, Paperclip, Copy, Navigation } from 'lucide-react';
 import AddressMapsMenu from './AddressMapsMenu';
-import { useNavigate } from 'react-router-dom';
+// (navigation removed — chat link dropped)
 import { formatDate, formatTime, statusTone, TIMEZONES, asArray } from '@/lib/speaking';
 import CardWrapper from './CardWrapper';
 import CountdownBadge from './CountdownBadge';
+import ImportantFlagButton from './ImportantFlagButton';
+import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
 
 const ACCENT = { Planning: 'border-l-primary', Confirmed: 'border-l-foreground', Completed: 'border-l-muted-foreground' };
 
 export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, hasTrip, onLocate }) {
-  const navigate = useNavigate();
+  const { flaggedKeys, toggle } = useImportantFlags();
   const dateForDisplay = item.speaking_date || item.deploy_date;
   const isRange = item.end_date && item.end_date !== dateForDisplay;
   return (
@@ -59,9 +61,7 @@ export default function EngagementCard({ item, onClick, onDuplicate, isAdmin, ha
         <span className="rounded-full border border-border px-2 py-1">{item.progress}</span>
         {asArray(item.presentation_type).map(t => <span key={t} className="rounded-full border border-border px-2 py-1">{t}</span>)}
         {hasTrip && <span className="rounded-full border border-primary bg-primary/10 px-2 py-1 text-foreground">Trip</span>}
-        <button type="button" onClick={e => { e.stopPropagation(); navigate(`/chat?linkType=engagement&linkedId=${item.id}`); }} className="ml-auto inline-flex items-center gap-1 rounded-full border border-[#1B2A4B] bg-[#1B2A4B] px-2 py-1 font-body text-[10px] font-medium text-white transition hover:bg-[#2A3D6B]">
-          <MessageCircle className="h-3 w-3" />Chat
-        </button>
+        <ImportantFlagButton className="ml-auto" flagged={flaggedKeys.has(`Engagement:${item.id}`)} onToggle={() => toggle('Engagement', item.id, item.title || item.place || 'Engagement')} />
       </div>
     </CardWrapper>
   );

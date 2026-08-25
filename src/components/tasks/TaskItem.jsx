@@ -15,6 +15,8 @@ import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Pencil, Trash2, CalendarPlus, CalendarDays } from 'lucide-react';
 import { formatDateTime } from '@/lib/inbox';
+import ImportantFlagButton from '@/components/speaking/ImportantFlagButton';
+import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
 
 const NOTE_URL_RE = /((?:https?:\/\/|msteams:\/\/|www\.)[^\s<>]+)/gi;
 
@@ -66,6 +68,7 @@ const isOverdue = (iso) => {
 
 export default function TaskItem({ task, onToggle, onEdit, onSchedule, onDelete, compact, linkedPlanTitle }) {
   const overdue = !task.is_done && isOverdue(task.due_date);
+  const { flaggedKeys, toggle } = useImportantFlags();
   return (
     <div
       className={cn(
@@ -97,6 +100,8 @@ export default function TaskItem({ task, onToggle, onEdit, onSchedule, onDelete,
           <p className="mt-1 line-clamp-3 whitespace-pre-wrap break-words text-xs text-muted-foreground">{renderNotes(task.notes)}</p>
         )}
       </div>
+
+      <ImportantFlagButton flagged={flaggedKeys.has(`Task:${task.id}`)} onToggle={() => toggle('Task', task.id, task.title)} />
 
       {!compact && onSchedule && !task.is_done && !task.converted_to_plan_id && (
         <button
