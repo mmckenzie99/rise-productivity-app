@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Plane, BookOpen, Activity } from 'lucide-react';
+import { LayoutDashboard, Users, Plane, Activity } from 'lucide-react';
 import QuickActionBar from './QuickActionBar';
 
 const TABS = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/engagements', label: 'Duty', icon: Users },
   { to: '/trips', label: 'Trips', icon: Plane },
-  { to: '/faith', label: 'Faith', icon: BookOpen },
   { to: '/fitness', label: 'Fitness', icon: Activity },
 ];
 
