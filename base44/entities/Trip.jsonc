@@ -7,7 +7,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Place(s) this trip covers (multiple engagement locations can be linked to one trip itinerary)"
+      "description": "Place(s) this trip covers"
     },
     "department": {
       "type": "string",
@@ -52,30 +52,25 @@
             ]
           },
           "description": {
-            "type": "string",
-            "description": "Label for this travel entry (e.g. Outbound DTW \u2192 ORD, Gas for Rental #1)"
+            "type": "string"
           },
           "airline": {
             "type": "string"
           },
           "departure_airport": {
-            "type": "string",
-            "description": "Departure airport for this travel entry"
+            "type": "string"
           },
           "arrival_airport": {
-            "type": "string",
-            "description": "Arrival airport for this flight leg (multi-city)"
+            "type": "string"
           },
           "rental_company": {
             "type": "string"
           },
           "rental_pickup_location": {
-            "type": "string",
-            "description": "Rental pickup location for this travel entry"
+            "type": "string"
           },
           "dropoff_location": {
-            "type": "string",
-            "description": "Rental drop-off location for this leg (multi-city)"
+            "type": "string"
           },
           "cost": {
             "type": "number"
@@ -100,8 +95,7 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "description": "Lodging place / hotel name for this entry"
+            "type": "string"
           },
           "check_in_date": {
             "type": "string",
@@ -167,10 +161,9 @@
     "total_cost": {
       "type": "number"
     },
-    "is_shared": {
-      "type": "boolean",
-      "default": false,
-      "description": "When true, all authenticated users can read this record. When false, only the creator and admins can see it. Owner-controlled sharing."
+    "workspace_id": {
+      "type": "string",
+      "description": "Workspace this trip belongs to. Stamped server-side by the data backend function."
     }
   },
   "required": [
@@ -178,56 +171,9 @@
     "department"
   ],
   "rls": {
-    "read": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        },
-        {
-          "data.is_shared": true
-        }
-      ]
-    },
-    "create": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    },
-    "update": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    },
-    "delete": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    }
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
   }
 }
