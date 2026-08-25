@@ -10,7 +10,7 @@ import LocationGroup from '@/components/speaking/LocationGroup';
 
 import EngagementForm from '@/components/speaking/EngagementForm';
 import EngagementDetail from '@/components/speaking/EngagementDetail';
-import InviteDialog from '@/components/speaking/InviteDialog';
+// (invites removed — no accounts)
 import useEngagements from '@/hooks/useEngagements';
 import useTrips from '@/hooks/useTrips';
 import TripForm from '@/components/speaking/TripForm';
@@ -25,13 +25,13 @@ import { resolveFeature } from '@/lib/permissions';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import PullToRefresh from '@/components/speaking/PullToRefresh';
 import { useHistoryBack } from '@/hooks/useHistoryBack';
-import { deleteLinkedConversations } from '@/lib/chat';
+// (chat integration removed)
 import TasksOverview from '@/components/speaking/TasksOverview';
 
 export default function Home() {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
-  const isOwner = !!user?.is_owner;
+  const isAdmin = true;
+  const isOwner = true;
   const [searchParams, setSearchParams] = useSearchParams();
   const { items, loading, save, remove, load: loadEngagements } = useEngagements();
   const { items: trips, loading: tripsLoading, save: saveTrip, remove: removeTrip } = useTrips();
@@ -40,7 +40,7 @@ export default function Home() {
     try { const s = sessionStorage.getItem('homeFilters'); if (s) { const p = JSON.parse(s); return { status: p.status || 'all', progress: p.progress || 'all', search: p.search || '' }; } } catch {}
     return { status: 'all', progress: 'all', search: '' };
   });
-  const [invite, setInvite] = useState(false);
+  // (invites removed)
   const [archive, setArchive] = useState(false);
   const [formPrefill, setFormPrefill] = useState(null);
   const [users, setUsers] = useState([]);
@@ -103,7 +103,7 @@ export default function Home() {
     if (action === 'new') setSearchParams({ editEngagement: 'new' }, opts);
     else if (action === 'calendar') navigate('/calendar', opts);
     else if (action === 'new-plan') navigate(`/calendar?planId=new&calDate=${todayStr()}`, opts);
-    else if (action === 'invite') { setInvite(true); if (replace) setSearchParams({}, opts); }
+    // (invite action removed — no accounts)
   };
   useEffect(() => { const action = searchParams.get('action'); if (action) applyAction(action, true); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
   useEffect(() => { const h = e => applyAction((e.detail && e.detail.type) || '', false); window.addEventListener('b44:quick-action', h); return () => window.removeEventListener('b44:quick-action', h); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
@@ -116,8 +116,8 @@ export default function Home() {
   const editTripNav = x => setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete('tripId'); sp.set('editTrip', x.id); return sp; });
   const viewTripFromEng = () => { if (engagementTrip) setSearchParams(prev => { const sp = new URLSearchParams(prev); sp.delete('engagementId'); sp.set('tripId', engagementTrip.id); return sp; }, { replace: true }); };
   const duplicate = x => { const { id, created_date, updated_date, created_by_id, ...fields } = x; setFormPrefill({ ...fields, title: `${x.title} (Copy)` }); setSearchParams({ editEngagement: 'new' }); };
-  const del = async x => { if (window.confirm(`Delete "${x.title}"?`)) { await remove(x.id); await deleteLinkedConversations(x.id, 'engagement'); return true; } return false; };
-  const delTrip = async x => { if (window.confirm('Delete this trip?')) { await removeTrip(x.id); await deleteLinkedConversations(x.id, 'trip'); return true; } return false; };
+  const del = async x => { if (window.confirm(`Delete "${x.title}"?`)) { await remove(x.id); return true; } return false; };
+  const delTrip = async x => { if (window.confirm('Delete this trip?')) { await removeTrip(x.id); return true; } return false; };
 
   const openEngagement = x => setSearchParams({ engagementId: x.id });
   const openQuickLook = x => setSearchParams({ quickLook: x.id });
@@ -144,7 +144,7 @@ export default function Home() {
       <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={async () => { await loadEngagements(); }}>
          <div className="space-y-6">
-          <AppHeader onAdd={() => setSearchParams({ editEngagement: 'new' })} onInvite={() => setInvite(true)} isAdmin={isAdmin} isOwner={isOwner} newOpen={!!editEngagement} inviteOpen={invite} />
+          <AppHeader onAdd={() => setSearchParams({ editEngagement: 'new' })} />
           <div className="relative sm:max-w-xs">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input className="bg-card pl-9 text-sm h-9 border-border" placeholder="Search place or engagement type…" value={filters.search} onChange={e => setFilters({ ...filters, search: e.target.value })} />
@@ -159,7 +159,7 @@ export default function Home() {
 
       <EngagementForm open={!!form} item={form === true ? null : form} onClose={closeEditEngagement} onSave={save} />
       <EngagementDetail item={selected} onClose={closeEngagement} onEdit={edit} onDelete={del} isAdmin={isAdmin} trip={engagementTrip} onViewTrip={viewTripFromEng} admins={commentUsers} currentUserId={user?.id} />
-      <InviteDialog open={invite} onClose={() => setInvite(false)} />
+      {/* invites removed */}
       <TripListDialog open={tripsOpen} trips={trips} loading={tripsLoading} isAdmin={isAdmin} onClose={closeTrips} onAdd={() => pushParam(sp => sp.set('editTrip', 'new'))} onSelect={t => pushParam(sp => sp.set('tripId', t.id))} />
       <TripForm open={!!tripFormOpen} item={tripFormOpen === true ? null : tripFormOpen} engagements={items} onClose={closeEditTrip} onSave={async t => { await saveTrip(t); }} />
       <TripDetail trip={selectedTrip} onClose={closeTrip} onEdit={() => editTripNav(selectedTrip)} onDelete={() => delTrip(selectedTrip)} isAdmin={isAdmin} />

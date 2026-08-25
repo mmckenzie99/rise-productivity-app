@@ -36,7 +36,7 @@ export default function Inbox() {
   const [captureOpen, setCaptureOpen] = useState(false);
   const [convert, setConvert] = useState(null); // { type, item }
 
-  const admin = isAdmin(user);
+  const admin = true;
 
   useEffect(() => {
     (async () => {

@@ -22,7 +22,7 @@ const FILTER_ICONS = {
 
 export default function Trips() {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = true;
   const [searchParams, setSearchParams] = useSearchParams();
   const { items: trips, loading, save, remove, load } = useTrips();
   const { items: engagements } = useEngagements();

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useAuth } from '@/lib/AuthContext';
+import { data } from '@/lib/workspaceData';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +11,6 @@ import TimePicker from './TimePicker';
 import { formatDate } from '@/lib/speaking';
 
 export default function DailyReflection({ dateKey, engagements = [] }) {
-  const { user } = useAuth();
   const [record, setRecord] = useState(null);
   const [meditation, setMeditation] = useState('');
   const [reference, setReference] = useState('');
@@ -30,7 +28,7 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
   useEffect(() => {
     let active = true;
     setLoading(true);
-    base44.entities.DailyReflection.filter({ date: dateKey, created_by_id: user?.id })
+    data.entities.DailyReflection.filter({ date: dateKey })
       .then((res) => {
         if (!active) return;
         const rec = res && res[0];
@@ -44,16 +42,16 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
       })
       .finally(() => active && setLoading(false));
     return () => { active = false; };
-  }, [dateKey, user?.id]);
+  }, [dateKey]);
 
   const persist = async (patch) => {
     setSaving(true);
     try {
       if (record?.id) {
-        const updated = await base44.entities.DailyReflection.update(record.id, patch);
+        const updated = await data.entities.DailyReflection.update(record.id, patch);
         setRecord(updated);
       } else {
-        const created = await base44.entities.DailyReflection.create({ date: dateKey, ...patch });
+        const created = await data.entities.DailyReflection.create({ date: dateKey, ...patch });
         setRecord(created);
       }
     } finally {
@@ -104,11 +102,11 @@ export default function DailyReflection({ dateKey, engagements = [] }) {
     if (!linkedId || !note) return;
     setSyncing(true);
     try {
-      const eng = await base44.entities.Engagement.get(linkedId);
+      const eng = await data.entities.Engagement.get(linkedId);
       const dateLabel = formatDate(dateKey);
       const entry = `<div style="border-top:1px solid #E3E6EC;margin-top:8px;padding-top:8px"><p style="font-size:11px;color:#5A6781;margin:0 0 4px"><strong>${dateLabel}</strong></p>${note}</div>`;
       const newNotes = (eng?.notes || '') + entry;
-      await base44.entities.Engagement.update(linkedId, { notes: newNotes });
+      await data.entities.Engagement.update(linkedId, { notes: newNotes });
       setSynced(true);
     } finally {
       setSyncing(false);

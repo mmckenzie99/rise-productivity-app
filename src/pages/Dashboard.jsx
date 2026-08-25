@@ -27,7 +27,7 @@ export default function Dashboard() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
   const navigate = useNavigate();
-  const goHome = (action) => navigate(`/?action=${action}`);
+  const goHome = (action) => navigate(`/engagements?action=${action}`);
   const { items: engagements, loading, load: loadEngagements } = useEngagements();
   const { items: events, load: loadCalEvents } = useCalendarEvents();
   const { settings } = useAppSettings();

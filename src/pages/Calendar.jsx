@@ -9,7 +9,7 @@ import { useAppSettings } from '@/hooks/useAppSettings';
 import { resolveFeature } from '@/lib/permissions';
 import { formatDate, formatTime } from '@/lib/speaking';
 import { generateICSBatch, downloadICS } from '@/lib/icsExport';
-import { deleteLinkedConversations } from '@/lib/chat';
+import { data } from '@/lib/workspaceData';
 import CalendarView from '@/components/speaking/CalendarView';
 import DayPlanner from '@/components/speaking/DayPlanner';
 import CalendarEventForm from '@/components/speaking/CalendarEventForm';
@@ -131,26 +131,24 @@ export default function Calendar() {
     const safeTitle = esc(planTitle);
     if (item.assignee_id && item.assignee_id !== wasAssigned) {
       const assignee = users.find((u) => u.id === item.assignee_id);
-      try { await base44.entities.Notification.create({ engagement_id: planId, engagement_title: planTitle, speaking_date: planDateVal, speaking_time: item.start_time, window_label: 'Assigned to you', email_sent: false, read: false }); } catch {}
-      if (assignee?.email) { try { await base44.integrations.Core.SendEmail({ to: assignee.email, subject: `New plan assigned: ${safeTitle}`, body: `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B"><h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B">A plan was assigned to you</h2><p style="font-size:16px"><strong>${safeTitle}</strong>${planDateVal ? ` on ${formatDate(planDateVal)}` : ''}${item.start_time ? ` at ${formatTime(item.start_time)}` : ''}.</p><p style="font-size:13px;color:#5A6781">Open the RISE calendar to view details and mark it complete.</p></div>` }); } catch {} }
+      try { await data.entities.Notification.create({ engagement_id: planId, engagement_title: planTitle, speaking_date: planDateVal, speaking_time: item.start_time, window_label: 'Assigned to you', email_sent: false, read: false }); } catch {}
     }
     if (item.completed && !wasCompleted) {
       const assignerId = prev?.created_by_id || user?.id;
       const assigner = users.find((u) => u.id === assignerId);
-      try { await base44.entities.Notification.create({ engagement_id: planId, engagement_title: planTitle, speaking_date: item.completed_date || planDateVal, speaking_time: item.start_time, window_label: 'Completed', email_sent: false, read: false }); } catch {}
-      if (assigner?.email) { try { await base44.integrations.Core.SendEmail({ to: assigner.email, subject: `Plan completed: ${safeTitle}`, body: `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1B2A4B"><h2 style="font-family:Fraunces,Georgia,serif;color:#1B2A4B">A plan was completed</h2><p style="font-size:16px"><strong>${safeTitle}</strong> has been marked complete.</p></div>` }); } catch {} }
+      try { await data.entities.Notification.create({ engagement_id: planId, engagement_title: planTitle, speaking_date: item.completed_date || planDateVal, speaking_time: item.start_time, window_label: 'Completed', email_sent: false, read: false }); } catch {}
     }
     if (!item.id) { lastSaveWasNewRef.current = true; lastSaveDateRef.current = saved?.date || item.date || ''; }
   };
 
-  const handleDeletePlan = async (id) => { await removeCalEvent(id); await deleteLinkedConversations(id, 'plan'); };
+  const handleDeletePlan = async (id) => { await removeCalEvent(id); };
   const handleDeleteFuture = async (seriesId, afterDate) => {
     const future = calEvents.filter((e) => e.series_id === seriesId && e.date > afterDate);
-    for (const e of future) { await removeCalEvent(e.id); await deleteLinkedConversations(e.id, 'plan'); }
+    for (const e of future) { await removeCalEvent(e.id); }
   };
   const handleDeleteSeries = async (seriesId) => {
     const all = calEvents.filter((e) => e.series_id === seriesId);
-    for (const e of all) { await removeCalEvent(e.id); await deleteLinkedConversations(e.id, 'plan'); }
+    for (const e of all) { await removeCalEvent(e.id); }
   };
 
   const overlayCursor = calDate ? new Date(calDate + 'T00:00:00') : new Date();

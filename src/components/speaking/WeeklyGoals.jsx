@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { data } from '@/lib/workspaceData';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import TimePicker from '@/components/speaking/TimePicker';
@@ -43,7 +43,7 @@ export default function WeeklyGoals({ cursor }) {
   useEffect(() => {
     let active = true;
     setLoading(true);
-    base44.entities.WeeklyGoal.filter({ start_date: startKey })
+    data.entities.WeeklyGoal.filter({ start_date: startKey })
       .then((res) => {
         if (!active) return;
         const rec = res && res[0];
@@ -58,9 +58,9 @@ export default function WeeklyGoals({ cursor }) {
   const persist = (next) => {
     const payload = { goals: next, goal_reminder_time: reminderTime || null, reminder_timezone: userTz };
     if (record?.id) {
-      base44.entities.WeeklyGoal.update(record.id, payload).then(setRecord);
+      data.entities.WeeklyGoal.update(record.id, payload).then(setRecord);
     } else {
-      base44.entities.WeeklyGoal.create({ start_date: startKey, ...payload }).then(setRecord);
+      data.entities.WeeklyGoal.create({ start_date: startKey, ...payload }).then(setRecord);
     }
   };
 

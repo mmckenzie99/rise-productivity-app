@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Plus } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { data } from '@/lib/workspaceData';
 import useTasks from '@/hooks/useTasks';
 import useCalendarEvents from '@/hooks/useCalendarEvents';
 import TaskItem from '@/components/tasks/TaskItem';
@@ -44,7 +44,7 @@ export default function Tasks() {
   const handleScheduleSave = async (planItem) => {
     const saved = await saveCalEvent(planItem);
     if (scheduleTask?.id && saved?.id) {
-      await base44.entities.Task.update(scheduleTask.id, { converted_to_plan_id: saved.id, is_done: true });
+      await data.entities.Task.update(scheduleTask.id, { converted_to_plan_id: saved.id, is_done: true });
       await loadTasks();
       toast({ title: 'Scheduled as plan', description: 'Task marked done and linked.' });
     }
