@@ -132,7 +132,7 @@ export default function CalendarView({ items, events, onSelect, onEventSelect, o
                   <div
                     key={ci}
                     onClick={() => { if (!cell.muted) { if (onSelectDay) { onSelectDay(cell.key); } else { setInternalMode('day'); setCursor(new Date(cell.key + 'T00:00:00')); } } }}
-                    className={`min-h-[72px] cursor-pointer rounded-md border p-1.5 ${cell.muted ? 'border-transparent bg-[#F0F2F6]/50 text-[#5A6781]' : cell.key === todayKey ? 'border-[#D9A404] bg-[#FBF0D0]/40' : 'border-[#D6DAE3] bg-white'}`}
+                    className={`min-h-[72px] cursor-pointer rounded-md border p-1.5 ${cell.muted ? 'border-transparent bg-[#F0F2F6]/50 text-[#5A6781]' : cell.key === todayKey ? 'border-[#D9A404] bg-[#FBF0D0]/40 text-[#1B2A4B]' : 'border-[#D6DAE3] bg-white text-[#1B2A4B]'}`}
                   >
                     <div className="flex items-center justify-between">
                       <p className="text-xs font-medium">{cell.day}</p>
