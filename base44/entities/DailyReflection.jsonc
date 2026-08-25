@@ -17,11 +17,11 @@
     },
     "meditation_reference": {
       "type": "string",
-      "description": "Reference or source for the meditation text (e.g. John 3:16, Desire of Ages p. 123)"
+      "description": "Reference or source for the meditation text"
     },
     "note": {
       "type": "string",
-      "description": "Rich-text note with formatting (bold, italics, underline, highlight, links)"
+      "description": "Rich-text note with formatting"
     },
     "linked_engagement_id": {
       "type": "string",
@@ -33,64 +33,20 @@
     },
     "reminder_timezone": {
       "type": "string",
-      "description": "IANA timezone the reminder time is interpreted in (e.g. America/Detroit)"
+      "description": "IANA timezone the reminder time is interpreted in"
     },
-    "last_viewed_by_admin_id": {
+    "workspace_id": {
       "type": "string",
-      "description": "User id of the last Owner who opened this reflection for oversight review. Written only by the recordReflectionView backend function (service role) \u2014 the only sanctioned writer \u2014 so the stamp is always server-verified from auth context, never client-supplied."
-    },
-    "last_viewed_by_admin_name": {
-      "type": "string",
-      "description": "Cached display name of the last Owner who reviewed this reflection for oversight, parallel to last_viewed_by_admin_id."
-    },
-    "last_viewed_at": {
-      "type": "string",
-      "format": "date-time",
-      "description": "ISO timestamp of the most recent oversight review. Overwrites with the latest reviewer only (not an accumulating history). Surfaces to the entry owner as a passive, in-context transparency note."
+      "description": "Workspace this reflection belongs to. Shared between workspace members. Stamped server-side by the data backend function."
     }
   },
   "required": [
     "date"
   ],
   "rls": {
-    "create": {
-      "created_by_id": "{{user.id}}"
-    },
-    "read": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    },
-    "update": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    },
-    "delete": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
-    }
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
   }
 }
