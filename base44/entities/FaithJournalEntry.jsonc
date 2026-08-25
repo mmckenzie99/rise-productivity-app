@@ -1,0 +1,73 @@
+{
+  "name": "FaithJournalEntry",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "The day this Faith journal entry belongs to"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Time spent on this entry, in minutes"
+    },
+    "is_sermon_prep": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when this entry is marked as sermon prep, which flags it as an important InboxItem so it shows in the Inbox as something being worked on."
+    },
+    "linked_engagement_id": {
+      "type": "string",
+      "description": "ID of the Duty (engagement) this entry is associated with"
+    },
+    "reading_book_title": {
+      "type": "string",
+      "description": "Optional book title for the Reading Focus section"
+    },
+    "reading_quote": {
+      "type": "string",
+      "description": "Optional paragraph or sentence quote for the Reading Focus section"
+    },
+    "reading_reference": {
+      "type": "string",
+      "description": "Optional Bible book/chapter/verse reference for the Reading Focus section"
+    },
+    "reading_focus_title": {
+      "type": "string",
+      "description": "Custom (renamed) title for the Reading Focus section; blank means use the default 'Reading Focus'."
+    },
+    "study_notes": {
+      "type": "string",
+      "description": "Rich-text study notes for the Study Focus section (bold, underline, highlight, links)"
+    },
+    "study_focus_title": {
+      "type": "string",
+      "description": "Custom (renamed) title for the Study Focus section; blank means use the default 'Study Focus'."
+    },
+    "takeaways": {
+      "type": "string",
+      "description": "Free text for main takeaways and personal spiritual goals"
+    },
+    "prayer_notes": {
+      "type": "string",
+      "description": "Free text for personal prayer notes"
+    },
+    "prayer_title": {
+      "type": "string",
+      "description": "Custom (renamed) title for the prayer section; blank means use the default 'What Should I Pray About'."
+    },
+    "workspace_id": {
+      "type": "string",
+      "description": "Workspace this entry belongs to. Shared between workspace members. Stamped server-side by the data backend function."
+    }
+  },
+  "required": [
+    "date"
+  ],
+  "rls": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  }
+}

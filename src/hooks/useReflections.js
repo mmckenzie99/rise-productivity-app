@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { data } from '@/lib/workspaceData';
 
-// Loads all workspace DailyReflection entries and exposes a Set of dates
+// Loads all workspace FaithJournalEntry records and exposes a Set of dates
 // that have a saved entry, used by the Agenda to render Faith indicators.
 export default function useReflections() {
   const [items, setItems] = useState([]);
@@ -9,7 +9,7 @@ export default function useReflections() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      setItems(await data.entities.DailyReflection.list('-date', 500));
+      setItems(await data.entities.FaithJournalEntry.list('-date', 500));
     } catch {
       setItems([]);
     } finally {

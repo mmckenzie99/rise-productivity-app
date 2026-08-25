@@ -57,6 +57,7 @@ export const data = {
     InboxItem: makeEntity('InboxItem'),
     Fitness: makeEntity('Fitness'),
     DailyReflection: makeEntity('DailyReflection'),
+    FaithJournalEntry: makeEntity('FaithJournalEntry'),
     WeeklyGoal: makeEntity('WeeklyGoal'),
     Notification: makeEntity('Notification'),
     Comment: makeEntity('Comment'),

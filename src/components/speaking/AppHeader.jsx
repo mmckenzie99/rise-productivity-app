@@ -15,7 +15,6 @@ const NAV = [
   { to: '/faith', label: 'Faith', icon: BookOpen },
   { to: '/calendar', label: 'Agenda', icon: CalendarDays },
   { to: '/fitness', label: 'Fitness', icon: Activity },
-  { to: '/inbox', label: 'Inbox', icon: InboxIcon },
 ];
 
 // No-account model: every workspace member is an equal owner, so the header no
@@ -42,7 +41,7 @@ export default function AppHeader({ onAdd }) {
             </Button>
           )}
         </div>
-        <Link to="/inbox" className="lg:hidden">
+        <Link to="/inbox" aria-label="Inbox">
           <Button variant="ghost" size="icon" aria-label="Inbox" className="h-11 w-11">
             <InboxIcon className="h-4 w-4" />
           </Button>

@@ -9,80 +9,44 @@
     },
     "goals": {
       "type": "string",
-      "description": "Goals for the day (legacy field, retained for backward compatibility)"
+      "description": "Goals for the day (oversight field)"
     },
     "meditation": {
       "type": "string",
-      "description": "Bible verse or Spirit of Prophecy statement to meditate on (legacy field, retained for the oversight editor)"
+      "description": "Bible verse or Spirit of Prophecy statement to meditate on (oversight field)"
     },
     "meditation_reference": {
       "type": "string",
-      "description": "Reference or source for the meditation text (legacy field, retained for the oversight editor)"
+      "description": "Reference or source for the meditation text (oversight field)"
     },
     "note": {
       "type": "string",
-      "description": "Rich-text note with formatting (legacy field, retained for the oversight editor)"
-    },
-    "linked_engagement_id": {
-      "type": "string",
-      "description": "ID of the Duty (engagement) this meditation entry is associated with"
+      "description": "Rich-text note with formatting (oversight field)"
     },
     "meditation_reminder_time": {
       "type": "string",
-      "description": "Time of day (HH:MM) to send a meditation reminder, or blank for none (legacy field, retained for the oversight editor)"
+      "description": "Time of day (HH:MM) to send a meditation reminder, or blank for none (oversight field)"
     },
     "reminder_timezone": {
       "type": "string",
-      "description": "IANA timezone the reminder time is interpreted in (legacy field, retained for the oversight editor)"
+      "description": "IANA timezone the reminder time is interpreted in (oversight field)"
     },
-    "duration_minutes": {
-      "type": "number",
-      "description": "Amount of time spent on this Daily Meditation entry, in minutes"
-    },
-    "is_sermon_prep": {
-      "type": "boolean",
-      "default": false,
-      "description": "True when this entry is marked as sermon prep, which flags it as an important InboxItem so it shows in the Inbox as something being worked on."
-    },
-    "reading_book_title": {
+    "last_viewed_by_admin_id": {
       "type": "string",
-      "description": "Optional book title for the Reading Focus section"
+      "description": "User id of the admin who last reviewed this reflection for oversight (stamped by recordReflectionView)"
     },
-    "reading_quote": {
+    "last_viewed_by_admin_name": {
       "type": "string",
-      "description": "Optional paragraph or sentence quote for the Reading Focus section"
+      "description": "Name of the admin who last reviewed this reflection for oversight (stamped by recordReflectionView)"
     },
-    "reading_reference": {
+    "last_viewed_at": {
       "type": "string",
-      "description": "Optional Bible book/chapter/verse reference for the Reading Focus section"
-    },
-    "reading_focus_title": {
-      "type": "string",
-      "description": "Custom (renamed) title for the Reading Focus section; blank means use the default 'Reading Focus'."
-    },
-    "study_notes": {
-      "type": "string",
-      "description": "Rich-text study notes for the Study Focus section (bold, underline, highlight, links)"
-    },
-    "study_focus_title": {
-      "type": "string",
-      "description": "Custom (renamed) title for the Study Focus section; blank means use the default 'Study Focus'."
-    },
-    "takeaways": {
-      "type": "string",
-      "description": "Free text for main takeaways and personal spiritual goals"
-    },
-    "prayer_notes": {
-      "type": "string",
-      "description": "Free text for personal prayer notes"
-    },
-    "prayer_title": {
-      "type": "string",
-      "description": "Custom (renamed) title for the prayer section; blank means use the default 'What Should I Pray About'."
+      "format": "date-time",
+      "description": "Timestamp of the last oversight review (stamped by recordReflectionView)"
     },
     "workspace_id": {
       "type": "string",
-      "description": "Workspace this reflection belongs to. Shared between workspace members. Stamped server-side by the data backend function."
+      "description": "Workspace this reflection belongs to. Stamped server-side by the data backend function."
     }
   },
   "required": [

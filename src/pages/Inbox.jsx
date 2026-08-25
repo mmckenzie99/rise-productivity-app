@@ -23,7 +23,8 @@ const sourceLink = (it) => {
     case 'CalendarEvent': return `/calendar?planId=${it.source_id}`;
     case 'Task': return '/tasks';
     case 'Fitness': return '/fitness';
-    case 'DailyReflection': {
+    case 'DailyReflection':
+    case 'FaithJournalEntry': {
       const k = (it.message_date || '').slice(0, 10);
       return k ? `/faith?date=${k}` : '/faith';
     }
@@ -51,7 +52,7 @@ export default function Inbox() {
 
   return (
     <main className="min-h-screen bg-background text-foreground pb-safe">
-      <PageHeader title="Inbox" backTo="/" />
+      <PageHeader title="Inbox" />
       <div className="mx-auto max-w-3xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={refresh}>
         {loading ? (

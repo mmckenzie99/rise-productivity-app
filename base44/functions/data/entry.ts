@@ -15,6 +15,7 @@ const ENTITIES = new Set([
   "InboxItem",
   "Fitness",
   "DailyReflection",
+  "FaithJournalEntry",
   "WeeklyGoal",
   "Notification",
   "Comment",

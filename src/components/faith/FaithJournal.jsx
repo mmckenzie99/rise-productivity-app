@@ -64,7 +64,7 @@ export default function FaithJournal() {
     loadedDateRef.current = dateKey;
     setLoading(true);
     try {
-      const res = await data.entities.DailyReflection.filter({ date: dateKey });
+      const res = await data.entities.FaithJournalEntry.filter({ date: dateKey });
       const rec = res && res[0];
       setRecord(rec || null);
       setDurationMinutes(rec?.duration_minutes ?? '');
@@ -87,7 +87,7 @@ export default function FaithJournal() {
   }, []);
 
   const loadEntries = useCallback(async () => {
-    try { setEntries(await data.entities.DailyReflection.list('-date', 200)); }
+    try { setEntries(await data.entities.FaithJournalEntry.list('-date', 200)); }
     catch { setEntries([]); }
   }, []);
 
@@ -102,12 +102,12 @@ export default function FaithJournal() {
   // so the Inbox can deep-link back to this day.
   const syncSermonPrepFlag = async (recordId, flagged, dateKey) => {
     const title = `Sermon Prep — ${formatDate(dateKey)}`;
-    const existing = await data.entities.InboxItem.filter({ source_type: 'DailyReflection', source_id: recordId });
+    const existing = await data.entities.InboxItem.filter({ source_type: 'FaithJournalEntry', source_id: recordId });
     const ex = existing && existing[0];
     if (flagged) {
       const payload = {
         is_important: true,
-        source_type: 'DailyReflection',
+        source_type: 'FaithJournalEntry',
         source_id: recordId,
         source_title: title,
         message_text: title,
@@ -139,8 +139,8 @@ export default function FaithJournal() {
         prayer_title: prayerTitle,
       };
       let saved;
-      if (record?.id) saved = await data.entities.DailyReflection.update(record.id, payload);
-      else saved = await data.entities.DailyReflection.create({ date, ...payload });
+      if (record?.id) saved = await data.entities.FaithJournalEntry.update(record.id, payload);
+      else saved = await data.entities.FaithJournalEntry.create({ date, ...payload });
       setRecord(saved);
       await syncSermonPrepFlag(saved.id, isSermonPrep, date);
       await Promise.all([loadEntries(), loadFlags()]);
