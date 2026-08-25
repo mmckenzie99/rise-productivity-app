@@ -19,6 +19,7 @@ const Trips = lazy(() => import('@/pages/Trips'));
 const Inbox = lazy(() => import('@/pages/Inbox'));
 const Tasks = lazy(() => import('@/pages/Tasks'));
 const Fitness = lazy(() => import('@/pages/Fitness'));
+const Faith = lazy(() => import('@/pages/Faith'));
 
 function AppRoutes() {
   return (
@@ -31,6 +32,7 @@ function AppRoutes() {
           <Route path="/trips" element={<Trips />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/fitness" element={<Fitness />} />
+          <Route path="/faith" element={<Faith />} />
           <Route path="/inbox" element={<Inbox />} />
           <Route path="/tasks" element={<Tasks />} />
         </Route>

@@ -1,4 +1,4 @@
-import { LogOut, CalendarDays, Plane, LayoutDashboard, Users, Activity, Inbox as InboxIcon, Plus } from 'lucide-react';
+import { LogOut, CalendarDays, Plane, LayoutDashboard, Users, BookOpen, Activity, Inbox as InboxIcon, Plus } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/AuthContext';
@@ -10,9 +10,10 @@ const IDLE = 'border-border bg-card';
 
 const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/engagements', label: 'Engagements', icon: Users },
+  { to: '/engagements', label: 'Duty', icon: Users },
   { to: '/trips', label: 'Trips', icon: Plane },
-  { to: '/calendar', label: 'Calendar', icon: CalendarDays },
+  { to: '/faith', label: 'Faith', icon: BookOpen },
+  { to: '/calendar', label: 'Agenda', icon: CalendarDays },
   { to: '/fitness', label: 'Fitness', icon: Activity },
   { to: '/inbox', label: 'Inbox', icon: InboxIcon },
 ];

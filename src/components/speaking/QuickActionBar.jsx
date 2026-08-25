@@ -10,7 +10,7 @@ export default function QuickActionBar() {
   const actions = [
     { key: 'new', label: 'New', icon: Plus, onClick: () => navigate('/engagements?action=new') },
     { key: 'new-plan', label: 'New Plan', icon: CalendarPlus, onClick: () => navigate(calendarUrl({ planId: 'new', calDate: todayStr() })) },
-    { key: 'calendar', label: 'Calendar', icon: CalendarDays, onClick: () => navigate('/calendar') },
+    { key: 'calendar', label: 'Agenda', icon: CalendarDays, onClick: () => navigate('/calendar') },
   ];
   return (
     <div className="border-b border-border">
