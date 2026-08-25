@@ -9,12 +9,11 @@ import PageHeader from '@/components/speaking/PageHeader';
 import TaskItem from '@/components/tasks/TaskItem';
 import TaskForm from '@/components/tasks/TaskForm';
 import CalendarEventForm from '@/components/speaking/CalendarEventForm';
+import InboxSection from '@/components/inbox/InboxSection';
+import FlaggedItemRow from '@/components/inbox/FlaggedItemRow';
 import { buildPlanPrefillFromTask, createRecurringPlanSeries } from '@/lib/tasks';
 import { data } from '@/lib/workspaceData';
 import { toast } from '@/components/ui/use-toast';
-import { cn } from '@/lib/utils';
-
-const FILTERS = ['outstanding', 'done'];
 
 const sourceLink = (it) => {
   switch (it.source_type) {
@@ -34,13 +33,12 @@ const sourceLink = (it) => {
 
 export default function Inbox() {
   const navigate = useNavigate();
-  const { flaggedItems } = useImportantFlags();
+  const { flaggedItems, toggle: toggleFlag } = useImportantFlags();
   const { items: tasks, loading, save, remove, toggle, load: loadTasks } = useTasks();
   const { items: plans, save: saveCalEvent } = useCalendarEvents();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [filter, setFilter] = useState('outstanding');
   const [scheduleTask, setScheduleTask] = useState(null);
 
   const outstanding = useMemo(
@@ -50,11 +48,6 @@ export default function Inbox() {
         .sort((a, b) => (a.due_date || '9999').localeCompare(b.due_date || '9999')),
     [tasks]
   );
-  const done = useMemo(
-    () => tasks.filter((t) => t.is_done).sort((a, b) => (b.updated_date || '').localeCompare(a.updated_date || '')),
-    [tasks]
-  );
-  const shown = filter === 'done' ? done : outstanding;
 
   const faithFlags = useMemo(() => flaggedItems.filter((i) => i.source_type === 'FaithJournalEntry'), [flaggedItems]);
   const fitnessFlags = useMemo(() => flaggedItems.filter((i) => i.source_type === 'Fitness'), [flaggedItems]);
@@ -111,11 +104,7 @@ export default function Inbox() {
         ) : (
           <>
             {/* 1. Faith Journal Entry */}
-            <section className="space-y-3">
-              <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
-                <BookOpen className="h-4 w-4 text-primary" />Faith Journal Entry
-                <span className="text-sm font-normal text-muted-foreground">{faithFlags.length}</span>
-              </h2>
+            <InboxSection icon={<BookOpen className="h-4 w-4 text-primary" />} title="Faith Journal Entry" count={faithFlags.length}>
               {faithFlags.length === 0 ? (
                 <p className="rounded-lg border border-dashed border-border bg-card/60 py-8 text-center text-sm text-muted-foreground">
                   No sermon-prep entries flagged yet. Mark a Faith journal entry as sermon prep to pin it here.
@@ -123,24 +112,20 @@ export default function Inbox() {
               ) : (
                 <div className="space-y-2">
                   {faithFlags.map((it) => (
-                    <button key={it.id} onClick={() => navigate(sourceLink(it))} className="flex w-full items-center gap-3 rounded-lg border border-border bg-card p-3 text-left transition hover:border-primary/50">
-                      <BookOpen className="h-4 w-4 shrink-0 text-primary" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold">{it.source_title || it.message_text || 'Faith entry'}</p>
-                        <p className="text-xs text-muted-foreground">{it.source_type}</p>
-                      </div>
-                    </button>
+                    <FlaggedItemRow
+                      key={it.id}
+                      icon={<BookOpen className="h-4 w-4 shrink-0 text-primary" />}
+                      item={it}
+                      onNavigate={() => navigate(sourceLink(it))}
+                      onUntag={() => toggleFlag(it.source_type, it.source_id, it.source_title)}
+                    />
                   ))}
                 </div>
               )}
-            </section>
+            </InboxSection>
 
             {/* 2. Fitness Journal Entry */}
-            <section className="space-y-3">
-              <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
-                <Dumbbell className="h-4 w-4 text-primary" />Fitness Journal Entry
-                <span className="text-sm font-normal text-muted-foreground">{fitnessFlags.length}</span>
-              </h2>
+            <InboxSection icon={<Dumbbell className="h-4 w-4 text-primary" />} title="Fitness Journal Entry" count={fitnessFlags.length}>
               {fitnessFlags.length === 0 ? (
                 <p className="rounded-lg border border-dashed border-border bg-card/60 py-8 text-center text-sm text-muted-foreground">
                   No workouts flagged for follow-up yet. Use “Flag for follow-up” on a workout log to pin it here.
@@ -148,24 +133,20 @@ export default function Inbox() {
               ) : (
                 <div className="space-y-2">
                   {fitnessFlags.map((it) => (
-                    <button key={it.id} onClick={() => navigate(sourceLink(it))} className="flex w-full items-center gap-3 rounded-lg border border-border bg-card p-3 text-left transition hover:border-primary/50">
-                      <Dumbbell className="h-4 w-4 shrink-0 text-primary" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold">{it.source_title || it.message_text || 'Workout'}</p>
-                        <p className="text-xs text-muted-foreground">{it.source_type}</p>
-                      </div>
-                    </button>
+                    <FlaggedItemRow
+                      key={it.id}
+                      icon={<Dumbbell className="h-4 w-4 shrink-0 text-primary" />}
+                      item={it}
+                      onNavigate={() => navigate(sourceLink(it))}
+                      onUntag={() => toggleFlag(it.source_type, it.source_id, it.source_title)}
+                    />
                   ))}
                 </div>
               )}
-            </section>
+            </InboxSection>
 
             {/* 3. Engagement Follow-up */}
-            <section className="space-y-3">
-              <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
-                <Users className="h-4 w-4 text-primary" />Engagement Follow-up
-                <span className="text-sm font-normal text-muted-foreground">{engagementFlags.length}</span>
-              </h2>
+            <InboxSection icon={<Users className="h-4 w-4 text-primary" />} title="Engagement Follow-up" count={engagementFlags.length}>
               {engagementFlags.length === 0 ? (
                 <p className="rounded-lg border border-dashed border-border bg-card/60 py-8 text-center text-sm text-muted-foreground">
                   No engagements flagged for follow-up yet. Use “Flag for follow-up” on an engagement to pin it here.
@@ -173,51 +154,27 @@ export default function Inbox() {
               ) : (
                 <div className="space-y-2">
                   {engagementFlags.map((it) => (
-                    <button key={it.id} onClick={() => navigate(sourceLink(it))} className="flex w-full items-center gap-3 rounded-lg border border-border bg-card p-3 text-left transition hover:border-primary/50">
-                      <Users className="h-4 w-4 shrink-0 text-primary" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold">{it.source_title || it.message_text || 'Engagement'}</p>
-                        <p className="text-xs text-muted-foreground">{it.source_type}</p>
-                      </div>
-                    </button>
+                    <FlaggedItemRow
+                      key={it.id}
+                      icon={<Users className="h-4 w-4 shrink-0 text-primary" />}
+                      item={it}
+                      onNavigate={() => navigate(sourceLink(it))}
+                      onUntag={() => toggleFlag(it.source_type, it.source_id, it.source_title)}
+                    />
                   ))}
                 </div>
               )}
-            </section>
+            </InboxSection>
 
-            {/* 4. Created Tasks */}
-            <section className="space-y-3">
-              <div className="flex items-center justify-between gap-2">
-                <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
-                  Created Tasks
-                  <span className="text-sm font-normal text-muted-foreground">{outstanding.length}</span>
-                </h2>
-              </div>
-
-              <div className="flex gap-2">
-                {FILTERS.map((f) => (
-                  <button
-                    key={f}
-                    onClick={() => setFilter(f)}
-                    className={cn(
-                      'rounded-full border px-3 py-1 text-xs font-medium capitalize transition',
-                      filter === f
-                        ? 'border-primary bg-primary text-primary-foreground'
-                        : 'border-border bg-card text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    {f}
-                  </button>
-                ))}
-              </div>
-
-              {shown.length === 0 ? (
+            {/* 4. Tasks */}
+            <InboxSection icon={<Check className="h-4 w-4 text-primary" />} title="Tasks" count={outstanding.length}>
+              {outstanding.length === 0 ? (
                 <p className="rounded-lg border border-dashed border-border bg-card/60 py-8 text-center text-sm text-muted-foreground">
-                  {filter === 'done' ? 'No completed tasks yet.' : 'No outstanding tasks — you\'re all caught up.'}
+                  No outstanding tasks — you're all caught up.
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {shown.map((t) => (
+                  {outstanding.map((t) => (
                     <TaskItem
                       key={t.id}
                       task={t}
@@ -230,7 +187,7 @@ export default function Inbox() {
                   ))}
                 </div>
               )}
-            </section>
+            </InboxSection>
           </>
         )}
 
