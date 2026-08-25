@@ -1,0 +1,34 @@
+{
+  "name": "Workspace",
+  "type": "object",
+  "properties": {
+    "workspace_id": {
+      "type": "string",
+      "description": "Public workspace identifier (UUID) used to tag every data record that belongs to this workspace"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name for the workspace"
+    },
+    "password_hash": {
+      "type": "string",
+      "description": "SHA-256 hash of the workspace join password (with salt). Written only by the workspaceAuth backend function (service role); never exposed to clients."
+    },
+    "salt": {
+      "type": "string",
+      "description": "Per-workspace random salt used for password hashing"
+    }
+  },
+  "required": [
+    "workspace_id",
+    "name",
+    "password_hash",
+    "salt"
+  ],
+  "rls": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  }
+}

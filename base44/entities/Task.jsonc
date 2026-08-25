@@ -27,6 +27,10 @@
     "converted_to_plan_id": {
       "type": "string",
       "description": "Set when this task is later scheduled as its own CalendarEvent/Plan (id of the created plan)"
+    },
+    "workspace_id": {
+      "type": "string",
+      "description": "Workspace this task belongs to. Stamped server-side by the data backend function; scopes all access to the owning workspace."
     }
   },
   "required": [
