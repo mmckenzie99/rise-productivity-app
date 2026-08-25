@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flag, Plus } from 'lucide-react';
+import { Flag, Plus, Check } from 'lucide-react';
 import useTasks from '@/hooks/useTasks';
 import useCalendarEvents from '@/hooks/useCalendarEvents';
 import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
@@ -94,9 +94,10 @@ export default function Inbox() {
       <PageHeader title="Inbox" actions={
         <button
           onClick={openNew}
-          className="inline-flex items-center gap-1.5 rounded-md bg-[#D9A404] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#B89003]"
+          aria-label="New Task"
+          className="inline-flex items-center gap-1 rounded-md bg-[#D9A404] px-2.5 py-2 text-white transition hover:bg-[#B89003]"
         >
-          <Plus className="h-4 w-4" />New Task
+          <Plus className="h-4 w-4" /><Check className="h-4 w-4" />
         </button>
       } />
       <div className="mx-auto max-w-3xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
@@ -137,12 +138,6 @@ export default function Inbox() {
                   Tasks
                   <span className="text-sm font-normal text-muted-foreground">{outstanding.length}</span>
                 </h2>
-                <button
-                  onClick={openNew}
-                  className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground transition hover:border-primary hover:text-primary"
-                >
-                  <Plus className="h-3.5 w-3.5" />New Task
-                </button>
               </div>
 
               <div className="flex gap-2">
