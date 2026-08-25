@@ -25,7 +25,6 @@ const CAT_COLORS = { Personal: '#5B2DA0', Work: '#1B4A6B' };
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
   const navigate = useNavigate();
   const goHome = (action) => navigate(`/engagements?action=${action}`);
   const { items: engagements, loading, load: loadEngagements } = useEngagements();
@@ -86,7 +85,7 @@ export default function Dashboard() {
     <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
       <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); }}>
         <div className="mx-auto max-w-6xl space-y-7 px-4 py-6 sm:px-6 sm:py-9">
-          <AppHeader isAdmin={isAdmin} onAdd={() => goHome('new')} onInvite={() => goHome('invite')} onCalendar={() => goHome('calendar')} />
+          <AppHeader onAdd={() => goHome('new')} />
 
         {canSee('stat_cards') && (
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">

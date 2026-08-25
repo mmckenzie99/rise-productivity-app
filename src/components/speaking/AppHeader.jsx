@@ -41,6 +41,11 @@ export default function AppHeader({ onAdd }) {
             </Button>
           )}
         </div>
+        <Link to="/inbox" className="lg:hidden">
+          <Button variant="ghost" size="icon" aria-label="Inbox" className="h-11 w-11">
+            <InboxIcon className="h-4 w-4" />
+          </Button>
+        </Link>
         <ProfileMenu />
         <Button size="icon" variant="ghost" aria-label="Leave workspace" className="h-11 w-11 lg:h-9 lg:w-9" onClick={logout}>
           <LogOut className="h-4 w-4" />
