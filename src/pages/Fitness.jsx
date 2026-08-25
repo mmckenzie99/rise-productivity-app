@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Star, Trash2, Dumbbell, Moon, Scale, Target, Check } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Star, Trash2, Dumbbell, Moon, Scale } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -21,7 +20,6 @@ import { useImportantFlags } from '@/lib/ImportantFlagsProvider';
 
 const ACTIVITIES = ['Run', 'Walk', 'Strength', 'Cycling', 'Swim', 'Yoga', 'Sports', 'Other'];
 const INTENSITIES = ['Easy', 'Moderate', 'Hard'];
-const GOAL_METRICS = ['Workouts per week', 'Sleep score avg', 'Weight target', 'Distance per week'];
 
 const todayStr = () => {
   const d = new Date();
@@ -44,14 +42,11 @@ export default function Fitness() {
   const { items, loading, save, remove, load } = useFitness();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(blankForm);
-  const [showGoal, setShowGoal] = useState(false);
-  const [goal, setGoal] = useState({ goal_metric: 'Workouts per week', goal_target: '', goal_deadline: '' });
   const [favOnly, setFavOnly] = useState(false);
   const [flagForFollowUp, setFlagForFollowUp] = useState(false);
   const { flaggedKeys, toggle, load: loadFlags } = useImportantFlags();
 
   const logs = useMemo(() => items.filter((i) => i.kind !== 'goal'), [items]);
-  const goals = useMemo(() => items.filter((i) => i.kind === 'goal'), [items]);
 
   const latestWeight = useMemo(() => logs.find((l) => l.weight != null)?.weight, [logs]);
   const ws = weekStart();
@@ -81,20 +76,12 @@ export default function Fitness() {
     setShowForm(false);
   };
 
-  const submitGoal = async () => {
-    if (!goal.goal_target) return;
-    await save({ kind: 'goal', date: todayStr(), goal_metric: goal.goal_metric, goal_target: num(goal.goal_target), goal_deadline: goal.goal_deadline || null, goal_completed: false });
-    setGoal({ goal_metric: 'Workouts per week', goal_target: '', goal_deadline: '' });
-    setShowGoal(false);
-  };
-
   const toggleFav = async (l) => { await save({ ...l, is_favorite: !l.is_favorite }); };
-  const toggleGoalDone = async (g) => { await save({ ...g, goal_completed: !g.goal_completed }); };
 
   return (
     <main className="min-h-screen bg-background text-foreground pb-safe">
       <PageHeader title="Fitness" backTo="/" actions={
-        <AddButton onClick={() => { setFlagForFollowUp(false); setShowForm(true); setShowGoal(false); }} label="Log workout" />
+        <AddButton onClick={() => { setFlagForFollowUp(false); setShowForm(true); }} label="Log workout" />
       } />
       <div className="mx-auto max-w-3xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
         <PullToRefresh onRefresh={load}>
@@ -114,31 +101,6 @@ export default function Fitness() {
             <div className="mt-1 text-xl font-semibold">{workoutsThisWeek}</div>
             <div className="text-[11px] text-muted-foreground">Workouts this week</div>
           </div>
-        </div>
-
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 font-display text-lg font-semibold"><Target className="h-4 w-4 text-primary" />Goals</h2>
-            <AddButton onClick={() => { setShowGoal(true); setShowForm(false); }} label="Add goal" className="h-8 px-2" iconClass="h-3.5 w-3.5" />
-          </div>
-          {goals.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-border bg-card/60 py-6 text-center text-sm text-muted-foreground">No fitness goals yet.</p>
-          ) : (
-            <div className="space-y-2">
-              {goals.map((g) => (
-                <div key={g.id} className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
-                  <button onClick={() => toggleGoalDone(g)} className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${g.goal_completed ? 'border-primary bg-primary text-primary-foreground' : 'border-border'}`}>
-                    {g.goal_completed && <Check className="h-3 w-3" strokeWidth={3} />}
-                  </button>
-                  <div className="min-w-0 flex-1">
-                    <p className={`text-sm font-medium ${g.goal_completed ? 'text-muted-foreground line-through' : ''}`}>{g.goal_metric}: {g.goal_target}</p>
-                    {g.goal_deadline && <p className="text-xs text-muted-foreground">by {formatDate(g.goal_deadline)}</p>}
-                  </div>
-                  <button onClick={() => remove(g.id)} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         <div className="space-y-3">
@@ -237,22 +199,6 @@ export default function Fitness() {
         </div>
       )}
 
-      {showGoal && (
-        <div className="fixed inset-0 z-50 flex items-end bg-black/40 sm:items-center sm:justify-center" onClick={() => setShowGoal(false)}>
-          <div className="w-full max-w-md rounded-t-lg border border-border bg-card p-4 pb-safe sm:rounded-lg" onClick={(e) => e.stopPropagation()}>
-            <h3 className="mb-3 font-display text-lg font-semibold">New fitness goal</h3>
-            <div className="space-y-3">
-              <div className="space-y-1"><Label>Metric</Label><ResponsiveSelect value={goal.goal_metric} onValueChange={(v) => setGoal({ ...goal, goal_metric: v })} options={GOAL_METRICS.map((a) => ({ value: a, label: a }))} label="Metric" /></div>
-              <div className="space-y-1"><Label>Target</Label><Input type="number" value={goal.goal_target} onChange={(e) => setGoal({ ...goal, goal_target: e.target.value })} /></div>
-              <div className="space-y-1"><Label>Deadline</Label><DatePicker value={goal.goal_deadline} onChange={(v) => setGoal({ ...goal, goal_deadline: v })} label="Deadline" /></div>
-            </div>
-            <div className="mt-3 flex gap-2">
-              <Button variant="outline" className="flex-1" onClick={() => setShowGoal(false)}>Cancel</Button>
-              <Button className="flex-1" onClick={submitGoal}>Save goal</Button>
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

@@ -6,16 +6,13 @@ import TimePicker from '@/components/speaking/TimePicker';
 import AddButton from '@/components/speaking/AddButton';
 import { Target, Trash2, Check, Bell, ChevronDown } from 'lucide-react';
 
-const FOCUSES = ['Spiritual', 'Professional', 'Physical', 'Mental', 'Relational', 'Personal'];
+const GOAL_TYPES = ['Faith Goal', 'Fitness Goal', 'Duty Goal'];
 const MAX_GOALS = 4;
 
-const FOCUS_TONES = {
-  Spiritual: 'bg-[#FBF0D0]/60 text-[#8A6D0B]',
-  Professional: 'bg-[#E2E8F0] text-[#1B2A4B]',
-  Physical: 'bg-[#DCFCE7] text-[#166534]',
-  Mental: 'bg-[#E9D5FF] text-[#6B21A8]',
-  Relational: 'bg-[#FFE4E6] text-[#9F1239]',
-  Personal: 'bg-muted text-muted-foreground',
+const GOAL_TYPE_TONES = {
+  'Faith Goal': 'bg-[#FBF0D0]/60 text-[#8A6D0B]',
+  'Fitness Goal': 'bg-[#DCFCE7] text-[#166534]',
+  'Duty Goal': 'bg-[#E2E8F0] text-[#1B2A4B]',
 };
 
 export const weekStartKey = (d) => {
@@ -32,7 +29,7 @@ export default function WeeklyGoals({ cursor }) {
   const [record, setRecord] = useState(null);
   const [goals, setGoals] = useState([]);
   const [draftText, setDraftText] = useState('');
-  const [draftFocuses, setDraftFocuses] = useState([]);
+  const [draftType, setDraftType] = useState('');
   const [reminderTime, setReminderTime] = useState('');
   const [userTz] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Detroit');
   const timer = useRef(null);
@@ -78,19 +75,10 @@ export default function WeeklyGoals({ cursor }) {
   const atCapacity = goals.length >= MAX_GOALS;
 
   const addGoal = () => {
-    if (!draftText.trim() || atCapacity) return;
-    const focus = draftFocuses.length > 0 ? draftFocuses : ['Personal'];
-    setGoals((g) => [...g, { id: newId(), text: draftText.trim(), focus, completed: false }]);
+    if (!draftText.trim() || !draftType || atCapacity) return;
+    setGoals((g) => [...g, { id: newId(), text: draftText.trim(), focus: [draftType], completed: false }]);
     setDraftText('');
-    setDraftFocuses([]);
-  };
-
-  const toggleDraftFocus = (f) => {
-    setDraftFocuses((cur) => (cur.includes(f) ? cur.filter((x) => x !== f) : [...cur, f]));
-  };
-
-  const selectAllFocuses = () => {
-    setDraftFocuses((cur) => (cur.length === FOCUSES.length ? [] : [...FOCUSES]));
+    setDraftType('');
   };
 
   const toggleComplete = (id) => {
@@ -179,33 +167,22 @@ export default function WeeklyGoals({ cursor }) {
               placeholder="Add a goal…"
               className="h-8 flex-1 min-w-[120px] border-border text-sm"
             />
-            <AddButton onClick={addGoal} disabled={!draftText.trim()} label="Add goal" className="h-8 px-2" iconClass="h-3.5 w-3.5" />
+            <AddButton onClick={addGoal} disabled={!draftText.trim() || !draftType} label="Add goal" className="h-8 px-2" iconClass="h-3.5 w-3.5" />
           </div>
           <div className="flex flex-wrap gap-1">
-            <button
-              type="button"
-              onClick={selectAllFocuses}
-              className={`rounded-full border px-2 py-0.5 text-[10px] font-medium transition ${
-                draftFocuses.length === FOCUSES.length
-                  ? 'bg-foreground text-primary-foreground border-transparent'
-                  : 'border-border bg-card text-muted-foreground hover:bg-muted'
-              }`}
-            >
-              All
-            </button>
-            {FOCUSES.map((f) => {
-              const on = draftFocuses.includes(f);
-              const tone = FOCUS_TONES[f] || 'bg-muted text-muted-foreground';
+            {GOAL_TYPES.map((t) => {
+              const on = draftType === t;
+              const tone = GOAL_TYPE_TONES[t] || 'bg-muted text-muted-foreground';
               return (
                 <button
-                  key={f}
+                  key={t}
                   type="button"
-                  onClick={() => toggleDraftFocus(f)}
+                  onClick={() => setDraftType(t)}
                   className={`rounded-full border px-2 py-0.5 text-[10px] font-medium transition ${
                     on ? `${tone} border-transparent` : 'border-border bg-card text-muted-foreground hover:bg-muted'
                   }`}
                 >
-                  {f}
+                  {t}
                 </button>
               );
             })}
@@ -243,7 +220,7 @@ export default function WeeklyGoals({ cursor }) {
                 </span>
                 <div className="flex shrink-0 flex-wrap justify-end gap-1">
                   {tags.map((t) => (
-                    <span key={t} className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${FOCUS_TONES[t] || 'bg-muted text-muted-foreground'}`}>{t}</span>
+                    <span key={t} className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${GOAL_TYPE_TONES[t] || 'bg-muted text-muted-foreground'}`}>{t}</span>
                   ))}
                 </div>
                 {!selectMode && (

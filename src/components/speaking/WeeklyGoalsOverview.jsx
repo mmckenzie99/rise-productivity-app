@@ -4,14 +4,11 @@ import { Target, Check } from 'lucide-react';
 import { weekStartKey, focusOf } from './WeeklyGoals';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const FOCUSES = ['Spiritual', 'Professional', 'Physical', 'Mental', 'Relational', 'Personal'];
+const FOCUSES = ['Faith Goal', 'Fitness Goal', 'Duty Goal'];
 const FOCUS_DOT = {
-  Spiritual: '#D9A404',
-  Professional: '#1B2A4B',
-  Physical: '#166534',
-  Mental: '#6B21A8',
-  Relational: '#9F1239',
-  Personal: '#5A6781',
+  'Faith Goal': '#D9A404',
+  'Fitness Goal': '#166534',
+  'Duty Goal': '#1B2A4B',
 };
 
 const fmtWeek = (key) => {
