@@ -7,6 +7,7 @@ import StatCard from '@/components/speaking/StatCard';
 import useEngagements from '@/hooks/useEngagements';
 import useCalendarEvents from '@/hooks/useCalendarEvents';
 import useTrips from '@/hooks/useTrips';
+import useTasks from '@/hooks/useTasks';
 import { getTripStatus } from '@/lib/trips';
 import PlanListSection from '@/components/speaking/PlanListSection';
 import WeeklyGoalsOverview from '@/components/speaking/WeeklyGoalsOverview';
@@ -37,6 +38,7 @@ export default function Dashboard() {
   const { items: engagements, loading, load: loadEngagements } = useEngagements();
   const { items: events, load: loadCalEvents } = useCalendarEvents();
   const { items: trips, load: loadTrips } = useTrips();
+  const { items: tasks, load: loadTasks } = useTasks();
   const { settings } = useAppSettings();
   const canSee = (id) => resolveDashboardSection(user, settings, id);
 
@@ -79,6 +81,21 @@ export default function Dashboard() {
       .map(([, v]) => v);
   }, [engagements]);
 
+  const taskMonthlyData = useMemo(() => {
+    const map = {};
+    tasks.forEach((t) => {
+      const d = t.due_date || t.created_date;
+      if (!d) return;
+      const m = d.slice(0, 7);
+      if (!map[m]) map[m] = { month: MONTHS[Number(m.slice(5, 7)) - 1], logged: 0, completed: 0 };
+      if (t.is_done) map[m].completed++;
+      else map[m].logged++;
+    });
+    return Object.entries(map)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([, v]) => v);
+  }, [tasks]);
+
   const planSections = useMemo(() => {
     const upcoming = events.filter((x) => x.date && x.date >= today && !x.completed);
     const completed = events.filter((x) => x.completed);
@@ -99,7 +116,7 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
-      <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); await loadTrips(); }}>
+      <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); await loadTrips(); await loadTasks(); }}>
         <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
           <AppHeader onAdd={() => goHome('new')} />
 
@@ -154,6 +171,22 @@ export default function Dashboard() {
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={tripMonthlyData} barGap={4}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Bar dataKey="logged" name="Logged" fill="#D9A404" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="completed" name="Completed" fill="#1B2A4B" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </DashboardSection>
+
+        <DashboardSection title="Tasks per month" icon={CheckCircle2} iconTone="text-primary">
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={taskMonthlyData} barGap={4}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                 <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
