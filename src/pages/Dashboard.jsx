@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 import { ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw, Target, Plane, Dumbbell } from 'lucide-react';
@@ -9,7 +9,11 @@ import useCalendarEvents from '@/hooks/useCalendarEvents';
 import useTrips from '@/hooks/useTrips';
 import useTasks from '@/hooks/useTasks';
 import useFitness from '@/hooks/useFitness';
-import { getTripStatus } from '@/lib/trips';
+import { getTripStatus, formatPlaces } from '@/lib/trips';
+import TagCloud from '@/components/dashboard/TagCloud';
+import TaskQuickLook from '@/components/dashboard/TaskQuickLook';
+import EngagementQuickLook from '@/components/speaking/EngagementQuickLook';
+import TripDetail from '@/components/speaking/TripDetail';
 import PlanListSection from '@/components/speaking/PlanListSection';
 import WeeklyGoalsOverview from '@/components/speaking/WeeklyGoalsOverview';
 import DashboardSection from '@/components/dashboard/DashboardSection';
@@ -43,6 +47,27 @@ export default function Dashboard() {
   const { items: fitness, load: loadFitness } = useFitness();
   const { settings } = useAppSettings();
   const canSee = (id) => resolveDashboardSection(user, settings, id);
+
+  const [selectedEng, setSelectedEng] = useState(null);
+  const [selectedTrip, setSelectedTrip] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
+
+  const ENG_TONE = (e) => ({
+    Planning: 'bg-[#FBF0D0]/70 text-[#8A6D0B] border-[#D9A404]/30',
+    Confirmed: 'bg-[#E2E8F0] text-[#1B2A4B] border-[#1B2A4B]/20',
+    Completed: 'bg-[#DCFCE7] text-[#166534] border-[#166534]/25',
+  }[e.status] || 'bg-muted text-muted-foreground border-border');
+  const TRIP_TONE = (t) => ({
+    'Expense to Thrive': 'bg-blue-50 text-blue-700 border-blue-200',
+    'Expense to Engage': 'bg-amber-50 text-amber-700 border-amber-200',
+    'Expense Local Entity': 'bg-slate-100 text-slate-700 border-slate-300',
+  }[t.department] || 'bg-muted text-muted-foreground border-border');
+  const TASK_TONE = (t) => t.is_done
+    ? 'bg-muted text-muted-foreground border-border line-through opacity-70'
+    : ({
+        Personal: 'bg-[#FBF0D0]/70 text-[#8A6D0B] border-[#D9A404]/30',
+        Work: 'bg-[#E2E8F0] text-[#1B2A4B] border-[#1B2A4B]/20',
+      }[t.category] || 'bg-muted text-muted-foreground border-border');
 
   const today = todayStr();
 
@@ -166,6 +191,39 @@ export default function Dashboard() {
           </DashboardSection>
         )}
 
+        <DashboardSection title="Engagements" icon={ClipboardList} iconTone="text-primary">
+          <TagCloud
+            items={engagements}
+            getKey={(e) => e.id}
+            getLabel={(e) => e.place || e.title || e.speaker_name || 'Engagement'}
+            getTone={ENG_TONE}
+            onSelect={setSelectedEng}
+            emptyText="No engagements yet."
+          />
+        </DashboardSection>
+
+        <DashboardSection title="Trips" icon={Plane} iconTone="text-primary">
+          <TagCloud
+            items={trips}
+            getKey={(t) => t.id}
+            getLabel={(t) => formatPlaces(t)}
+            getTone={TRIP_TONE}
+            onSelect={setSelectedTrip}
+            emptyText="No trips yet."
+          />
+        </DashboardSection>
+
+        <DashboardSection title="Tasks" icon={CheckCircle2} iconTone="text-primary">
+          <TagCloud
+            items={tasks}
+            getKey={(t) => t.id}
+            getLabel={(t) => t.title}
+            getTone={TASK_TONE}
+            onSelect={setSelectedTask}
+            emptyText="No tasks yet."
+          />
+        </DashboardSection>
+
         <DashboardSection title="Engagements per month" icon={ClipboardList} iconTone="text-primary">
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -230,6 +288,9 @@ export default function Dashboard() {
 
         </div>
       </PullToRefresh>
+      <EngagementQuickLook item={selectedEng} onClose={() => setSelectedEng(null)} />
+      <TripDetail trip={selectedTrip} onClose={() => setSelectedTrip(null)} onEdit={() => {}} onDelete={async () => false} isAdmin={false} />
+      <TaskQuickLook task={selectedTask} onClose={() => setSelectedTask(null)} />
       <div className="h-28 lg:hidden" />
     </main>
   );
