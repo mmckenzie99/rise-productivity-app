@@ -26,7 +26,7 @@ export default function TagCloud({ items, getLabel, getKey, getTone, onSelect, e
           type="button"
           onClick={() => onSelect(item)}
           className={cn(
-            'inline-flex max-w-[220px] items-center rounded-full border px-3 py-1.5 text-xs font-medium transition hover:shadow-sm',
+            'inline-flex max-w-[240px] items-center rounded-full border px-3 py-1.5 text-xs font-medium transition hover:opacity-80 active:scale-[0.98]',
             getTone(item)
           )}
         >

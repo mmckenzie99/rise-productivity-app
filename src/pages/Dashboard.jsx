@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 import { ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw, Target, Plane, Dumbbell } from 'lucide-react';
 import AppHeader from '@/components/speaking/AppHeader';
 import StatCard from '@/components/speaking/StatCard';
@@ -11,6 +10,7 @@ import useTasks from '@/hooks/useTasks';
 import useFitness from '@/hooks/useFitness';
 import { getTripStatus, formatPlaces } from '@/lib/trips';
 import TagCloud from '@/components/dashboard/TagCloud';
+import MonthlyChart from '@/components/dashboard/MonthlyChart';
 import TaskQuickLook from '@/components/dashboard/TaskQuickLook';
 import EngagementQuickLook from '@/components/speaking/EngagementQuickLook';
 import TripDetail from '@/components/speaking/TripDetail';
@@ -53,20 +53,20 @@ export default function Dashboard() {
   const [selectedTask, setSelectedTask] = useState(null);
 
   const ENG_TONE = (e) => ({
-    Planning: 'bg-[#FBF0D0]/70 text-[#8A6D0B] border-[#D9A404]/30',
-    Confirmed: 'bg-[#E2E8F0] text-[#1B2A4B] border-[#1B2A4B]/20',
-    Completed: 'bg-[#DCFCE7] text-[#166534] border-[#166534]/25',
+    Planning: 'bg-amber-50 text-amber-700 border-amber-200',
+    Confirmed: 'bg-slate-100 text-slate-700 border-slate-200',
+    Completed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   }[e.status] || 'bg-muted text-muted-foreground border-border');
   const TRIP_TONE = (t) => ({
-    'Expense to Thrive': 'bg-blue-50 text-blue-700 border-blue-200',
+    'Expense to Thrive': 'bg-sky-50 text-sky-700 border-sky-200',
     'Expense to Engage': 'bg-amber-50 text-amber-700 border-amber-200',
-    'Expense Local Entity': 'bg-slate-100 text-slate-700 border-slate-300',
+    'Expense Local Entity': 'bg-slate-100 text-slate-700 border-slate-200',
   }[t.department] || 'bg-muted text-muted-foreground border-border');
   const TASK_TONE = (t) => t.is_done
-    ? 'bg-muted text-muted-foreground border-border line-through opacity-70'
+    ? 'bg-muted text-muted-foreground border-border line-through opacity-60'
     : ({
-        Personal: 'bg-[#FBF0D0]/70 text-[#8A6D0B] border-[#D9A404]/30',
-        Work: 'bg-[#E2E8F0] text-[#1B2A4B] border-[#1B2A4B]/20',
+        Personal: 'bg-amber-50 text-amber-700 border-amber-200',
+        Work: 'bg-slate-100 text-slate-700 border-slate-200',
       }[t.category] || 'bg-muted text-muted-foreground border-border');
 
   const today = todayStr();
@@ -157,7 +157,7 @@ export default function Dashboard() {
   return (
     <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
       <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); await loadTrips(); await loadTasks(); await loadFitness(); }}>
-        <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
+        <div className="mx-auto max-w-6xl space-y-5 px-4 py-6 sm:px-6 sm:py-8">
           <AppHeader onAdd={() => goHome('new')} />
 
           <div>
@@ -183,10 +183,10 @@ export default function Dashboard() {
         {canSee('plans') && (
           <DashboardSection title="Plans" icon={CalendarClock} iconTone="text-primary">
             <div className="grid gap-4 sm:grid-cols-2">
-              <PlanListSection title="Upcoming Plans" icon={CalendarClock} tone="bg-[#FBF0D0] text-primary" items={planSections.upcoming} emptyText="No upcoming plans" />
-              <PlanListSection title="Completed Plans" icon={CheckCircle2} tone="bg-[#D7F0DD] text-[#1E6B3A]" items={planSections.completed} emptyText="No completed plans" />
-              <PlanListSection title="Edited Plans" icon={Edit} tone="bg-[#E7EEF6] text-foreground" items={planSections.edited} emptyText="No edited plans" />
-              <PlanListSection title="Rescheduled Plans" icon={RefreshCw} tone="bg-[#EDE3F8] text-[#5B2DA0]" items={planSections.rescheduled} emptyText="No rescheduled plans" />
+              <PlanListSection title="Upcoming Plans" icon={CalendarClock} tone="bg-amber-50 text-amber-600" items={planSections.upcoming} emptyText="No upcoming plans" />
+              <PlanListSection title="Completed Plans" icon={CheckCircle2} tone="bg-emerald-50 text-emerald-600" items={planSections.completed} emptyText="No completed plans" />
+              <PlanListSection title="Edited Plans" icon={Edit} tone="bg-slate-100 text-slate-600" items={planSections.edited} emptyText="No edited plans" />
+              <PlanListSection title="Rescheduled Plans" icon={RefreshCw} tone="bg-violet-50 text-violet-600" items={planSections.rescheduled} emptyText="No rescheduled plans" />
             </div>
           </DashboardSection>
         )}
@@ -224,67 +224,20 @@ export default function Dashboard() {
           />
         </DashboardSection>
 
-        <DashboardSection title="Engagements per month" icon={ClipboardList} iconTone="text-primary">
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={engagementMonthlyData} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="logged" name="Logged" fill="#D9A404" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="completed" name="Completed" fill="#1B2A4B" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </DashboardSection>
-
-        <DashboardSection title="Trips per month" icon={Plane} iconTone="text-primary">
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={tripMonthlyData} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="logged" name="Logged" fill="#D9A404" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="completed" name="Completed" fill="#1B2A4B" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </DashboardSection>
-
-        <DashboardSection title="Tasks per month" icon={CheckCircle2} iconTone="text-primary">
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={taskMonthlyData} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="logged" name="Logged" fill="#D9A404" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="completed" name="Completed" fill="#1B2A4B" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </DashboardSection>
-
-        <DashboardSection title="Workouts completed" icon={Dumbbell} iconTone="text-primary">
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={workoutMonthlyData} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} />
-                <Bar dataKey="completed" name="Completed" fill="#1B2A4B" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </DashboardSection>
+        <div className="grid gap-5 lg:grid-cols-2">
+          <DashboardSection title="Engagements per month" icon={ClipboardList} iconTone="text-primary">
+            <MonthlyChart data={engagementMonthlyData} />
+          </DashboardSection>
+          <DashboardSection title="Trips per month" icon={Plane} iconTone="text-primary">
+            <MonthlyChart data={tripMonthlyData} />
+          </DashboardSection>
+          <DashboardSection title="Tasks per month" icon={CheckCircle2} iconTone="text-primary">
+            <MonthlyChart data={taskMonthlyData} />
+          </DashboardSection>
+          <DashboardSection title="Workouts completed" icon={Dumbbell} iconTone="text-primary">
+            <MonthlyChart data={workoutMonthlyData} showLogged={false} />
+          </DashboardSection>
+        </div>
 
         </div>
       </PullToRefresh>
