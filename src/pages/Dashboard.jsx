@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
-import { ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw, Target, Plane } from 'lucide-react';
+import { ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw, Target, Plane, Dumbbell } from 'lucide-react';
 import AppHeader from '@/components/speaking/AppHeader';
 import StatCard from '@/components/speaking/StatCard';
 import useEngagements from '@/hooks/useEngagements';
 import useCalendarEvents from '@/hooks/useCalendarEvents';
 import useTrips from '@/hooks/useTrips';
 import useTasks from '@/hooks/useTasks';
+import useFitness from '@/hooks/useFitness';
 import { getTripStatus } from '@/lib/trips';
 import PlanListSection from '@/components/speaking/PlanListSection';
 import WeeklyGoalsOverview from '@/components/speaking/WeeklyGoalsOverview';
@@ -39,6 +40,7 @@ export default function Dashboard() {
   const { items: events, load: loadCalEvents } = useCalendarEvents();
   const { items: trips, load: loadTrips } = useTrips();
   const { items: tasks, load: loadTasks } = useTasks();
+  const { items: fitness, load: loadFitness } = useFitness();
   const { settings } = useAppSettings();
   const canSee = (id) => resolveDashboardSection(user, settings, id);
 
@@ -96,6 +98,19 @@ export default function Dashboard() {
       .map(([, v]) => v);
   }, [tasks]);
 
+  const workoutMonthlyData = useMemo(() => {
+    const map = {};
+    fitness.forEach((f) => {
+      if (f.kind !== 'log' || !f.date) return;
+      const m = f.date.slice(0, 7);
+      if (!map[m]) map[m] = { month: MONTHS[Number(m.slice(5, 7)) - 1], completed: 0 };
+      map[m].completed++;
+    });
+    return Object.entries(map)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([, v]) => v);
+  }, [fitness]);
+
   const planSections = useMemo(() => {
     const upcoming = events.filter((x) => x.date && x.date >= today && !x.completed);
     const completed = events.filter((x) => x.completed);
@@ -116,7 +131,7 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen bg-background text-foreground pt-safe pb-safe">
-      <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); await loadTrips(); await loadTasks(); }}>
+      <PullToRefresh onRefresh={async () => { await loadEngagements(); await loadCalEvents(); await loadTrips(); await loadTasks(); await loadFitness(); }}>
         <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 sm:py-9">
           <AppHeader onAdd={() => goHome('new')} />
 
@@ -193,6 +208,20 @@ export default function Dashboard() {
                 <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
                 <Bar dataKey="logged" name="Logged" fill="#D9A404" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="completed" name="Completed" fill="#1B2A4B" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </DashboardSection>
+
+        <DashboardSection title="Workouts completed" icon={Dumbbell} iconTone="text-primary">
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={workoutMonthlyData} barGap={4}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} />
                 <Bar dataKey="completed" name="Completed" fill="#1B2A4B" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
