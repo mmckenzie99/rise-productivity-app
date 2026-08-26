@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw, PieChart as PieChartIcon, BarChart as BarChartIcon, Target } from 'lucide-react';
+import { ClipboardList, CalendarClock, CalendarDays, CheckCircle2, Edit, RefreshCw, Target } from 'lucide-react';
 import AppHeader from '@/components/speaking/AppHeader';
 import StatCard from '@/components/speaking/StatCard';
 import useEngagements from '@/hooks/useEngagements';
@@ -18,10 +17,6 @@ const todayStr = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
-
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const STATUS_COLORS = { Planning: '#D9A404', Confirmed: '#1B2A4B', Completed: '#5A6781' };
-const CAT_COLORS = { Personal: '#5B2DA0', Work: '#1B4A6B' };
 
 const greeting = () => {
   const h = new Date().getHours();
@@ -48,29 +43,6 @@ export default function Dashboard() {
     const plansThisMonth = events.filter((x) => x.date && x.date.slice(0, 7) === today.slice(0, 7));
     return { upcomingEng, completedEng, upcomingPlans, plansThisMonth };
   }, [engagements, events, today]);
-
-  const statusData = useMemo(() => {
-    const counts = { Planning: 0, Confirmed: 0, Completed: 0 };
-    engagements.forEach((x) => { if (counts[x.status] !== undefined) counts[x.status]++; });
-    return Object.entries(counts).map(([name, value]) => ({ name, value }));
-  }, [engagements]);
-
-  const monthlyData = useMemo(() => {
-    const map = {};
-    stats.upcomingEng.forEach((x) => {
-      const m = x.deploy_date.slice(0, 7);
-      map[m] = (map[m] || 0) + 1;
-    });
-    return Object.entries(map)
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([k, v]) => ({ month: MONTHS[Number(k.slice(5, 7)) - 1], engagements: v }));
-  }, [stats.upcomingEng]);
-
-  const categoryData = useMemo(() => {
-    const counts = { Personal: 0, Work: 0 };
-    stats.upcomingPlans.forEach((x) => { if (counts[x.category] !== undefined) counts[x.category]++; });
-    return Object.entries(counts).map(([name, value]) => ({ name, value }));
-  }, [stats.upcomingPlans]);
 
   const planSections = useMemo(() => {
     const upcoming = events.filter((x) => x.date && x.date >= today && !x.completed);
@@ -123,74 +95,6 @@ export default function Dashboard() {
               <PlanListSection title="Completed Plans" icon={CheckCircle2} tone="bg-[#D7F0DD] text-[#1E6B3A]" items={planSections.completed} emptyText="No completed plans" />
               <PlanListSection title="Edited Plans" icon={Edit} tone="bg-[#E7EEF6] text-foreground" items={planSections.edited} emptyText="No edited plans" />
               <PlanListSection title="Rescheduled Plans" icon={RefreshCw} tone="bg-[#EDE3F8] text-[#5B2DA0]" items={planSections.rescheduled} emptyText="No rescheduled plans" />
-            </div>
-          </DashboardSection>
-        )}
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          {canSee('status_chart') && (
-            <DashboardSection title="Engagements by status" icon={PieChartIcon} iconTone="text-primary">
-              <div className="flex flex-col items-center">
-                <div className="h-52 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={statusData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={3}>
-                        {statusData.map((e) => <Cell key={e.name} fill={STATUS_COLORS[e.name]} />)}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="mt-3 flex flex-wrap justify-center gap-2">
-                  {statusData.map((e) => (
-                    <span key={e.name} className="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
-                      <span className="h-2 w-2 rounded-full" style={{ background: STATUS_COLORS[e.name] }} />
-                      {e.name} <span className="font-semibold text-foreground">{e.value}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </DashboardSection>
-          )}
-
-          {canSee('category_chart') && (
-            <DashboardSection title="Upcoming plans by category" icon={PieChartIcon} iconTone="text-[#1B4A6B]">
-              <div className="flex flex-col items-center">
-                <div className="h-52 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={3}>
-                        {categoryData.map((e) => <Cell key={e.name} fill={CAT_COLORS[e.name]} />)}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="mt-3 flex flex-wrap justify-center gap-2">
-                  {categoryData.map((e) => (
-                    <span key={e.name} className="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
-                      <span className="h-2 w-2 rounded-full" style={{ background: CAT_COLORS[e.name] }} />
-                      {e.name} <span className="font-semibold text-foreground">{e.value}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </DashboardSection>
-          )}
-        </div>
-
-        {canSee('monthly_chart') && (
-          <DashboardSection title="Upcoming engagements by month" icon={BarChartIcon} iconTone="text-primary">
-            <div className="h-56 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                  <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} />
-                  <Bar dataKey="engagements" fill="#D9A404" radius={[6, 6, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
             </div>
           </DashboardSection>
         )}
