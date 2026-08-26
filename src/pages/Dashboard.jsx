@@ -64,6 +64,21 @@ export default function Dashboard() {
       .map(([, v]) => v);
   }, [trips]);
 
+  const engagementMonthlyData = useMemo(() => {
+    const map = {};
+    engagements.forEach((e) => {
+      const d = e.speaking_date || e.deploy_date;
+      if (!d) return;
+      const m = d.slice(0, 7);
+      if (!map[m]) map[m] = { month: MONTHS[Number(m.slice(5, 7)) - 1], logged: 0, completed: 0 };
+      if (e.status === 'Completed') map[m].completed++;
+      else map[m].logged++;
+    });
+    return Object.entries(map)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([, v]) => v);
+  }, [engagements]);
+
   const planSections = useMemo(() => {
     const upcoming = events.filter((x) => x.date && x.date >= today && !x.completed);
     const completed = events.filter((x) => x.completed);
@@ -118,6 +133,22 @@ export default function Dashboard() {
             </div>
           </DashboardSection>
         )}
+
+        <DashboardSection title="Engagements per month" icon={ClipboardList} iconTone="text-primary">
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={engagementMonthlyData} barGap={4}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Bar dataKey="logged" name="Logged" fill="#D9A404" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="completed" name="Completed" fill="#1B2A4B" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </DashboardSection>
 
         <DashboardSection title="Trips per month" icon={Plane} iconTone="text-primary">
           <div className="h-64 w-full">
