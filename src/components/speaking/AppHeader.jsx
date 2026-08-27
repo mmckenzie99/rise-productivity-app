@@ -1,4 +1,4 @@
-import { LogOut, CalendarDays, Plane, LayoutDashboard, Users, BookOpen, Activity } from 'lucide-react';
+import { LogOut, CalendarDays, Plane, LayoutDashboard, Users, BookOpen, Activity, Inbox } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import AddButton from './AddButton';
@@ -16,6 +16,7 @@ const NAV = [
   { to: '/faith', label: 'Faith', icon: BookOpen },
   { to: '/calendar', label: 'Agenda', icon: CalendarDays },
   { to: '/fitness', label: 'Fitness', icon: Activity },
+  { to: '/inbox', label: 'Inbox', icon: Inbox },
 ];
 
 // No-account model: every workspace member is an equal owner, so the header no
